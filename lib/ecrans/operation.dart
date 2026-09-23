@@ -70,6 +70,59 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
       rafraichir(ref);
     }
 
+    // Dépense, revenu, ou virement entre tes comptes : la détection peut
+    // se tromper dans les deux sens, alors cela se corrige ici.
+    Future<void> choisirMouvement() async {
+      final choix = await showModalBottomSheet<(SensInterne?,)>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        constraints: const BoxConstraints(maxWidth: 560),
+        builder: (ctx) => SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(24, 0, 24, 10),
+                  child: Text(
+                    'Un virement entre tes comptes n\'est ni une dépense ni un revenu : il sort du budget.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire),
+                  ),
+                ),
+                for (final (sens, texte, icone) in [
+                  (null, o.entree ? 'Revenu' : 'Dépense', 'label'),
+                  (SensInterne.versEpargne, "Virement vers l'épargne", 'savings'),
+                  (SensInterne.depuisEpargne, "Virement depuis l'épargne", 'savings'),
+                  (SensInterne.entreComptes, 'Virement entre mes comptes', 'sync_alt'),
+                ])
+                  ListTile(
+                    leading: Icon(iconeDe(icone), color: sens == null ? AppColors.texteSecondaire : AppColors.interne),
+                    title: Text(texte, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    trailing: sens == o.interne ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                    onTap: () => Navigator.pop(ctx, (sens,)),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+      if (choix == null || choix.$1 == o.interne) return;
+      final sens = choix.$1;
+      if (sens != null) {
+        await modifier(() => const DepotOperations().marquerInterne(o.id, sens));
+        return;
+      }
+      // Ce n'était pas un virement interne : il lui faut une vraie catégorie.
+      if (!context.mounted) return;
+      final id = await choisirCategorie(context, ref);
+      if (id == null) return;
+      await modifier(() async {
+        await const DepotOperations().reclasser(o.id, id);
+      });
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Contenu(
@@ -115,15 +168,25 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  if (o.interne != null)
-                    _BlocInterne(sens: o.interne!)
-                  else
-                    Carte(
+                  Carte(
                       padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const Surtitre('Classement'),
+                          _Ligne(
+                            icone: 'sync_alt',
+                            libelle: 'Mouvement',
+                            valeur: switch (o.interne) {
+                              null => o.entree ? 'Revenu' : 'Dépense',
+                              SensInterne.versEpargne => "Vers l'épargne",
+                              SensInterne.depuisEpargne => "Depuis l'épargne",
+                              SensInterne.entreComptes => 'Entre mes comptes',
+                            },
+                            couleur: o.interne == null ? null : AppColors.interne,
+                            onTap: choisirMouvement,
+                          ),
+                          if (o.interne == null) ...[
                           _Ligne(
                             icone: 'label',
                             libelle: 'Catégorie',
@@ -198,9 +261,14 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                               }
                             },
                           ),
+                          ],
                         ],
                       ),
                     ),
+                  if (o.interne != null) ...[
+                    const SizedBox(height: 14),
+                    _BlocInterne(sens: o.interne!),
+                  ],
                   const SizedBox(height: 14),
                   Carte(
                     padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),

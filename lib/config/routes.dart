@@ -9,6 +9,7 @@ import '../ecrans/mois.dart';
 import '../ecrans/operation.dart';
 import '../ecrans/operations.dart';
 import '../ecrans/reglages.dart';
+import '../ecrans/verifier.dart';
 import '../ecrans/verrouillage.dart';
 import '../security/lock_state.dart';
 import '../widgets/coque.dart';
@@ -78,6 +79,7 @@ final router = GoRouter(
       builder: (_, e) => _Pleine(EcranLier(id: int.parse(e.pathParameters['id']!))),
     ),
     GoRoute(path: '/operations', builder: (_, _) => const _Pleine(EcranOperations())),
+    GoRoute(path: '/verifier', builder: (_, _) => const _Pleine(EcranAVerifier())),
     GoRoute(path: '/livret/nouveau', builder: (_, _) => const EcranNouveauLivret()),
     GoRoute(path: '/internes', builder: (_, _) => const _Pleine(EcranInternes())),
   ],
@@ -134,6 +136,7 @@ class _VoletsAnalyse extends StatelessWidget {
         if (chemin.startsWith('/sous/')) return EcranSousCategorie(id: id);
         if (chemin.startsWith('/operation/')) return EcranOperation(id: id);
         if (chemin == '/internes') return const EcranInternes();
+        if (chemin == '/operations') return const EcranOperations();
         return const SizedBox.shrink();
       },
     );

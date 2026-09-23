@@ -63,12 +63,7 @@ class Classeur {
 
     final interne = reconnaitreInterne(texte, livretsConnus: livretsConnus);
     if (interne != null) {
-      final sous = switch (interne.sens) {
-        SensInterne.versEpargne => "Vers l'épargne",
-        SensInterne.depuisEpargne => "Depuis l'épargne",
-        SensInterne.entreComptes => 'Entre mes comptes courants',
-      };
-      final id = idDe('Virements internes', sous);
+      final id = idDe('Virements internes', sousCategorieInterne(interne.sens));
       if (id != null) return Classement(id, Origine.interne, interne: interne.sens);
     }
 
@@ -90,6 +85,13 @@ class Classeur {
     return Classement(defaut ?? 0, Origine.defaut);
   }
 }
+
+/// La sous-catégorie de « Virements internes » qui correspond à un sens.
+String sousCategorieInterne(SensInterne sens) => switch (sens) {
+      SensInterne.versEpargne => "Vers l'épargne",
+      SensInterne.depuisEpargne => "Depuis l'épargne",
+      SensInterne.entreComptes => 'Entre mes comptes courants',
+    };
 
 /// Le motif figure-t-il dans le texte, au début d'un mot ?
 bool contient(String texte, String motif, {bool motEntier = false}) {

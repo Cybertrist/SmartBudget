@@ -319,7 +319,7 @@ class _Ajuste extends SingleChildRenderObjectWidget {
 class _RenduAjuste extends RenderProxyBox {
   _RenduAjuste(this._hauteur);
 
-  static const _minimum = 0.8;
+  static const _minimum = 0.72;
 
   double _hauteur;
   set hauteur(double v) {

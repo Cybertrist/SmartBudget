@@ -232,6 +232,37 @@ class DepotOperations {
     return suivies;
   }
 
+  /// Marque une opération comme virement entre ses comptes, dans ce sens :
+  /// elle sort du budget. Pour l'inverse, la reclasser dans une catégorie.
+  Future<void> marquerInterne(int id, SensInterne sens) async {
+    final idDe = await _categories.resolveur();
+    final categorie = idDe('Virements internes', sousCategorieInterne(sens));
+    if (categorie == null) return;
+    await (await _db).update(
+      'operations',
+      {'categorie_id': categorie, 'origine': Origine.main.name, 'interne': sens.name},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  /// Les opérations que rien n'a su reconnaître : à toi de dire ce
+  /// qu'elles sont.
+  Future<List<Operation>> aVerifier() async {
+    final l = await (await _db).query(
+      'operations',
+      where: "origine = ? AND interne IS NULL AND masquee = 0",
+      whereArgs: [Origine.defaut.name],
+      orderBy: 'le DESC, id DESC',
+    );
+    return l.map(Operation.lire).toList();
+  }
+
+  /// Garde la catégorie proposée : l'opération quitte la liste à vérifier.
+  Future<void> valider(int id) async {
+    await (await _db).update('operations', {'origine': Origine.main.name}, where: 'id = ?', whereArgs: [id]);
+  }
+
   Future<void> modifier(
     int id, {
     Object? note = _rien,

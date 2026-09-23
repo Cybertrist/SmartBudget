@@ -111,6 +111,7 @@ class _Contenu extends ConsumerWidget {
     final budget = ref.watch(budgetProvider).value ?? 0;
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
     final epargne = livrets.fold<int>(0, (s, c) => s + c.soldeCentimes);
+    final aVerifier = ref.watch(aVerifierProvider).value?.length ?? 0;
 
 
     final top = bilan.parCategorie.entries
@@ -144,13 +145,47 @@ class _Contenu extends ConsumerWidget {
               const Text('Sur tes comptes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
               const SizedBox(height: 6),
               Montant(courant.soldeCentimes + epargne, taille: 46),
-              if (courant.soldeLe != null) ...[
-                const SizedBox(height: 6),
-                Row(
+              // La date de mise à jour et, à côté, ce qui reste à vérifier :
+              // une seule ligne, pour que l'accueil déplié tienne.
+              if (courant.soldeLe != null || aVerifier > 0) ...[
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 14,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Icon(iconeDe('sync'), size: 14, color: AppColors.texteDiscret),
-                    const SizedBox(width: 5),
-                    Text('Mis à jour le ${jourCourt(courant.soldeLe!)}', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                    if (courant.soldeLe != null)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(iconeDe('sync'), size: 14, color: AppColors.texteDiscret),
+                          const SizedBox(width: 5),
+                          Text('Mis à jour le ${jourCourt(courant.soldeLe!)}', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                        ],
+                      ),
+                    if (aVerifier > 0)
+                    Material(
+                      color: AppColors.attention.withValues(alpha: 0.1),
+                      shape: StadiumBorder(side: BorderSide(color: AppColors.attention.withValues(alpha: 0.35))),
+                      child: InkWell(
+                        customBorder: const StadiumBorder(),
+                        onTap: () => context.push('/verifier'),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(iconeDe('fact_check'), size: 16, color: AppColors.attention),
+                              const SizedBox(width: 7),
+                              Text('${pluriel(aVerifier, 'opération')} à vérifier',
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.attention)),
+                              const SizedBox(width: 2),
+                              Icon(iconeDe('chevron_right'), size: 16, color: AppColors.attention),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -376,7 +411,7 @@ class _CarteRepartition extends StatelessWidget {
           const SizedBox(height: 8),
           for (final l in lignes)
             Padding(
-              padding: EdgeInsets.symmetric(vertical: serre ? 5 : 8),
+              padding: EdgeInsets.symmetric(vertical: serre ? 3 : 8),
               child: Row(
                 children: [
                   Container(

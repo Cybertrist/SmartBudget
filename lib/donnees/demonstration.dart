@@ -69,6 +69,18 @@ class Demonstration {
       op(j(28), 'FRAIS COTISATION CARTE', -2.30);
     }
 
+    // Ce mois-ci, de quoi essayer la vérification : un achat Amazon sous un
+    // libellé qu'il ne dit pas, un commerçant inconnu, un prélèvement
+    // opaque, un remboursement entre amis, et un virement vers un livret
+    // d'une autre banque, que rien ne signale comme interne.
+    final ici = DateTime(aujourdhui.year, aujourdhui.month, 1);
+    DateTime k(int jour) => DateTime(ici.year, ici.month, jour);
+    op(k(4), cb(k(3), 'MKTP FR*2K4L9 LUXEMBOURG'), -34.99);
+    op(k(9), cb(k(8), 'SUMUP *ATELIER KERNEVEL'), -18.50);
+    op(k(11), 'PRLV SEPA GOCARDLESS LTD', -9.99);
+    op(k(12), 'VIR SEPA RECU REMBOURSEMENT M LE GALL', 25);
+    op(k(15), 'VIR SEPA EMIS REF 88213 BOURSOBANK', -100);
+
     // Le mois en cours : un retrait sur l'épargne, un chèque qui rembourse
     // deux dépenses, et quelques achats à reclasser.
     final ce = DateTime(aujourdhui.year, aujourdhui.month, 1);

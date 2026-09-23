@@ -204,6 +204,17 @@ class _Repartition extends ConsumerWidget {
 
     void ouvrir(int id) => ouvrirPage(context, '/categorie/$id');
 
+    // Toucher le centre de l'anneau ouvre les opérations : à droite de la
+    // liste sur l'écran déplié, en page sur téléphone.
+    void voirOperations() {
+      final volet = VoletScope.de(context);
+      if (volet != null) {
+        volet.pousser(1, '/operations');
+      } else {
+        context.push('/operations');
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -212,7 +223,10 @@ class _Repartition extends ConsumerWidget {
         Center(
           child: Anneau(
             parts: [for (final e in lignes) PartAnneau(e.value, Color(categories[e.key]!.couleur), categories[e.key]!.icone)],
-            centre: Column(
+            centre: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: voirOperations,
+              child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(entrees ? 'ENTRÉES' : 'SORTIES',
@@ -220,8 +234,15 @@ class _Repartition extends ConsumerWidget {
                 const SizedBox(height: 6),
                 Montant(total, taille: 30),
                 const SizedBox(height: 4),
-                Text(pluriel(nbOps, 'opération'), style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(pluriel(nbOps, 'opération'), style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.vert)),
+                    Icon(iconeDe('chevron_right'), size: 15, color: AppColors.vert),
+                  ],
+                ),
               ],
+            ),
             ),
           ),
         ),

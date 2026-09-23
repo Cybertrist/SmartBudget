@@ -70,6 +70,12 @@ final recurrencesProvider = FutureProvider<List<Recurrence>>((ref) async {
   return const DepotOperations().recurrences();
 });
 
+/// Les opérations non reconnues, à vérifier.
+final aVerifierProvider = FutureProvider<List<Operation>>((ref) async {
+  ref.watch(versionProvider);
+  return const DepotOperations().aVerifier();
+});
+
 final liensProvider = FutureProvider.family<List<Lien>, int>((ref, id) async {
   ref.watch(versionProvider);
   return const DepotLiens().concernant([id]);

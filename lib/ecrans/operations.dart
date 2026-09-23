@@ -32,13 +32,7 @@ class EcranOperations extends ConsumerWidget {
     final liste = ListView(
       padding: const EdgeInsets.only(bottom: 40),
       children: [
-        if (dansVolet)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 18, 24, 10),
-            child: Text('Opérations', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-          )
-        else
-          const BarreRetour(titre: 'Opérations'),
+        EnTetePage(surtitre: nomMois(mois), titre: 'Opérations'),
         if (jours.isEmpty)
           const Padding(padding: EdgeInsets.all(32), child: Text('Aucune opération ce mois-ci.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire))),
         for (final e in jours.entries)
