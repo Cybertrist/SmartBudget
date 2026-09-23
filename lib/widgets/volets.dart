@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 /// vers la gauche, la liste prend la place de l'anneau et Shopping s'ouvre
 /// à droite, et ainsi de suite jusqu'à une opération.
 class VoletScope extends InheritedWidget {
-  const VoletScope({super.key, required this.index, required this.pousser, required this.retirer, required super.child});
+  const VoletScope({super.key, required this.index, required this.pousser, required this.fermer, required super.child});
 
   /// La place de ce volet dans la pile.
   final int index;
@@ -17,14 +17,23 @@ class VoletScope extends InheritedWidget {
   /// Ouvre [chemin] juste après ce volet, en fermant ce qui suivait.
   final void Function(int depuis, String chemin) pousser;
 
-  /// Referme le dernier volet.
-  final VoidCallback retirer;
+  /// Referme le volet [index] et ceux qui le suivent : la flèche d'un
+  /// volet ferme ce volet-là, pas celui d'à côté.
+  final void Function(int index) fermer;
 
   static VoletScope? de(BuildContext context) => context.dependOnInheritedWidgetOfExactType<VoletScope>();
 
   @override
   bool updateShouldNotify(VoletScope old) => old.index != index;
 }
+
+/// De quoi refermer le dernier volet ouvert, ou rien.
+///
+/// Le geste retour d'Android arrive au navigateur du haut : go_router ne
+/// le confie à l'onglet que si celui-ci a une page à dépiler, ce qui
+/// n'est jamais le cas des volets. Sans relais, le geste fermait
+/// l'application au lieu du volet. La coque écoute cette valeur.
+final retourVolet = ValueNotifier<VoidCallback?>(null);
 
 /// Ouvre une page : dans le volet voisin sur l'écran déplié, sinon en
 /// plein écran.
@@ -41,7 +50,7 @@ void ouvrirPage(BuildContext context, String chemin) {
 void revenir(BuildContext context) {
   final volet = VoletScope.de(context);
   if (volet != null) {
-    volet.retirer();
+    volet.fermer(volet.index);
   } else if (context.canPop()) {
     context.pop();
   } else {
@@ -74,26 +83,38 @@ class _EtatPile extends State<PileVolets> {
       _enAvant = true;
       _pile = [..._pile.take(depuis + 1), chemin];
     });
+    _publier();
   }
 
-  void _retirer() {
-    if (_pile.length <= widget.racine.length) return;
+  void _retirer() => _fermer(_pile.length - 1);
+
+  void _fermer(int index) {
+    if (index < widget.racine.length || index >= _pile.length) return;
     setState(() {
       _enAvant = false;
-      _pile = _pile.sublist(0, _pile.length - 1);
+      _pile = _pile.sublist(0, index);
     });
+    _publier();
+  }
+
+  void _publier() {
+    retourVolet.value = _pile.length > widget.racine.length ? _retirer : null;
+  }
+
+  @override
+  void dispose() {
+    // Après l'image : la coque se reconstruit en écoutant la valeur.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (retourVolet.value == _retirer) retourVolet.value = null;
+    });
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final debut = (_pile.length - widget.nombre).clamp(0, _pile.length);
     final visibles = _pile.sublist(debut);
-    return PopScope(
-      canPop: _pile.length <= widget.racine.length,
-      onPopInvokedWithResult: (fait, _) {
-        if (!fait) _retirer();
-      },
-      child: AnimatedSwitcher(
+    return AnimatedSwitcher(
         duration: const Duration(milliseconds: 320),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
@@ -115,14 +136,13 @@ class _EtatPile extends State<PileVolets> {
                 child: VoletScope(
                   index: debut + i,
                   pousser: _pousser,
-                  retirer: _retirer,
+                  fermer: _fermer,
                   child: KeyedSubtree(key: ValueKey(visibles[i]), child: widget.construire(visibles[i])),
                 ),
               ),
             ],
           ],
         ),
-      ),
     );
   }
 }

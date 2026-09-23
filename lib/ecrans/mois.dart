@@ -15,12 +15,23 @@ import '../config/layout.dart';
 import 'lancement.dart';
 import 'dialogues.dart';
 
+/// Ce que montre une colonne de l'accueil.
+enum PartieMois {
+  /// Tout, sur une page qui défile : le téléphone.
+  tout,
+
+  /// Le solde, les comptes, le budget et l'épargne.
+  comptes,
+
+  /// Les dépenses du mois et leur répartition.
+  depenses,
+}
+
 /// L'accueil : le mois en un coup d'œil.
 class EcranMois extends ConsumerWidget {
-  const EcranMois({super.key, this.avecSelecteur = true});
+  const EcranMois({super.key, this.partie = PartieMois.tout});
 
-  /// Sur l'écran déplié, le sélecteur de mois de l'analyse voisine suffit.
-  final bool avecSelecteur;
+  final PartieMois partie;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +46,7 @@ class EcranMois extends ConsumerWidget {
     final pret = bilan.hasValue && ops.hasValue && comptes.hasValue && categories.hasValue;
     return Stack(
       children: [
-        const _Lueur(couleur: Color(0xFF1E3A2A)),
+        if (partie != PartieMois.depenses) const _Lueur(couleur: Color(0xFF1E3A2A)),
         SafeArea(
           bottom: false,
           child: !pret
@@ -46,7 +57,7 @@ class EcranMois extends ConsumerWidget {
                   ops: ops.value!,
                   comptes: comptes.value!,
                   categories: categories.value!,
-                  avecSelecteur: avecSelecteur,
+                  partie: partie,
                 ),
         ),
       ],
@@ -82,7 +93,7 @@ class _Contenu extends ConsumerWidget {
     required this.ops,
     required this.comptes,
     required this.categories,
-    required this.avecSelecteur,
+    required this.partie,
   });
 
   final Mois mois;
@@ -90,7 +101,7 @@ class _Contenu extends ConsumerWidget {
   final List<Operation> ops;
   final List<Compte> comptes;
   final Map<int, Categorie> categories;
-  final bool avecSelecteur;
+  final PartieMois partie;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -106,17 +117,16 @@ class _Contenu extends ConsumerWidget {
         .toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return ListView(
-      padding: EdgeInsets.only(bottom: margeCapsule(context)),
-      children: [
-        Padding(
+    final entete = Padding(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
           child: Row(
             children: [
               // Le nom de l'application, comme sur la bannière du dépôt. Sur
               // l'écran déplié, le rail porte déjà le logo et l'en-tête
               // donne le mois.
-              if (AppLayout.usesRail(context))
+              if (partie == PartieMois.depenses)
+                const Expanded(child: Text('Dépenses du mois', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)))
+              else if (AppLayout.usesRail(context))
                 Expanded(child: Text(nomMois(mois), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)))
               else ...[
                 const Expanded(child: NomApp(taille: 26)),
@@ -124,8 +134,8 @@ class _Contenu extends ConsumerWidget {
               ],
             ],
           ),
-        ),
-        Padding(
+        );
+    final solde = Padding(
           padding: const EdgeInsets.fromLTRB(24, 22, 24, 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,8 +155,8 @@ class _Contenu extends ConsumerWidget {
               ],
             ],
           ),
-        ),
-        Padding(
+        );
+    final mesComptes = Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
           child: Carte(
             padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
@@ -159,7 +169,7 @@ class _Contenu extends ConsumerWidget {
                   _LigneCompte(
                     icone: c.nature == NatureCompte.courant ? 'credit_card' : 'savings',
                     nom: c.nom,
-                    detail: c.nature == NatureCompte.courant ? 'Crédit Mutuel de Bretagne' : 'Livret, suivi par les virements',
+                    detail: c.nature == NatureCompte.courant ? 'Crédit Mutuel de Bretagne' : 'Livret d\'épargne',
                     solde: c.soldeCentimes,
                     couleur: c.nature == NatureCompte.courant ? AppColors.vert : AppColors.epargne,
                     onTap: () => context.go(c.nature == NatureCompte.courant ? '/analyse' : '/epargne'),
@@ -172,14 +182,8 @@ class _Contenu extends ConsumerWidget {
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              IntrinsicHeight(
+        );
+    final cartes = IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -188,9 +192,8 @@ class _Contenu extends ConsumerWidget {
                     Expanded(child: _CarteEpargne(epargne: epargne, objectif: objectif, aDesLivrets: livrets.isNotEmpty)),
                   ],
                 ),
-              ),
-              const SizedBox(height: 14),
-              Carte(
+              );
+    final depenses = Carte(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -209,23 +212,73 @@ class _Contenu extends ConsumerWidget {
                     Row(
                       children: [
                         Expanded(child: _BoutonTexte(texte: 'Analyser', onTap: () => context.go('/analyse'))),
-                        if (!AppLayout.usesRail(context)) ...[
-                          const SizedBox(width: 10),
-                          Expanded(child: _BoutonTexte(texte: 'Opérations', onTap: () => context.push('/operations'))),
-                        ],
+                        const SizedBox(width: 10),
+                        Expanded(child: _BoutonTexte(texte: 'Opérations', onTap: () => context.push('/operations'))),
                       ],
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 14),
-              _CarteRepartition(bilan: bilan),
-            ],
+              );
+    final repartition = _CarteRepartition(bilan: bilan, serre: partie != PartieMois.tout);
+
+    const bord = EdgeInsets.symmetric(horizontal: 16);
+    switch (partie) {
+      case PartieMois.tout:
+        return ListView(
+          padding: EdgeInsets.only(bottom: margeCapsule(context)),
+          children: [
+            entete,
+            solde,
+            mesComptes,
+            const SizedBox(height: 12),
+            Padding(padding: bord, child: cartes),
+            const SizedBox(height: 14),
+            Padding(padding: bord, child: depenses),
+            const SizedBox(height: 14),
+            Padding(padding: bord, child: repartition),
+          ],
+        );
+      case PartieMois.comptes:
+        return _SansDefiler(children: [
+          entete,
+          solde,
+          mesComptes,
+          const SizedBox(height: 12),
+          Padding(padding: bord, child: cartes),
+        ]);
+      case PartieMois.depenses:
+        return _SansDefiler(children: [
+          entete,
+          const SizedBox(height: 14),
+          Padding(padding: bord, child: depenses),
+          const SizedBox(height: 14),
+          Padding(padding: bord, child: repartition),
+        ]);
+    }
+  }
+}
+
+/// Une colonne de l'écran déplié : tout doit se voir d'un coup. Si la
+/// hauteur manque, la colonne se réduit un peu plutôt que d'être coupée.
+class _SansDefiler extends StatelessWidget {
+  const _SansDefiler({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, contraintes) => Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: contraintes.maxWidth,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+            ),
           ),
         ),
-      ],
-    );
-  }
+      );
 }
 
 class _CarteBudget extends ConsumerWidget {
@@ -263,8 +316,12 @@ class _CarteBudget extends ConsumerWidget {
           const SizedBox(height: 12),
           FittedBox(child: Montant(reste.abs(), taille: 26, couleur: couleur)),
           const SizedBox(height: 4),
-          Text(reste >= 0 ? 'restants sur ${euros(budget, centimesSiRond: false)}' : 'de dépassement',
-              style: const TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(reste >= 0 ? 'restants sur ${euros(budget, centimesSiRond: false)}' : 'de dépassement',
+                maxLines: 1, style: const TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
+          ),
           const Spacer(),
           const SizedBox(height: 12),
           Jauge(part: part, couleur: couleur),
@@ -318,9 +375,12 @@ class _CarteEpargne extends ConsumerWidget {
 }
 
 class _CarteRepartition extends StatelessWidget {
-  const _CarteRepartition({required this.bilan});
+  const _CarteRepartition({required this.bilan, this.serre = false});
 
   final Bilan bilan;
+
+  /// Des lignes plus basses, pour tenir dans une colonne de l'écran déplié.
+  final bool serre;
 
   @override
   Widget build(BuildContext context) {
@@ -341,7 +401,7 @@ class _CarteRepartition extends StatelessWidget {
           const SizedBox(height: 8),
           for (final l in lignes)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: serre ? 5 : 8),
               child: Row(
                 children: [
                   Container(

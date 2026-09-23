@@ -81,8 +81,8 @@ final router = GoRouter(
   ],
 );
 
-/// Le mois : seul sur téléphone ; sur l'écran déplié, ses opérations à
-/// côté, plutôt que l'analyse, qui aurait répété ses catégories.
+/// Le mois : seul sur téléphone. Sur l'écran déplié, en deux colonnes qui
+/// tiennent sans défiler : les comptes à gauche, les dépenses à droite.
 class _VoletsMois extends StatelessWidget {
   const _VoletsMois();
 
@@ -90,10 +90,11 @@ class _VoletsMois extends StatelessWidget {
   Widget build(BuildContext context) {
     if (Volets.nombre(context) == 1) return const EcranMois();
     return const Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: EcranMois(avecSelecteur: false)),
+        Expanded(child: EcranMois(partie: PartieMois.comptes)),
         VerticalDivider(width: 1, color: AppColors.trait),
-        Expanded(child: EcranOperations(dansVolet: true)),
+        Expanded(child: EcranMois(partie: PartieMois.depenses)),
       ],
     );
   }

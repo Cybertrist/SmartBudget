@@ -9,6 +9,7 @@ import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import 'base.dart';
 import 'logo_neon.dart';
+import 'volets.dart';
 
 /// Les quatre onglets.
 const onglets = [
@@ -39,7 +40,20 @@ class Coque extends ConsumerWidget {
           children: [
             _Rail(index: _index, onVerrou: () => ref.read(authServiceProvider).lock()),
             const VerticalDivider(width: 1, color: AppColors.trait),
-            Expanded(child: MediaQuery.removePadding(context: context, removeLeft: true, child: child)),
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: retourVolet,
+                // Le geste retour referme d'abord le dernier volet.
+                builder: (_, retour, enfant) => PopScope(
+                  canPop: retour == null,
+                  onPopInvokedWithResult: (fait, _) {
+                    if (!fait) retour?.call();
+                  },
+                  child: enfant!,
+                ),
+                child: MediaQuery.removePadding(context: context, removeLeft: true, child: child),
+              ),
+            ),
           ],
         ),
       );
