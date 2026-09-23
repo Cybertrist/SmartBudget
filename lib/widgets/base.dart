@@ -166,6 +166,10 @@ class BarreSegmentee extends StatelessWidget {
   Widget build(BuildContext context) {
     final utiles = parts.where((p) => p.$1 > 0).toList();
     if (utiles.isEmpty) return Jauge(part: 0, hauteur: hauteur);
+    // Un segment ne descend pas sous 2,5 % de la barre : une petite
+    // dépense doit rester visible.
+    final total = utiles.fold<int>(0, (s, p) => s + p.$1);
+    int largeur(int v) => (1000 * (v / total < 0.025 ? 0.025 : v / total)).round();
     return SizedBox(
       height: hauteur,
       child: Row(
@@ -174,7 +178,7 @@ class BarreSegmentee extends StatelessWidget {
           for (var i = 0; i < utiles.length; i++) ...[
             if (i > 0) const SizedBox(width: 3),
             Expanded(
-              flex: utiles[i].$1,
+              flex: largeur(utiles[i].$1),
               child: DecoratedBox(decoration: BoxDecoration(color: utiles[i].$2, borderRadius: BorderRadius.circular(99))),
             ),
           ],

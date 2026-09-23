@@ -62,6 +62,13 @@ class AuthService {
     }
   }
 
+  /// Ouvre sans empreinte, quand le verrou est coupé dans les réglages. Le
+  /// chiffrement reste : la clé est simplement chargée sans preuve.
+  Future<void> ouvrirSansVerrou() async {
+    await KeyVault.instance.unlock();
+    EtatVerrou.instance.setUnlocked(true);
+  }
+
   /// Referme tout : la connexion à la base, puis les clés.
   Future<void> lock() async {
     EtatVerrou.instance.setUnlocked(false);

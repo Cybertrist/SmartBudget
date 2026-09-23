@@ -38,7 +38,8 @@ class MainActivity : FlutterFragmentActivity() {
                 when (call.method) {
                     "protegerEcran" -> {
                         val actif = call.argument<Boolean>("actif") ?: true
-                        if (actif) {
+                        val debogable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+                        if (actif && !debogable) {
                             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
                         } else {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)

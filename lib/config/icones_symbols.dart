@@ -457,6 +457,7 @@ const iconesSymbols = <String, IconData>{
   'theaters': Symbols.theaters_rounded,
   'thermostat': Symbols.thermostat_rounded,
   'thumb_up': Symbols.thumb_up_rounded,
+  'timer': Symbols.timer_rounded,
   'tire_repair': Symbols.tire_repair_rounded,
   'toll': Symbols.toll_rounded,
   'tour': Symbols.tour_rounded,

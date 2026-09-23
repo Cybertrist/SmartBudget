@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../config/theme.dart';
+import '../widgets/logo_neon.dart';
 
 /// Le lancement : ce qui se voit entre l'icône touchée et l'écran
 /// d'ouverture.
 ///
 /// Android pose d'abord son propre écran, le logo au centre. Celui-ci
-/// prend le relais au même endroit et l'anime : les trois barres montent
-/// l'une après l'autre, puis le nom apparaît dessous. L'écran d'ouverture
+/// prend le relais au même endroit : le vrai logo grandit, un reflet le
+/// traverse, puis le nom apparaît dessous. L'écran d'ouverture
 /// attend la fin pour demander l'empreinte : la fenêtre du système par
 /// dessus l'animation la couperait en plein milieu.
 class Lancement {
@@ -86,14 +86,36 @@ class _EtatLancement extends State<AnimationLancement> with TickerProviderStateM
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      LogoAnime(
-                        taille: 144,
-                        barres: [
-                          _phase(0.10, 0.55, Curves.easeOutBack),
-                          _phase(0.22, 0.67, Curves.easeOutBack),
-                          _phase(0.34, 0.79, Curves.easeOutBack),
-                        ],
-                        cadre: _phase(0.0, 0.35),
+                      // Le vrai logo, pas une copie redessinée : il grandit, puis un
+                      // reflet le traverse.
+                      Opacity(
+                        opacity: _phase(0.0, 0.3),
+                        child: Transform.scale(
+                          scale: 0.82 + 0.18 * _phase(0.0, 0.55, Curves.easeOutBack),
+                          child: Stack(
+                            children: [
+                              const LogoNeon(taille: 144),
+                              Positioned.fill(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: FractionalTranslation(
+                                    translation: Offset(-1.2 + 2.4 * _phase(0.45, 0.95, Curves.easeInOut), 0),
+                                    child: const DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment(-1, -0.4),
+                                          end: Alignment(1, 0.4),
+                                          colors: [Color(0x00FFFFFF), Color(0x33FFFFFF), Color(0x00FFFFFF)],
+                                          stops: [0.3, 0.5, 0.7],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 28),
                       Opacity(
@@ -134,79 +156,3 @@ class NomApp extends StatelessWidget {
   }
 }
 
-/// Le logo redessiné, pour pouvoir animer ses barres : une plaque sombre,
-/// un cadre néon, trois barres qui montent.
-class LogoAnime extends StatelessWidget {
-  const LogoAnime({super.key, required this.taille, required this.barres, this.cadre = 1});
-
-  final double taille;
-
-  /// La hauteur de chaque barre, de 0 à 1 (un peu plus pendant le rebond).
-  final List<double> barres;
-  final double cadre;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: taille,
-      child: CustomPaint(painter: _Logo(barres, cadre)),
-    );
-  }
-}
-
-class _Logo extends CustomPainter {
-  _Logo(this.barres, this.cadre);
-
-  final List<double> barres;
-  final double cadre;
-
-  static const _couleurs = [
-    [Color(0xFFD2FFE2), Color(0xFF8DF3B2)],
-    [Color(0xFF8BFFB5), Color(0xFF3FE08A)],
-    [Color(0xFF4FF596), Color(0xFF10C265)],
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final t = size.width;
-    final plaque = RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(t * 0.21));
-    canvas.drawRRect(plaque, Paint()..color = const Color(0xFF02110A).withValues(alpha: cadre));
-    canvas.drawRRect(
-      plaque.deflate(0.75),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5
-        ..color = AppColors.neon.withValues(alpha: 0.75 * cadre),
-    );
-    canvas.drawRRect(
-      plaque,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 7)
-        ..color = AppColors.neon.withValues(alpha: 0.18 * cadre),
-    );
-
-    final largeur = t * 0.16;
-    final bas = t * 0.76;
-    const hauteurs = [0.27, 0.40, 0.54];
-    const centres = [0.32, 0.5, 0.68];
-    for (var i = 0; i < 3; i++) {
-      final h = t * hauteurs[i] * math.max(barres[i], 0);
-      if (h <= 0) continue;
-      final r = Rect.fromLTWH(t * centres[i] - largeur / 2, bas - h, largeur, h);
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(r, Radius.circular(largeur / 2)),
-        Paint()
-          ..shader = LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: _couleurs[i],
-          ).createShader(r),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _Logo o) => o.barres != barres || o.cadre != cadre;
-}

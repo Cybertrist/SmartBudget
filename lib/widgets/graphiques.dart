@@ -48,6 +48,52 @@ class SelecteurMois extends ConsumerWidget {
   }
 }
 
+/// Les angles de chaque part, avec un minimum : une catégorie à 1 % doit
+/// quand même se voir. Les petites parts sont portées à [minimum] du
+/// cercle, et les grandes rendent la différence au prorata.
+List<double> anglesAnneau(List<int> valeurs, {double minimum = 0.035}) {
+  final utiles = valeurs.map((v) => max(v, 0)).toList();
+  final total = utiles.fold<int>(0, (s, v) => s + v);
+  if (total == 0) return List.filled(valeurs.length, 0);
+  final parts = utiles.map((v) => v / total).toList();
+  final petites = parts.where((p) => p > 0 && p < minimum).length;
+  final rendu = parts.where((p) => p >= minimum).fold<double>(0, (s, p) => s + p);
+  final reste = 1 - petites * minimum;
+  return [
+    for (final p in parts)
+      p == 0 ? 0 : (p < minimum ? minimum : p / rendu * reste) * 2 * pi,
+  ];
+}
+
+/// Place les icônes autour de l'anneau sans qu'elles se chevauchent : on
+/// part du milieu de chaque arc, puis on écarte les voisines trop proches,
+/// quelques passes suffisent.
+List<double> ecarterIcones(List<double> milieux, double ecartMin) {
+  final ordre = List.generate(milieux.length, (i) => i)..sort((a, b) => milieux[a].compareTo(milieux[b]));
+  final a = [for (final i in ordre) milieux[i]];
+  for (var passe = 0; passe < 40; passe++) {
+    var bouge = false;
+    for (var i = 0; i < a.length; i++) {
+      final j = (i + 1) % a.length;
+      if (a.length < 2) break;
+      var d = a[j] - a[i];
+      if (j == 0) d += 2 * pi;
+      if (d < ecartMin) {
+        final pousse = (ecartMin - d) / 2;
+        a[i] -= pousse;
+        a[j] += pousse;
+        bouge = true;
+      }
+    }
+    if (!bouge) break;
+  }
+  final sortie = List<double>.filled(milieux.length, 0);
+  for (var k = 0; k < ordre.length; k++) {
+    sortie[ordre[k]] = a[k];
+  }
+  return sortie;
+}
+
 /// Une part de l'anneau.
 class PartAnneau {
   const PartAnneau(this.valeur, this.couleur, this.icone);
@@ -70,31 +116,36 @@ class Anneau extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = parts.fold<int>(0, (s, p) => s + max(p.valeur, 0));
     final rayon = taille * 0.32;
+    final angles = anglesAnneau([for (final p in parts) p.valeur]);
     final badges = <Widget>[];
-    var debut = -pi / 2;
     if (total > 0) {
-      for (final p in parts) {
-        if (p.valeur <= 0) continue;
-        final angle = p.valeur / total * 2 * pi;
-        if (p.valeur / total >= 0.05) {
-          final milieu = debut + angle / 2;
-          final r = rayon + 30;
-          badges.add(Positioned(
-            left: taille / 2 + cos(milieu) * r - 15,
-            top: taille / 2 + sin(milieu) * r - 15,
-            child: Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: p.couleur.withValues(alpha: 0.4)),
-              ),
-              child: Icon(iconeDe(p.icone), size: 16, color: p.couleur, fill: 1),
+      final milieux = <double>[];
+      final visibles = <PartAnneau>[];
+      var debut = -pi / 2;
+      for (var i = 0; i < parts.length; i++) {
+        if (angles[i] <= 0) continue;
+        milieux.add(debut + angles[i] / 2);
+        visibles.add(parts[i]);
+        debut += angles[i];
+      }
+      final r = rayon + 30;
+      final places = ecarterIcones(milieux, 34 / r);
+      for (var i = 0; i < visibles.length; i++) {
+        final p = visibles[i];
+        badges.add(Positioned(
+          left: taille / 2 + cos(places[i]) * r - 15,
+          top: taille / 2 + sin(places[i]) * r - 15,
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: p.couleur.withValues(alpha: 0.4)),
             ),
-          ));
-        }
-        debut += angle;
+            child: Icon(iconeDe(p.icone), size: 16, color: p.couleur, fill: 1),
+          ),
+        ));
       }
     }
     return SizedBox(
@@ -102,7 +153,7 @@ class Anneau extends StatelessWidget {
       height: taille,
       child: Stack(
         children: [
-          CustomPaint(size: Size.square(taille), painter: _Anneau(parts, total, rayon)),
+          CustomPaint(size: Size.square(taille), painter: _Anneau(parts, angles, total, rayon)),
           ...badges,
           Positioned.fill(child: Center(child: centre)),
         ],
@@ -112,9 +163,10 @@ class Anneau extends StatelessWidget {
 }
 
 class _Anneau extends CustomPainter {
-  _Anneau(this.parts, this.total, this.rayon);
+  _Anneau(this.parts, this.angles, this.total, this.rayon);
 
   final List<PartAnneau> parts;
+  final List<double> angles;
   final int total;
   final double rayon;
 
@@ -135,9 +187,10 @@ class _Anneau extends CustomPainter {
     }
     const jeu = 3 / 96;
     var debut = -pi / 2;
-    for (final p in parts) {
-      if (p.valeur <= 0) continue;
-      final angle = p.valeur / total * 2 * pi;
+    for (var i = 0; i < parts.length; i++) {
+      final p = parts[i];
+      final angle = angles[i];
+      if (angle <= 0) continue;
       canvas.drawArc(
         rect,
         debut,

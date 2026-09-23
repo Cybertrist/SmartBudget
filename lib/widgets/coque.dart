@@ -192,8 +192,7 @@ class _Rail extends StatelessWidget {
                   ],
                 ),
               ),
-              const Spacer(),
-              BoutonRond(icone: 'lock', label: 'Verrouiller', onTap: onVerrou),
+
             ],
           ),
         ),

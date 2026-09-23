@@ -15,7 +15,6 @@ import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import '../widgets/graphiques.dart';
 import '../config/layout.dart';
-import '../providers/auth_provider.dart';
 import 'lancement.dart';
 import 'dialogues.dart';
 
@@ -123,8 +122,6 @@ class _Contenu extends ConsumerWidget {
                 Expanded(child: Text(nomMois(mois), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)))
               else
                 const Expanded(child: NomApp(taille: 26)),
-              if (!AppLayout.usesRail(context))
-                BoutonRond(icone: 'lock', label: 'Verrouiller', onTap: () => ref.read(authServiceProvider).lock()),
             ],
           ),
         ),

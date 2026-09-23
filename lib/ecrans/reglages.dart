@@ -10,6 +10,7 @@ import '../donnees/demonstration.dart';
 import '../donnees/depots.dart';
 import '../providers/auth_provider.dart';
 import '../providers/donnees.dart';
+import '../providers/securite.dart';
 import '../security/key_vault.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
@@ -29,6 +30,7 @@ class EcranReglages extends ConsumerWidget {
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
     final debut = ref.watch(_debutProvider).value ?? 1;
     final categories = ref.watch(categoriesProvider).value;
+    final securite = ref.watch(securiteProvider);
     final nbCat = categories?.values.where((c) => c.parentId == null).length ?? 0;
     final nbSous = (categories?.length ?? 0) - nbCat;
 
@@ -51,6 +53,24 @@ class EcranReglages extends ConsumerWidget {
                 Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret),
               ],
             ),
+          ),
+        );
+
+    Widget bascule(String icone, String libelle, bool valeur, ValueChanged<bool> onChanged) => Container(
+          height: 58,
+          decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(color: const Color(0x0AFFFFFF), borderRadius: BorderRadius.circular(12)),
+                child: Icon(iconeDe(icone), size: 18, color: AppColors.texteSecondaire),
+              ),
+              const SizedBox(width: 14),
+              Expanded(child: Text(libelle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
+              Switch(value: valeur, onChanged: onChanged),
+            ],
           ),
         );
 
@@ -97,7 +117,26 @@ class EcranReglages extends ConsumerWidget {
           ]),
           const SizedBox(height: 14),
           bloc('Sécurité', [
-            ligne('lock', 'Verrouiller maintenant', '', () => ref.read(authServiceProvider).lock()),
+            bascule('fingerprint', 'Empreinte à l\'ouverture', securite.verrou, (v) async {
+              if (!v) {
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Couper l\'empreinte ?'),
+                    content: const Text('Les données restent chiffrées, mais l\'application s\'ouvrira sans preuve d\'identité : quiconque tient le téléphone déverrouillé verra tes comptes.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Couper', style: TextStyle(color: AppColors.alerte))),
+                    ],
+                  ),
+                );
+                if (ok != true) return;
+              }
+              await ref.read(securiteProvider.notifier).verrou(v);
+            }),
+            if (securite.verrou)
+              ligne('timer', 'Verrouiller après', _duree(securite.delai), () => _choisirDelai(context, ref, securite.delai)),
+            bascule('visibility_off', 'Masquer dans le multitâche', securite.masquer, (v) => ref.read(securiteProvider.notifier).masquer(v)),
           ]),
           if (avecEssais) ...[
             const SizedBox(height: 14),
@@ -130,6 +169,30 @@ class EcranReglages extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
+
+  Future<void> _choisirDelai(BuildContext context, WidgetRef ref, Duration actuel) async {
+    const choix = [Duration(seconds: 30), Duration(minutes: 1), Duration(minutes: 2), Duration(minutes: 5), Duration(minutes: 15)];
+    final d = await showModalBottomSheet<Duration>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final c in choix)
+              ListTile(
+                title: Text(_duree(c)),
+                trailing: c == actuel ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                onTap: () => Navigator.pop(ctx, c),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (d != null) await ref.read(securiteProvider.notifier).delai(d);
   }
 
   Future<void> _choisirDebut(BuildContext context, WidgetRef ref, int actuel) async {

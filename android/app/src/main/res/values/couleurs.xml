@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Généré par tool/icone.mjs : la couleur de la plaque du logo. -->
 <resources>
-    <color name="fond_icone">#02110a</color>
+    <color name="fond_icone">#02140c</color>
     <color name="fond">#121212</color>
 </resources>

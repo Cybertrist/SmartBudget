@@ -27,21 +27,21 @@ const cibles = [];
 for (const [d, t] of Object.entries(tailles)) {
   cibles.push({ fichier: `mipmap-${d}/ic_launcher.png`, taille: t, zoom: 1 });
   // 108 dp de côté, dont 72 visibles : le logo agrandi remplit la zone sûre.
-  cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), zoom: 1, fond: true });
+  cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), zoom: 0.95, fond: true, plein: true });
 }
 // Android 12 ne montre du démarrage qu'un disque des deux tiers de l'icône :
 // le logo y est posé en grand, le cadre néon tombe hors du disque et seules
 // les barres restent. L'animation de Flutter redessine le cadre ensuite.
-cibles.push({ fichier: 'drawable-nodpi/logo_demarrage.png', taille: 288, zoom: 0.84, fond: true, plein: true });
+cibles.push({ fichier: 'drawable-nodpi/logo_demarrage.png', taille: 288, zoom: 0.95, fond: true, plein: true });
 
 const page = path.join(temp, 'page.html');
 fs.writeFileSync(page, `<!doctype html><body><script>
 const img = new Image();
 img.onload = () => {
-  // La couleur du fond du logo, prise dans son coin, hors du cadre néon.
+  // La couleur du fond du logo, prise à l'intérieur du cadre néon.
   const s = document.createElement('canvas'); s.width = img.width; s.height = img.height;
   const g0 = s.getContext('2d'); g0.drawImage(img, 0, 0);
-  const px = g0.getImageData(4, 4, 1, 1).data;
+  const px = g0.getImageData(Math.round(img.width * 0.5), Math.round(img.height * 0.2), 1, 1).data;
   const fond = '#' + [px[0], px[1], px[2]].map((v) => v.toString(16).padStart(2, '0')).join('');
   const sortie = { fond };
   for (const c of ${JSON.stringify(cibles)}) {
@@ -49,7 +49,18 @@ img.onload = () => {
     const g = k.getContext('2d'); g.imageSmoothingQuality = 'high';
     if (c.fond) { g.fillStyle = fond; g.fillRect(0, 0, c.taille, c.taille); }
     const cote = c.taille * c.zoom * (c.fond && !c.plein ? 72 / 108 : 1);
-    g.drawImage(img, (c.taille - cote) / 2, (c.taille - cote) / 2, cote, cote);
+    const x = (c.taille - cote) / 2;
+    if (c.plein) {
+      // Sans le cadre néon : chaque lanceur découpe l'icône à sa forme,
+      // cercle ou carré arrondi, et un cadre dessiné dedans ressortirait
+      // en petit carré tronqué. On ne garde que l'intérieur, les barres.
+      const m = cote * 0.16;
+      g.save(); g.beginPath(); g.roundRect(x + m, x + m, cote - 2 * m, cote - 2 * m, cote * 0.1); g.clip();
+      g.drawImage(img, x, x, cote, cote);
+      g.restore();
+    } else {
+      g.drawImage(img, x, x, cote, cote);
+    }
     sortie[c.fichier] = k.toDataURL('image/png');
   }
   document.body.textContent = JSON.stringify(sortie);

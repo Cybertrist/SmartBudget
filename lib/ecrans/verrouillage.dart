@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/logo_neon.dart';
+import '../providers/securite.dart';
 import 'lancement.dart';
 
 /// L'écran d'ouverture : le logo, et l'empreinte.
@@ -26,7 +27,13 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
   void initState() {
     super.initState();
     // L'empreinte attend la fin de l'animation de lancement.
-    Lancement.termine.then((_) {
+    Lancement.termine.then((_) async {
+      if (!mounted) return;
+      final securite = await SecuriteNotifier.lire();
+      if (!securite.verrou) {
+        await ref.read(authServiceProvider).ouvrirSansVerrou();
+        return;
+      }
       if (mounted) _ouvrir();
     });
   }
@@ -80,7 +87,7 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Ton argent, sur ton téléphone seulement.',
+                  'Arrêter de dépenser sans regarder,\net de piocher dans l\'épargne.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: AppColors.texteSecondaire),
                 ),
