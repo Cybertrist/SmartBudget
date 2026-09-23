@@ -28,20 +28,6 @@ class EcranOperation extends ConsumerStatefulWidget {
 }
 
 class _EtatOperation extends ConsumerState<EcranOperation> {
-  final _note = TextEditingController();
-  bool _noteLue = false;
-
-  @override
-  void dispose() {
-    _note.dispose();
-    super.dispose();
-  }
-
-  Future<void> _enregistrerNote() async {
-    await const DepotOperations().modifier(widget.id, note: _note.text.trim().isEmpty ? null : _note.text.trim());
-    rafraichir(ref);
-  }
-
   @override
   Widget build(BuildContext context) {
     final op = ref.watch(operationProvider(widget.id));
@@ -50,10 +36,6 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     if (!op.hasValue || !categories.hasValue) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     final o = op.value;
     if (o == null) return const Scaffold(body: Center(child: Text('Opération supprimée.')));
-    if (!_noteLue) {
-      _note.text = o.note ?? '';
-      _noteLue = true;
-    }
     final cats = categories.value!;
     final cat = cats[o.categorieId]!;
     final parent = cat.parentId == null ? cat : cats[cat.parentId]!;
@@ -129,7 +111,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
           padding: const EdgeInsets.only(bottom: 24),
           // Dans un volet, le montant monte à côté du titre et l'en-tête
           // tient sur une ligne : la page n'est plus qu'un bloc serré.
-          tete: EnTetePage(surtitre: cat.nom, titre: joli(o.libelle), montant: Montant(o.montantCentimes, taille: 24, signe: true)),
+          tete: EnTetePage(surtitre: cat.nom, titre: o.titre, montant: Montant(o.montantCentimes, taille: 24, signe: true)),
           children: [
             if (dansUnVolet(context))
               Padding(
@@ -163,7 +145,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                   const SizedBox(height: 14),
                   Montant(o.montantCentimes, taille: 44, signe: true),
                   const SizedBox(height: 10),
-                  Text(joli(o.libelle), textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  Text(o.titre, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 6),
                   Text('${o.libelle.toUpperCase()}\n${jour(o.le)} ${o.le.year} · Compte courant',
                       textAlign: TextAlign.center,
@@ -176,19 +158,15 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextField(
-                    controller: _note,
-                    maxLength: 140,
-                    onSubmitted: (_) => _enregistrerNote(),
-                    onTapOutside: (_) {
-                      FocusScope.of(context).unfocus();
-                      if (_note.text != (o.note ?? '')) _enregistrerNote();
+                  // La note s'écrit dans une carte qui s'agrandit au centre :
+                  // le clavier ne pousse plus la page hors de l'écran.
+                  _CarteNote(
+                    note: o.note,
+                    onTap: () async {
+                      final texte = await ecrireNote(context, titre: o.titre, initial: o.note ?? '');
+                      if (texte == null) return;
+                      await modifier(() => const DepotOperations().modifier(o.id, note: texte.trim().isEmpty ? null : texte.trim()));
                     },
-                    decoration: InputDecoration(
-                      hintText: 'Ajouter une note',
-                      counterText: '',
-                      prefixIcon: Icon(iconeDe('sticky_note_2'), color: AppColors.vert),
-                    ),
                   ),
                   const SizedBox(height: 14),
                   Carte(
@@ -197,6 +175,21 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const Surtitre('Classement'),
+                          _Ligne(
+                            icone: 'edit',
+                            libelle: 'Nom',
+                            valeur: o.titre,
+                            onTap: () async {
+                              final nom = await demanderTexte(
+                                context,
+                                titre: 'Renommer',
+                                aide: 'Toutes les opérations « ${joli(o.libelle)} » prendront ce nom, les prochaines aussi.',
+                                initial: o.titre,
+                                indice: joli(o.libelle),
+                              );
+                              if (nom != null) await modifier(() => const DepotOperations().renommer(o.id, nom));
+                            },
+                          ),
                           _Ligne(
                             icone: 'sync_alt',
                             libelle: 'Mouvement',
@@ -673,7 +666,7 @@ class _EtatLier extends ConsumerState<EcranLier> {
                       children: [
                         const Tuile(icone: 'payments', couleur: Color(0xFF7FE0A8), taille: 40),
                         const SizedBox(width: 12),
-                        Expanded(child: Text(joli(entree.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700))),
+                        Expanded(child: Text(entree.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700))),
                         Montant(entree.montantCentimes, signe: true, couleur: const Color(0xFF7FE0A8)),
                       ],
                     ),
@@ -714,7 +707,7 @@ class _EtatLier extends ConsumerState<EcranLier> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(joli(d.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                Text(d.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
                                 Text('${jourCourt(d.le)} · ${euros(d.montantCentimes)}', style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
                               ],
                             ),
@@ -824,7 +817,7 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
                 child: Text(
-                  'Pour « ${joli(_depense!.libelle)} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse.',
+                  'Pour « ${_depense!.titre} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse.',
                   style: const TextStyle(fontSize: 13.5, height: 1.5, color: AppColors.texteSecondaire),
                 ),
               ),
@@ -910,7 +903,7 @@ class _LigneChoix extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(joli(operation.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    Text(operation.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 2),
                     Text('$categorie · Compte courant', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                   ],
@@ -921,4 +914,74 @@ class _LigneChoix extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// La note d'une opération, telle qu'elle s'affiche sur sa page.
+class _CarteNote extends StatelessWidget {
+  const _CarteNote({required this.note, required this.onTap});
+
+  final String? note;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final vide = note == null || note!.isEmpty;
+    return Material(
+        color: AppColors.surfaceHaute,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              children: [
+                Icon(iconeDe('sticky_note_2'), color: AppColors.vert),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    vide ? 'Ajouter une note' : note!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 15.5, color: vide ? AppColors.texteDiscret : AppColors.texte),
+                  ),
+                ),
+                if (!vide) Icon(iconeDe('edit'), size: 18, color: AppColors.texteDiscret),
+              ],
+            ),
+          ),
+        ),
+    );
+  }
+}
+
+/// Écrire une note, dans la carte de saisie. Rend le texte, vide pour
+/// effacer, ou rien si l'on ferme sans valider.
+Future<String?> ecrireNote(BuildContext context, {required String titre, required String initial}) {
+  final champ = TextEditingController(text: initial);
+  return carteSaisie<String>(
+    context,
+    titre: 'Note · $titre',
+    resultat: () => champ.text,
+    gauche: initial.isEmpty
+        ? null
+        : Builder(
+            builder: (ctx) => TextButton(
+              onPressed: () => Navigator.pop(ctx, ''),
+              child: const Text('Effacer', style: TextStyle(color: AppColors.alerte)),
+            ),
+          ),
+    champ: (_, valider) => TextField(
+      controller: champ,
+      autofocus: true,
+      maxLength: 140,
+      minLines: 2,
+      maxLines: 4,
+      textCapitalization: TextCapitalization.sentences,
+      textInputAction: TextInputAction.done,
+      onSubmitted: (_) => valider(),
+      style: const TextStyle(fontSize: 17),
+      decoration: const InputDecoration(hintText: 'Colis Amazon, cadeau pour…'),
+    ),
+  );
 }

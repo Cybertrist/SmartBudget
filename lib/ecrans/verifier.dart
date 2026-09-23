@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../config/format.dart';
 import '../config/theme.dart';
-import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
 import '../domaine/virements.dart';
 import '../donnees/depots.dart';
@@ -129,7 +128,7 @@ class _LigneAVerifier extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(joli(o.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                      Text(o.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 2),
                       Text('${jour(o.le)} · ${o.libelle.toUpperCase()}',
                           maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),

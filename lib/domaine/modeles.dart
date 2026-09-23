@@ -1,4 +1,5 @@
 import 'classement.dart';
+import 'libelle.dart';
 import 'virements.dart';
 
 /// Ce que compte une catégorie dans le budget.
@@ -143,6 +144,7 @@ class Operation {
     this.recurrente,
     this.interne,
     this.pointee = false,
+    this.nom,
   });
 
   final int id;
@@ -170,6 +172,13 @@ class Operation {
   /// Vérifiée à la main : sa catégorie est la bonne.
   final bool pointee;
 
+  /// Le nom choisi à la main, « Spotify » plutôt que « Spotify P2f9
+  /// Stockholm ».
+  final String? nom;
+
+  /// Ce qu'on affiche : le nom choisi, sinon celui tiré du libellé.
+  String get titre => (nom == null || nom!.isEmpty) ? joli(libelle) : nom!;
+
   bool get entree => montantCentimes > 0;
 
   factory Operation.lire(Map<String, Object?> l) => Operation(
@@ -188,6 +197,7 @@ class Operation {
         recurrente: l['recurrente'] == null ? null : (l['recurrente']! as int) == 1,
         interne: l['interne'] == null ? null : SensInterne.values.byName(l['interne']! as String),
         pointee: (l['pointee'] as int? ?? 0) == 1,
+        nom: l['nom'] as String?,
       );
 }
 

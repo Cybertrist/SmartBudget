@@ -147,6 +147,11 @@ class DepotOperations {
     final livrets = (await db.query('comptes', where: "nature = 'livret'")).map(Compte.lire).toList();
     var nouvelles = 0;
     await db.transaction((t) async {
+      // Les noms choisis pour des marchands, que les nouvelles reprennent.
+      final noms = {
+        for (final r in await t.query('reglages', where: 'cle LIKE ?', whereArgs: ['$_nomMarchand%']))
+          if (r['valeur'] != null) (r['cle']! as String).substring(_nomMarchand.length): r['valeur']! as String,
+      };
       for (final b in brutes) {
         final existe = await t.query('operations', columns: ['id'], where: 'uid_banque = ?', whereArgs: [b.uidBanque], limit: 1);
         if (existe.isNotEmpty) continue;
@@ -160,6 +165,7 @@ class DepotOperations {
           'categorie_id': c.categorieId,
           'origine': c.origine.name,
           'interne': c.interne?.name,
+          'nom': noms[cleMarchand(b.libelle)],
         });
         nouvelles++;
         // Un virement vers ou depuis un livret suivi fait vivre son solde,
@@ -263,6 +269,27 @@ class DepotOperations {
     await (await _db).update('operations', {'origine': Origine.main.name, 'pointee': 1}, where: 'id = ?', whereArgs: [id]);
   }
 
+  static const _nomMarchand = 'nom:';
+
+  /// Donne un nom à une opération, et à toutes celles du même marchand,
+  /// passées et à venir. Un nom vide rend celui tiré du libellé.
+  Future<void> renommer(int id, String nom) async {
+    final op = await une(id);
+    if (op == null) return;
+    final cle = cleMarchand(op.libelle);
+    final valeur = nom.trim().isEmpty ? null : nom.trim();
+    final db = await _db;
+    await db.transaction((t) async {
+      final toutes = await t.query('operations', columns: ['id', 'libelle']);
+      for (final r in toutes) {
+        if (cleMarchand(r['libelle']! as String) == cle) {
+          await t.update('operations', {'nom': valeur}, where: 'id = ?', whereArgs: [r['id']]);
+        }
+      }
+      await t.insert('reglages', {'cle': '$_nomMarchand$cle', 'valeur': valeur}, conflictAlgorithm: ConflictAlgorithm.replace);
+    });
+  }
+
   /// Pointe une opération : tu as vérifié qu'elle est bien classée.
   Future<void> pointer(int id, bool pointee) async {
     await (await _db).update('operations', {'pointee': pointee ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
@@ -315,11 +342,25 @@ class DepotOperations {
       for (final e in (await const DepotReglages().commencantPar(_repetition)).entries)
         e.key.substring(_repetition.length): Frequence.values.where((f) => f.name == e.value).firstOrNull,
     };
-    return appliquerChoix(
-      detecterRecurrences(passages).where((r) => !forcees.contains(r.cle)).toList(),
-      passages,
-      choix,
-    );
+    // Une récurrence porte le nom choisi pour son marchand, s'il y en a un.
+    final titres = {for (final o in ops) o.id: o.titre};
+    return [
+      for (final r in appliquerChoix(
+        detecterRecurrences(passages).where((r) => !forcees.contains(r.cle)).toList(),
+        passages,
+        choix,
+      ))
+        Recurrence(
+          cle: r.cle,
+          libelle: titres[r.derniereId] ?? r.libelle,
+          montantCentimes: r.montantCentimes,
+          frequence: r.frequence,
+          derniere: r.derniere,
+          prochaine: r.prochaine,
+          nombre: r.nombre,
+          derniereId: r.derniereId,
+        ),
+    ];
   }
 
   static const _repetition = 'repetition:';

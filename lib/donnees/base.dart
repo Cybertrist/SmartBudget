@@ -34,7 +34,7 @@ class Base {
 
   /// 2 : sous-catégories, liens de remboursement, virements internes. La
   /// version 1 n'a jamais porté de vraie donnée : elle est refaite à neuf.
-  static const _version = 3;
+  static const _version = 4;
 
   /// L'ouverture en cours ou faite. On garde le futur, pas la base : au
   /// déverrouillage, plusieurs écrans la demandent au même instant, et
@@ -90,6 +90,10 @@ class Base {
         // Version 3 : une opération se pointe, une fois vérifiée à la main.
         if (ancienne < 3) {
           await base.execute('ALTER TABLE operations ADD COLUMN pointee INTEGER NOT NULL DEFAULT 0');
+        }
+        // Version 4 : une opération peut porter un nom choisi.
+        if (ancienne < 4) {
+          await base.execute('ALTER TABLE operations ADD COLUMN nom TEXT');
         }
       },
     );
@@ -161,7 +165,8 @@ class Base {
         masquee INTEGER NOT NULL DEFAULT 0,
         recurrente INTEGER,
         interne TEXT,
-        pointee INTEGER NOT NULL DEFAULT 0
+        pointee INTEGER NOT NULL DEFAULT 0,
+        nom TEXT
       )
     ''');
     await base.execute('CREATE INDEX operations_le ON operations(le)');

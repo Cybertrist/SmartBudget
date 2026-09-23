@@ -87,7 +87,7 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Arrêter de dépenser sans regarder,\net de piocher dans l\'épargne.',
+                  'Votre argent. Vos projets. Votre avenir.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: AppColors.texteSecondaire),
                 ),

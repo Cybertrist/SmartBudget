@@ -412,12 +412,16 @@ class _LigneInterne extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(top: 8, bottom: 10),
-        child: Surligne(
-          actif: estOuvert(context, '/internes'),
-          couleur: AppColors.interne,
-          child: Material(
-          color: const Color(0xFF1A1A1A),
-          borderRadius: BorderRadius.circular(16),
+        // Ouverte à côté, la ligne se surligne par son propre bord : un
+        // cadre posé autour débordait de la carte hachurée.
+        child: Builder(builder: (context) {
+          final actif = estOuvert(context, '/internes');
+          return Material(
+          color: actif ? AppColors.interne.withValues(alpha: 0.12) : const Color(0xFF1A1A1A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: actif ? AppColors.interne.withValues(alpha: 0.45) : Colors.transparent),
+          ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
@@ -455,8 +459,8 @@ class _LigneInterne extends StatelessWidget {
               ),
             ),
           ),
-        ),
-        ),
+        );
+        }),
       );
 }
 

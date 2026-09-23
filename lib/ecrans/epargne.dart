@@ -223,11 +223,16 @@ class LigneVirement extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(v == null ? joli(o.libelle) : '${nom(v.source)} → ${nom(v.destination)}',
+                  Text(v == null || o.nom != null ? o.titre : '${nom(v.source)} → ${nom(v.destination)}',
                       maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 3),
                   Text('${jourCourt(o.le)} · ${pioche ? 'pioché' : (o.interne == SensInterne.versEpargne ? 'mis de côté' : 'entre comptes')}',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: couleur)),
+                  if (o.note != null && o.note!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(o.note!, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
+                    ),
                 ],
               ),
             ),

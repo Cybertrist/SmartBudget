@@ -31,6 +31,7 @@ dependencies:
   # Dates et montants en français
   intl: ^0.20.2
   material_symbols_icons: ^4.2960.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

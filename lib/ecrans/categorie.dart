@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../config/format.dart';
 import '../config/icones_symbols.dart';
 import '../config/theme.dart';
-import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
@@ -454,7 +453,7 @@ class LigneOperation extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(joli(o.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  Text(o.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 3),
                   if (o.note != null && o.note!.isNotEmpty)
                     Row(
@@ -617,6 +616,180 @@ class _EtatNouvelle extends ConsumerState<EcranNouvelleSousCategorie> {
     if (parent == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     final couleur = Color(_couleur ?? parent.couleur);
     final groupes = _groupe == null ? groupesIcones : groupesIcones.where((g) => g.$1 == _groupe).toList();
+    final large = MediaQuery.sizeOf(context).width >= 720;
+
+    const etiquette = TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire);
+
+    // L'aperçu, le nom et la couleur.
+    final reglages = <Widget>[
+      Center(child: Tuile(icone: _icone, couleur: couleur, taille: large ? 96 : 88)),
+      const SizedBox(height: 12),
+      ValueListenableBuilder(
+        valueListenable: _nom,
+        builder: (_, v, _) => Text(v.text.isEmpty ? 'Sans nom' : v.text,
+            textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+      ),
+      const SizedBox(height: 6),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Dans ', style: TextStyle(fontSize: 13, color: AppColors.texteSecondaire)),
+          Icon(iconeDe(parent.icone), size: 16, color: Color(parent.couleur), fill: 1),
+          const SizedBox(width: 4),
+          Text(parent.nom, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+        ],
+      ),
+      const SizedBox(height: 22),
+      const Text('Nom', style: etiquette),
+      const SizedBox(height: 8),
+      TextField(controller: _nom, textCapitalization: TextCapitalization.sentences, decoration: const InputDecoration(hintText: 'Nom de la sous-catégorie')),
+      const SizedBox(height: 22),
+      const Text('Couleur', style: etiquette),
+      const SizedBox(height: 12),
+      Wrap(
+        spacing: large ? 8 : 10,
+        runSpacing: large ? 10 : 10,
+        children: [
+          for (final c in couleursChoix)
+            GestureDetector(
+              onTap: () => setState(() => _couleur = c),
+              child: Container(
+                // Neuf par ligne dans la colonne de l'écran déplié.
+                width: large ? 30 : 36,
+                height: large ? 30 : 36,
+                decoration: BoxDecoration(
+                  color: Color(c),
+                  shape: BoxShape.circle,
+                  border: c == (_couleur ?? parent.couleur) ? Border.all(color: Colors.white, width: 2.5, strokeAlign: BorderSide.strokeAlignOutside) : null,
+                ),
+              ),
+            ),
+        ],
+      ),
+    ];
+
+    // Le choix de l'icône.
+    final filtres = SizedBox(
+      height: 34,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          for (final g in [null, ...groupesIcones.map((g) => g.$1)])
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ChoiceChip(
+                label: Text(g ?? 'Tout'),
+                selected: g == _groupe,
+                onSelected: (_) => setState(() => _groupe = g),
+                showCheckmark: false,
+                selectedColor: AppColors.vert,
+                backgroundColor: AppColors.surfaceHaute,
+                labelStyle: TextStyle(fontWeight: FontWeight.w700, color: g == _groupe ? Colors.black : AppColors.texte),
+                side: BorderSide.none,
+                shape: const StadiumBorder(),
+              ),
+            ),
+        ],
+      ),
+    );
+    final grilles = <Widget>[
+      for (final g in groupes) ...[
+        Text(g.$1, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 10),
+        GridView.extent(
+          maxCrossAxisExtent: 56,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          children: [
+            for (final n in g.$2)
+              GestureDetector(
+                onTap: () => setState(() => _icone = n),
+                child: n == _icone
+                    ? Tuile(icone: n, couleur: couleur)
+                    : Container(
+                        decoration: BoxDecoration(color: AppColors.surfaceBasse, borderRadius: BorderRadius.circular(14)),
+                        child: Icon(iconeDe(n), size: 24, color: AppColors.texteSecondaire),
+                      ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 22),
+      ],
+    ];
+    final titreIcones = Text('Icône · ${groupesIcones.fold<int>(0, (s, g) => s + g.$2.length)} au choix', style: etiquette);
+
+    final bouton = ValueListenableBuilder(
+      valueListenable: _nom,
+      builder: (_, v, _) => FilledButton(
+        onPressed: v.text.trim().isEmpty ? null : () => _creer(parent),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(54),
+          disabledBackgroundColor: AppColors.surfaceHaute,
+          disabledForegroundColor: AppColors.texteDiscret,
+        ),
+        child: const Text('Créer la sous-catégorie'),
+      ),
+    );
+
+    // Sur l'écran déplié, deux colonnes : à gauche l'aperçu, le nom, la
+    // couleur et le bouton ; à droite les icônes, qui défilent seules.
+    if (large) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            _Lueur(couleur: couleur),
+            SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const BarreRetour(titre: 'Nouvelle sous-catégorie'),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(
+                          width: 380,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 8, 16, 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: reglages))),
+                                const SizedBox(height: 16),
+                                bouton,
+                              ],
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(width: 1, color: AppColors.trait),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(padding: const EdgeInsets.fromLTRB(24, 8, 24, 12), child: titreIcones),
+                              Padding(padding: const EdgeInsets.only(left: 24), child: filtres),
+                              const SizedBox(height: 16),
+                              Expanded(
+                                child: ListView(
+                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                                  children: grilles,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       body: Stack(
@@ -624,124 +797,26 @@ class _EtatNouvelle extends ConsumerState<EcranNouvelleSousCategorie> {
           _Lueur(couleur: couleur),
           SafeArea(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const BarreRetour(titre: 'Nouvelle sous-catégorie'),
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     children: [
-                      Center(child: Tuile(icone: _icone, couleur: couleur, taille: 88)),
-                      const SizedBox(height: 12),
-                      ValueListenableBuilder(
-                        valueListenable: _nom,
-                        builder: (_, v, _) => Text(v.text.isEmpty ? 'Sans nom' : v.text,
-                            textAlign: TextAlign.center, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Dans ', style: TextStyle(fontSize: 13, color: AppColors.texteSecondaire)),
-                          Icon(iconeDe(parent.icone), size: 16, color: Color(parent.couleur), fill: 1),
-                          const SizedBox(width: 4),
-                          Text(parent.nom, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                        ],
-                      ),
-                      const SizedBox(height: 22),
-                      const Text('Nom', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
-                      const SizedBox(height: 8),
-                      TextField(controller: _nom, textCapitalization: TextCapitalization.sentences, decoration: const InputDecoration(hintText: 'Nom de la sous-catégorie')),
-                      const SizedBox(height: 22),
-                      const Text('Couleur', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
-                      const SizedBox(height: 12),
-                      GridView.count(
-                        crossAxisCount: 9,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        children: [
-                          for (final c in couleursChoix)
-                            GestureDetector(
-                              onTap: () => setState(() => _couleur = c),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color(c),
-                                  shape: BoxShape.circle,
-                                  border: c == (_couleur ?? parent.couleur) ? Border.all(color: Colors.white, width: 2.5, strokeAlign: BorderSide.strokeAlignOutside) : null,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                      ...reglages,
                       const SizedBox(height: 26),
-                      Text('Icône · ${groupesIcones.fold<int>(0, (s, g) => s + g.$2.length)} au choix',
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
+                      titreIcones,
                       const SizedBox(height: 12),
-                      SizedBox(
-                        height: 34,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            for (final g in [null, ...groupesIcones.map((g) => g.$1)])
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: ChoiceChip(
-                                  label: Text(g ?? 'Tout'),
-                                  selected: g == _groupe,
-                                  onSelected: (_) => setState(() => _groupe = g),
-                                  showCheckmark: false,
-                                  selectedColor: AppColors.vert,
-                                  backgroundColor: AppColors.surfaceHaute,
-                                  labelStyle: TextStyle(fontWeight: FontWeight.w700, color: g == _groupe ? Colors.black : AppColors.texte),
-                                  side: BorderSide.none,
-                                  shape: const StadiumBorder(),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                      filtres,
                       const SizedBox(height: 18),
-                      for (final g in groupes) ...[
-                        Text(g.$1, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                        const SizedBox(height: 10),
-                        GridView.count(
-                          crossAxisCount: 6,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          children: [
-                            for (final n in g.$2)
-                              GestureDetector(
-                                onTap: () => setState(() => _icone = n),
-                                child: n == _icone
-                                    ? Tuile(icone: n, couleur: couleur)
-                                    : Container(
-                                        decoration: BoxDecoration(color: AppColors.surfaceBasse, borderRadius: BorderRadius.circular(14)),
-                                        child: Icon(iconeDe(n), size: 24, color: AppColors.texteSecondaire),
-                                      ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 22),
-                      ],
+                      ...grilles,
                     ],
                   ),
                 ),
+                // Le bouton sous la liste, jamais par-dessus.
+                Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), child: bouton),
               ],
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 22 + MediaQuery.paddingOf(context).bottom,
-            child: ValueListenableBuilder(
-              valueListenable: _nom,
-              builder: (_, v, _) => FilledButton(
-                onPressed: v.text.trim().isEmpty ? null : () => _creer(parent),
-                child: const Text('Créer la sous-catégorie'),
-              ),
             ),
           ),
         ],

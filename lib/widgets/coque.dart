@@ -180,15 +180,24 @@ class _Rail extends StatelessWidget {
       child: SafeArea(
         left: false,
         right: false,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (var i = 0; i < onglets.length; i++)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: _OngletRail(onglet: onglets[i], actif: i == index),
+        // Centrés dans la hauteur ; quand le clavier en prend la moitié,
+        // les onglets défilent au lieu de déborder.
+        child: LayoutBuilder(
+          builder: (context, contraintes) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: contraintes.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var i = 0; i < onglets.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: _OngletRail(onglet: onglets[i], actif: i == index),
+                    ),
+                ],
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );

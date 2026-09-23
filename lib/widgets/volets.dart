@@ -279,7 +279,9 @@ class Contenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!(ajuster ?? dansUnVolet(context))) return ListView(padding: padding, children: [?tete, ...children]);
+    // Clavier ouvert, la hauteur fond : on défile au lieu de réduire.
+    final clavier = MediaQuery.viewInsetsOf(context).bottom > 0;
+    if (!(ajuster ?? dansUnVolet(context)) || clavier) return ListView(padding: padding, children: [?tete, ...children]);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -61,9 +61,9 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/categorie/:id/nouvelle',
-      builder: (_, e) => _Pleine(EcranNouvelleSousCategorie(
+      builder: (_, e) => EcranNouvelleSousCategorie(
         parentId: int.parse(e.pathParameters['id']!),
-      )),
+      ),
     ),
     GoRoute(
       path: '/sous/:id',
