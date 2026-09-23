@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 ///
 /// Sur téléphone, toucher une catégorie ouvre une nouvelle page. Sur
 /// l'écran déplié, les pages forment une pile dont on montre les deux
-/// dernières, trois quand le téléphone est couché : toucher Shopping pousse
-/// tout vers la gauche, la liste prend la place de l'anneau et Shopping
-/// s'ouvre à droite, et ainsi de suite jusqu'à une opération.
+/// dernières, côte à côte, couché ou non : toucher Shopping pousse tout
+/// vers la gauche, la liste prend la place de l'anneau et Shopping s'ouvre
+/// à droite, et ainsi de suite jusqu'à une opération.
 class VoletScope extends InheritedWidget {
   const VoletScope({super.key, required this.index, required this.pousser, required this.retirer, required super.child});
 

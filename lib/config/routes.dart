@@ -111,7 +111,7 @@ class _VoletsAnalyse extends StatelessWidget {
     if (n == 1) return const EcranAnalyse();
     return PileVolets(
       racine: const ['resume', 'liste'],
-      nombre: n == 3 ? 3 : 2,
+      nombre: 2,
       construire: (chemin) {
         final id = int.tryParse(chemin.split('/').last) ?? 0;
         if (chemin == 'resume') {
