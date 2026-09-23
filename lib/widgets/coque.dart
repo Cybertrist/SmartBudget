@@ -6,9 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../config/layout.dart';
 import '../config/theme.dart';
-import '../providers/auth_provider.dart';
 import 'base.dart';
-import 'logo_neon.dart';
 import 'volets.dart';
 
 /// Les quatre onglets.
@@ -38,7 +36,7 @@ class Coque extends ConsumerWidget {
       return Scaffold(
         body: Row(
           children: [
-            _Rail(index: _index, onVerrou: () => ref.read(authServiceProvider).lock()),
+            _Rail(index: _index),
             const VerticalDivider(width: 1, color: AppColors.trait),
             Expanded(
               child: ValueListenableBuilder(
@@ -125,11 +123,10 @@ class _Capsule extends StatelessWidget {
 }
 
 class _Onglet extends StatelessWidget {
-  const _Onglet({required this.onglet, required this.actif, this.hauteur});
+  const _Onglet({required this.onglet, required this.actif});
 
   final (String, String, String) onglet;
   final bool actif;
-  final double? hauteur;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +138,6 @@ class _Onglet extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOutCubic,
-        height: hauteur,
         decoration: BoxDecoration(
           color: actif ? const Color(0x24FFFFFF) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
@@ -167,46 +163,75 @@ class _Onglet extends StatelessWidget {
   }
 }
 
+/// Le rail de l'écran déplié : de la couleur de la page, sans logo, les
+/// quatre onglets au milieu de la hauteur, là où tombe le pouce.
 class _Rail extends StatelessWidget {
-  const _Rail({required this.index, required this.onVerrou});
+  const _Rail({required this.index});
 
   final int index;
-  final VoidCallback onVerrou;
 
   @override
   Widget build(BuildContext context) {
     final gauche = MediaQuery.paddingOf(context).left;
     return Container(
-      width: 96 + gauche,
+      width: 92 + gauche,
       padding: EdgeInsets.only(left: gauche),
-      color: const Color(0xFF0E0E0E),
+      color: AppColors.fond,
       child: SafeArea(
-        right: false,
         left: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            children: [
-              const LogoNeon(taille: 48),
-              const SizedBox(height: 22),
-              Container(
-                width: 72,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xB8282828),
-                  borderRadius: BorderRadius.circular(26),
-                  border: Border.all(color: const Color(0x1AFFFFFF)),
-                ),
-                child: Column(
-                  children: [
-                    for (var i = 0; i < onglets.length; i++) ...[
-                      if (i > 0) const SizedBox(height: 6),
-                      _Onglet(onglet: onglets[i], actif: i == index, hauteur: 62),
-                    ],
-                  ],
-                ),
+        right: false,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var i = 0; i < onglets.length; i++)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: _OngletRail(onglet: onglets[i], actif: i == index),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
+/// Un onglet du rail : l'icône dans une pastille quand il est actif, le
+/// nom dessous.
+class _OngletRail extends StatelessWidget {
+  const _OngletRail({required this.onglet, required this.actif});
+
+  final (String, String, String) onglet;
+  final bool actif;
+
+  @override
+  Widget build(BuildContext context) {
+    final couleur = actif ? AppColors.texte : const Color(0xFF9A9A9A);
+    return Semantics(
+      selected: actif,
+      button: true,
+      label: onglet.$2,
+      excludeSemantics: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => context.go(onglet.$3),
+        child: SizedBox(
+          width: 76,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                width: 60,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: actif ? const Color(0x24FFFFFF) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(17),
+                ),
+                child: Icon(iconeDe(onglet.$1), size: 23, color: couleur, fill: actif ? 1 : 0, weight: actif ? 600 : 400),
+              ),
+              const SizedBox(height: 6),
+              Text(onglet.$2, maxLines: 1, style: TextStyle(fontSize: 12, fontWeight: actif ? FontWeight.w800 : FontWeight.w600, color: couleur)),
             ],
           ),
         ),

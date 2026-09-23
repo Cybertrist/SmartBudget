@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../ecrans/analyse.dart';
 import '../ecrans/categorie.dart';
 import '../ecrans/epargne.dart';
+import '../ecrans/livret.dart';
 import '../ecrans/mois.dart';
 import '../ecrans/operation.dart';
 import '../ecrans/operations.dart';
@@ -77,6 +78,7 @@ final router = GoRouter(
       builder: (_, e) => EcranLier(id: int.parse(e.pathParameters['id']!)),
     ),
     GoRoute(path: '/operations', builder: (_, _) => const EcranOperations()),
+    GoRoute(path: '/livret/nouveau', builder: (_, _) => const EcranNouveauLivret()),
     GoRoute(path: '/internes', builder: (_, _) => const EcranInternes()),
   ],
 );

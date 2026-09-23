@@ -12,6 +12,7 @@ import '../domaine/virements.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
+import '../widgets/volets.dart';
 import 'categorie.dart';
 import 'dialogues.dart';
 
@@ -68,10 +69,10 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
 
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: 40),
+        child: Contenu(
+          padding: const EdgeInsets.only(bottom: 24),
+          tete: EnTetePage(surtitre: cat.nom, titre: 'Opération'),
           children: [
-            const BarreRetour(titre: 'Opération'),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
               child: Column(

@@ -41,6 +41,70 @@ class BarreRetour extends StatelessWidget {
   }
 }
 
+/// L'en-tête d'une page : sur téléphone, le bouton retour et le titre ;
+/// dans un volet de l'écran déplié, le même titre que les volets voisins,
+/// sans bouton : on revient par le geste retour.
+class EnTetePage extends StatelessWidget {
+  const EnTetePage({super.key, required this.titre, this.surtitre, this.montant});
+
+  final String titre;
+  final String? surtitre;
+
+  /// Dans un volet, le montant à droite du titre ; sur téléphone, il est
+  /// en grand sous l'en-tête.
+  final Widget? montant;
+
+  @override
+  Widget build(BuildContext context) =>
+      dansUnVolet(context) ? TitreVolet(titre: titre, surtitre: surtitre, droite: montant) : BarreRetour(titre: titre);
+}
+
+/// Le haut d'une page de détail : grand et centré sur téléphone, sur une
+/// ligne dans un volet, pour laisser la place à la liste.
+class TeteDetail extends StatelessWidget {
+  const TeteDetail({super.key, required this.icone, required this.couleur, required this.montant, required this.texte, this.signe = false, this.tuile});
+
+  final String? icone;
+  final Color couleur;
+  final int montant;
+  final String texte;
+  final bool signe;
+
+  /// Une tuile à la place de celle de la catégorie.
+  final Widget? tuile;
+
+  @override
+  Widget build(BuildContext context) {
+    if (dansUnVolet(context)) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+        child: Row(
+          children: [
+            tuile ?? Tuile(icone: icone, couleur: couleur, taille: 36),
+            const SizedBox(width: 12),
+            Expanded(child: Text(texte, maxLines: 2, style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire))),
+          ],
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 22),
+      child: Column(
+        children: [
+          tuile ?? Tuile(icone: icone, couleur: couleur, taille: 64),
+          const SizedBox(height: 12),
+          Montant(montant, taille: 40, signe: signe),
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(texte, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Une catégorie : son total, et toutes ses sous-catégories, même vides.
 class EcranCategorie extends ConsumerWidget {
   const EcranCategorie({super.key, required this.id, this.dansVolet = false});
@@ -68,35 +132,32 @@ class EcranCategorie extends ConsumerWidget {
         return d != 0 ? d : a.ordre.compareTo(c.ordre);
       });
     final total = b.parCategorie[id] ?? 0;
-    final nb = b.operationsParCategorie[id] ?? 0;
     final pleines = sous.where((s) => (b.parSous[s.id] ?? 0) > 0).toList();
+    final vides = sous.where((s) => (b.parSous[s.id] ?? 0) == 0).toList()..sort((a, c) => a.ordre.compareTo(c.ordre));
     final direct = total - pleines.fold<int>(0, (s, x) => s + (b.parSous[x.id] ?? 0));
-    final part = cat.genre == Genre.revenu
-        ? (b.entrees == 0 ? 0 : total * 100 ~/ b.entrees)
-        : (b.sorties == 0 ? 0 : total * 100 ~/ b.sorties);
+    final revenu = cat.genre == Genre.revenu;
+    final part = revenu ? (b.entrees == 0 ? 0 : total * 100 ~/ b.entrees) : (b.sorties == 0 ? 0 : total * 100 ~/ b.sorties);
+    final volet = dansUnVolet(context);
 
     return Scaffold(
       body: Stack(
         children: [
-          _Lueur(couleur: couleur),
+          if (!volet) _Lueur(couleur: couleur),
           SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 40),
+            child: Contenu(
+              padding: const EdgeInsets.only(bottom: 24),
+              tete: EnTetePage(
+                surtitre: revenu ? 'Entrées' : 'Dépenses',
+                titre: cat.nom,
+                montant: Montant(revenu ? total : -total, taille: 24),
+              ),
               children: [
-                BarreRetour(titre: cat.nom),
-                if (VoletScope.de(context) == null) const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SelecteurMois()),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 22),
-                  child: Column(
-                    children: [
-                      Tuile(icone: cat.icone, couleur: couleur, taille: 64),
-                      const SizedBox(height: 12),
-                      Montant(cat.genre == Genre.revenu ? total : -total, taille: 40),
-                      const SizedBox(height: 6),
-                      Text('${pluriel(nb, 'opération')} · $part % des ${cat.genre == Genre.revenu ? 'entrées' : 'sorties'}',
-                          style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
-                    ],
-                  ),
+                if (!volet) const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SelecteurMois()),
+                TeteDetail(
+                  icone: cat.icone,
+                  couleur: couleur,
+                  montant: revenu ? total : -total,
+                  texte: '$part % de tes ${revenu ? 'entrées' : 'dépenses'} du mois',
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -116,19 +177,47 @@ class EcranCategorie extends ConsumerWidget {
                         ),
                         const SizedBox(height: 6),
                         if (direct > 0)
-                          _LigneSous(nom: cat.nom, icone: cat.icone, couleur: couleur, montant: direct, detail: 'sans sous-catégorie', onTap: () => ouvrirPage(context, '/sous/$id')),
-                        for (final s in sous)
-                          _LigneSous(
-                            nom: s.nom,
-                            icone: s.icone ?? cat.icone,
-                            couleur: couleur,
-                            montant: b.parSous[s.id] ?? 0,
-                            detail: (b.parSous[s.id] ?? 0) > 0
-                                ? '${total == 0 ? 0 : (b.parSous[s.id]! * 100 / total).round()} % · ${pluriel(b.operationsParSous[s.id] ?? 0, 'op.', 'op.')}'
-                                : 'aucune opération',
-                            onTap: () => ouvrirPage(context, '/sous/${s.id}'),
+                          _LigneSous(nom: cat.nom, icone: cat.icone, couleur: couleur, montant: direct, chemin: '/sous/$id', detail: 'sans sous-catégorie'),
+                        for (final s in pleines)
+                          _LigneSous(nom: s.nom, icone: s.icone ?? cat.icone, couleur: couleur, montant: b.parSous[s.id]!, chemin: '/sous/${s.id}'),
+                        if (vides.isNotEmpty || volet) ...[
+                          const SizedBox(height: 14),
+                          if (vides.isNotEmpty)
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Text('Rien ce mois-ci', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.texteDiscret)),
+                            ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final s in vides)
+                                _PuceSous(nom: s.nom, icone: s.icone ?? cat.icone, couleur: couleur, chemin: '/sous/${s.id}'),
+                              if (volet)
+                                Material(
+                                  color: couleur.withValues(alpha: 0.06),
+                                  shape: StadiumBorder(side: BorderSide(color: couleur.withValues(alpha: 0.33))),
+                                  child: InkWell(
+                                    customBorder: const StadiumBorder(),
+                                    onTap: () => context.push('/categorie/$id/nouvelle'),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(iconeDe('add'), size: 16, color: couleur),
+                                          const SizedBox(width: 6),
+                                          Text('Ajouter', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: couleur)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                        const SizedBox(height: 8),
+                        ],
+                        if (!volet) ...[
+                        const SizedBox(height: 16),
                         OutlinedButton.icon(
                           onPressed: () => context.push('/categorie/$id/nouvelle'),
                           icon: Icon(iconeDe('add'), color: couleur),
@@ -140,6 +229,7 @@ class EcranCategorie extends ConsumerWidget {
                             backgroundColor: couleur.withValues(alpha: 0.06),
                           ),
                         ),
+                        ],
                       ],
                     ),
                   ),
@@ -174,40 +264,76 @@ class _Lueur extends StatelessWidget {
 }
 
 class _LigneSous extends StatelessWidget {
-  const _LigneSous({required this.nom, required this.icone, required this.couleur, required this.montant, required this.detail, required this.onTap});
+  const _LigneSous({required this.nom, required this.icone, required this.couleur, required this.montant, required this.chemin, this.detail});
 
   final String nom;
   final String? icone;
   final Color couleur;
   final int montant;
-  final String detail;
-  final VoidCallback onTap;
+  final String chemin;
+  final String? detail;
 
   @override
   Widget build(BuildContext context) {
-    final vide = montant == 0;
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
-        child: Row(
-          children: [
-            Tuile(icone: icone, couleur: couleur, taille: 38, eteinte: vide),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(nom, style: TextStyle(fontSize: 15, fontWeight: vide ? FontWeight.w600 : FontWeight.w700, color: vide ? AppColors.texteDiscret : AppColors.texte)),
-                  const SizedBox(height: 2),
-                  Text(detail, style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret, fontFeatures: chiffres)),
-                ],
+    return Surligne(
+      actif: estOuvert(context, chemin),
+      couleur: couleur,
+      child: InkWell(
+        onTap: () => ouvrirPage(context, chemin),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
+          child: Row(
+            children: [
+              Tuile(icone: icone, couleur: couleur, taille: 38),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(nom, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    if (detail != null) Text(detail!, style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
+                  ],
+                ),
               ),
-            ),
-            Montant(montant, taille: 15.5, couleur: vide ? AppColors.texteDiscret : null, poids: vide ? FontWeight.w500 : FontWeight.w700),
-            Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret),
-          ],
+              Montant(montant, taille: 15.5),
+              Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Une sous-catégorie sans opération ce mois-ci : une simple pastille.
+class _PuceSous extends StatelessWidget {
+  const _PuceSous({required this.nom, required this.icone, required this.couleur, required this.chemin});
+
+  final String nom;
+  final String? icone;
+  final Color couleur;
+  final String chemin;
+
+  @override
+  Widget build(BuildContext context) {
+    final actif = estOuvert(context, chemin);
+    return Material(
+      color: actif ? couleur.withValues(alpha: 0.14) : AppColors.surfaceBasse,
+      shape: StadiumBorder(side: BorderSide(color: actif ? couleur.withValues(alpha: 0.4) : AppColors.trait)),
+      child: InkWell(
+        customBorder: const StadiumBorder(),
+        onTap: () => ouvrirPage(context, chemin),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(iconeDe(icone), size: 16, color: actif ? couleur : AppColors.texteDiscret),
+              const SizedBox(width: 6),
+              Text(nom, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: actif ? AppColors.texte : AppColors.texteSecondaire)),
+            ],
+          ),
         ),
       ),
     );
@@ -238,33 +364,26 @@ class EcranSousCategorie extends ConsumerWidget {
       jours.putIfAbsent(DateTime(o.le.year, o.le.month, o.le.day), () => []).add(o);
     }
 
+    final volet = dansUnVolet(context);
     return Scaffold(
       body: Stack(
         children: [
-          _Lueur(couleur: couleur),
+          if (!volet) _Lueur(couleur: couleur),
           SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+            child: Contenu(
+              padding: const EdgeInsets.only(bottom: 24),
+              tete: EnTetePage(
+                surtitre: cat.parentId != null ? parent.nom : 'Dépenses',
+                titre: cat.nom,
+                montant: Montant(total, taille: 24),
+              ),
               children: [
-                BarreRetour(titre: cat.nom),
-                if (cat.parentId != null)
+                if (!volet && cat.parentId != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text('${parent.nom}  ›  ${cat.nom}', style: const TextStyle(fontSize: 13, color: AppColors.texteDiscret)),
                   ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Column(
-                    children: [
-                      Tuile(icone: cat.icone ?? parent.icone, couleur: couleur, taille: 60),
-                      const SizedBox(height: 12),
-                      Montant(total, taille: 38),
-                      const SizedBox(height: 6),
-                      Text('${pluriel(liste.length, 'opération')} en ${nomMois(mois).toLowerCase()}',
-                          style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
-                    ],
-                  ),
-                ),
+                TeteDetail(icone: cat.icone ?? parent.icone, couleur: couleur, montant: total, texte: 'en ${nomMois(mois).toLowerCase()}'),
                 if (liste.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(24),
@@ -318,7 +437,10 @@ class LigneOperation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final o = operation;
-    return InkWell(
+    return Surligne(
+      actif: estOuvert(context, '/operation/${o.id}'),
+      couleur: couleur,
+      child: InkWell(
       onTap: () => ouvrirPage(context, '/operation/${o.id}'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -349,6 +471,7 @@ class LigneOperation extends StatelessWidget {
             Montant(o.montantCentimes, taille: 15.5, signe: true, couleur: o.masquee ? AppColors.texteDiscret : null),
           ],
         ),
+      ),
       ),
     );
   }

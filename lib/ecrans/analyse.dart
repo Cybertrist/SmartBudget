@@ -41,22 +41,43 @@ class EcranAnalyse extends ConsumerWidget {
     final periode = ref.watch(periodeProvider);
     final bilan = ref.watch(bilanPeriodeProvider);
     final categories = ref.watch(categoriesProvider);
+    final mois = ref.watch(moisProvider);
+    final enVolets = mode != ModeAnalyse.complet;
+    final laPeriode = switch (periode) {
+      Periode.mois => nomMois(mois),
+      Periode.trimestre => "3 mois jusqu'à ${nomMoisSeul(mois).toLowerCase()}",
+      Periode.annee => "12 mois jusqu'à ${nomMoisSeul(mois).toLowerCase()}",
+    };
 
     return SafeArea(
-      bottom: false,
-      child: ListView(
-        padding: EdgeInsets.only(bottom: margeCapsule(context)),
+      bottom: enVolets,
+      child: Contenu(
+        ajuster: enVolets,
+        padding: EdgeInsets.only(bottom: enVolets ? 16 : margeCapsule(context)),
+        tete: switch (mode) {
+          ModeAnalyse.complet => null,
+          ModeAnalyse.resume => const TitreVolet(surtitre: "Vue d'ensemble", titre: 'Analyse'),
+          ModeAnalyse.liste => TitreVolet(
+              surtitre: laPeriode,
+              titre: switch (vue) {
+                Vue.sorties => 'Dépenses',
+                Vue.entrees => 'Entrées',
+                Vue.recurrences => 'Récurrences',
+              },
+            ),
+        },
         children: [
           if (mode != ModeAnalyse.liste)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: EdgeInsets.fromLTRB(16, enVolets ? 0 : 16, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 8, bottom: 12),
-                  child: Text('Analyse', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
-                ),
+                if (!enVolets)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8, bottom: 12),
+                    child: Text('Analyse', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
+                  ),
                 const SelecteurMois(),
                 const SizedBox(height: 10),
                 Row(
@@ -75,9 +96,8 @@ class EcranAnalyse extends ConsumerWidget {
           if (!bilan.hasValue || !categories.hasValue)
             const Padding(padding: EdgeInsets.all(60), child: Center(child: CircularProgressIndicator()))
           else if (vue == Vue.recurrences)
-            mode == ModeAnalyse.liste ? const _TitreVolet('Récurrences') : const _Recurrences()
+            _Recurrences(resume: mode != ModeAnalyse.liste, blocs: mode != ModeAnalyse.resume)
           else ...[
-            if (mode == ModeAnalyse.liste) _TitreVolet(vue == Vue.entrees ? 'Entrées' : 'Dépenses'),
             _Repartition(
               bilan: bilan.value!,
               categories: categories.value!,
@@ -160,18 +180,6 @@ class _Onglets extends StatelessWidget {
   }
 }
 
-class _TitreVolet extends StatelessWidget {
-  const _TitreVolet(this.texte);
-
-  final String texte;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 6),
-        child: Text(texte, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-      );
-}
-
 class _Repartition extends ConsumerWidget {
   const _Repartition({required this.bilan, required this.categories, required this.entrees, this.anneau = true, this.liste = true});
 
@@ -217,7 +225,8 @@ class _Repartition extends ConsumerWidget {
             ),
           ),
         ),
-        if (bilan.virementsInternes > 0)
+        // Dans les volets, la liste voisine a déjà sa ligne de virements.
+        if (liste && bilan.virementsInternes > 0)
           Center(
             child: Padding(
               padding: const EdgeInsets.only(top: 2, bottom: 8),
@@ -272,9 +281,7 @@ class _Repartition extends ConsumerWidget {
                       _LigneAnalyse(
                         categorie: categories[lignes[i].key]!,
                         montant: lignes[i].value,
-                        part: total == 0 ? 0 : lignes[i].value / total,
                         relatif: lignes[i].value / plusGrand,
-                        operations: bilan.operationsParCategorie[lignes[i].key] ?? 0,
                         separateur: i > 0,
                         onTap: () => ouvrir(lignes[i].key),
                       ),
@@ -295,28 +302,27 @@ class _LigneAnalyse extends StatelessWidget {
   const _LigneAnalyse({
     required this.categorie,
     required this.montant,
-    required this.part,
     required this.relatif,
-    required this.operations,
     required this.separateur,
     required this.onTap,
   });
 
   final Categorie categorie;
   final int montant;
-  final double part;
   final double relatif;
-  final int operations;
   final bool separateur;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final couleur = Color(categorie.couleur);
-    return InkWell(
+    return Surligne(
+      actif: estOuvert(context, '/categorie/${categorie.id}'),
+      couleur: couleur,
+      child: InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: dansUnVolet(context) ? 9 : 12),
         decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
         child: Row(
           children: [
@@ -333,19 +339,13 @@ class _LigneAnalyse extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(child: Jauge(part: relatif, couleur: couleur, hauteur: 4)),
-                      const SizedBox(width: 10),
-                      Text('${(part * 100).round()} % · ${pluriel(operations, 'op.', 'op.')}',
-                          style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret, fontFeatures: chiffres)),
-                    ],
-                  ),
+                  Jauge(part: relatif, couleur: couleur, hauteur: 4),
                 ],
               ),
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -391,7 +391,10 @@ class _LigneInterne extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(top: 8, bottom: 10),
-        child: Material(
+        child: Surligne(
+          actif: estOuvert(context, '/internes'),
+          couleur: AppColors.interne,
+          child: Material(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(16),
           clipBehavior: Clip.antiAlias,
@@ -432,11 +435,18 @@ class _LigneInterne extends StatelessWidget {
             ),
           ),
         ),
+        ),
       );
 }
 
 class _Recurrences extends ConsumerWidget {
-  const _Recurrences();
+  const _Recurrences({this.resume = true, this.blocs = true});
+
+  /// La carte « payés sur … attendus ».
+  final bool resume;
+
+  /// Les listes en retard, à venir, payées.
+  final bool blocs;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -510,6 +520,7 @@ class _Recurrences extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (resume)
           Carte(
             child: Column(
               children: [
@@ -522,17 +533,17 @@ class _Recurrences extends ConsumerWidget {
               ],
             ),
           ),
-          if (liste.isEmpty)
+          if (blocs && liste.isEmpty)
             const Padding(
               padding: EdgeInsets.all(24),
               child: Text('Aucune récurrence repérée pour l\'instant : il faut au moins deux passages.',
                   textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire, height: 1.5)),
             ),
-          if (retard.isNotEmpty)
+          if (blocs && retard.isNotEmpty)
             bloc('En retard', retard, AppColors.alerte, (x) => 'attendu il y a ${-x.dansJours(DateTime.now())} j', 'schedule'),
-          if (aVenir.isNotEmpty)
+          if (blocs && aVenir.isNotEmpty)
             bloc('À venir', aVenir, AppColors.attention, (x) => 'dans ${x.dansJours(DateTime.now())} j', 'calendar_month'),
-          if (payees.isNotEmpty)
+          if (blocs && payees.isNotEmpty)
             bloc('Payées', payees, AppColors.vert, (x) => 'le ${x.derniere.day}', 'check'),
         ],
       ),

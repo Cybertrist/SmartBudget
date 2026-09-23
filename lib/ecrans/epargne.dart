@@ -88,7 +88,7 @@ class EcranEpargne extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Surtitre('Mes livrets', droite: TextButton.icon(onPressed: () => ajouterLivret(context, ref), icon: Icon(iconeDe('add'), size: 16), label: const Text('Ajouter'))),
+                    Surtitre('Mes livrets', droite: TextButton.icon(onPressed: () => context.push('/livret/nouveau'), icon: Icon(iconeDe('add'), size: 16), label: const Text('Ajouter'))),
                     if (livrets.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
@@ -248,11 +248,11 @@ class EcranInternes extends ConsumerWidget {
     final b = bilan.value!;
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: 40),
+        child: Contenu(
+          padding: const EdgeInsets.only(bottom: 24),
+          tete: const EnTetePage(surtitre: 'Dépenses', titre: 'Virements internes'),
           children: [
-            const BarreRetour(titre: 'Virements internes'),
-            const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SelecteurMois()),
+            if (!dansUnVolet(context)) const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SelecteurMois()),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 22),
               child: Column(
@@ -318,54 +318,13 @@ class EcranInternes extends ConsumerWidget {
 }
 
 /// Ajouter un livret : son nom, son solde, et comment la banque l'appelle.
-Future<void> ajouterLivret(BuildContext context, WidgetRef ref) async {
-  final nom = TextEditingController();
-  final solde = TextEditingController();
-  final motif = TextEditingController();
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Nouveau livret'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(controller: nom, autofocus: true, decoration: const InputDecoration(hintText: 'Livret A, Livret jeune…')),
-          const SizedBox(height: 10),
-          TextField(controller: solde, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(hintText: 'Solde actuel', suffixText: '€')),
-          const SizedBox(height: 10),
-          TextField(controller: motif, decoration: const InputDecoration(hintText: 'Nom dans les virements : LIVRET CMB')),
-        ],
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
-        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Ajouter')),
-      ],
-    ),
-  );
-  if (ok != true || nom.text.trim().isEmpty) return;
-  await const DepotComptes().ajouterLivret(
-    nom: nom.text.trim(),
-    soldeCentimes: lireEuros(solde.text) ?? 0,
-    motif: motif.text.trim().isEmpty ? null : motif.text.trim(),
-  );
-  rafraichir(ref);
-}
-
 Future<void> modifierSolde(BuildContext context, WidgetRef ref, Compte livret) async {
-  final solde = TextEditingController(text: (livret.soldeCentimes / 100).toStringAsFixed(2).replaceAll('.', ','));
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(livret.nom),
-      content: TextField(controller: solde, autofocus: true, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(suffixText: '€')),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
-        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Enregistrer')),
-      ],
-    ),
+  final v = await demanderMontant(
+    context,
+    titre: livret.nom,
+    aide: 'Le solde actuel, tel que ta banque l\'affiche.',
+    initial: livret.soldeCentimes,
   );
-  if (ok != true) return;
-  final v = lireEuros(solde.text);
   if (v == null) return;
   await const DepotComptes().definirSolde(livret.id, v);
   rafraichir(ref);

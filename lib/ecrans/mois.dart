@@ -11,6 +11,7 @@ import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import '../widgets/graphiques.dart';
+import '../widgets/volets.dart';
 import '../config/layout.dart';
 import 'lancement.dart';
 import 'dialogues.dart';
@@ -46,7 +47,7 @@ class EcranMois extends ConsumerWidget {
     final pret = bilan.hasValue && ops.hasValue && comptes.hasValue && categories.hasValue;
     return Stack(
       children: [
-        if (partie != PartieMois.depenses) const _Lueur(couleur: Color(0xFF1E3A2A)),
+        if (partie == PartieMois.tout) const _Lueur(couleur: Color(0xFF1E3A2A)),
         SafeArea(
           bottom: false,
           child: !pret
@@ -136,7 +137,7 @@ class _Contenu extends ConsumerWidget {
           ),
         );
     final solde = Padding(
-          padding: const EdgeInsets.fromLTRB(24, 22, 24, 4),
+          padding: EdgeInsets.fromLTRB(24, partie == PartieMois.tout ? 22 : 0, 24, 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -175,7 +176,7 @@ class _Contenu extends ConsumerWidget {
                     onTap: () => context.go(c.nature == NatureCompte.courant ? '/analyse' : '/epargne'),
                   ),
                 TextButton.icon(
-                  onPressed: () => context.go('/epargne'),
+                  onPressed: () => context.push('/livret/nouveau'),
                   icon: Icon(iconeDe('add'), size: 18),
                   label: const Text('Ajouter un livret'),
                 ),
@@ -207,7 +208,7 @@ class _Contenu extends ConsumerWidget {
                         child: Text('Aucune dépense ce mois-ci.', style: TextStyle(color: AppColors.texteSecondaire)),
                       ),
                     for (final e in top.take(5))
-                      _LigneCategorie(categorie: categories[e.key]!, montant: e.value, part: bilan.sorties == 0 ? 0 : e.value / bilan.sorties),
+                      _LigneCategorie(categorie: categories[e.key]!, montant: e.value),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -239,46 +240,20 @@ class _Contenu extends ConsumerWidget {
           ],
         );
       case PartieMois.comptes:
-        return _SansDefiler(children: [
-          entete,
+        return Contenu(ajuster: true, padding: const EdgeInsets.only(bottom: 16), tete: TitreVolet(surtitre: 'Ce mois-ci', titre: nomMois(mois)), children: [
           solde,
           mesComptes,
           const SizedBox(height: 12),
           Padding(padding: bord, child: cartes),
         ]);
       case PartieMois.depenses:
-        return _SansDefiler(children: [
-          entete,
-          const SizedBox(height: 14),
+        return Contenu(ajuster: true, padding: const EdgeInsets.only(bottom: 16), tete: const TitreVolet(surtitre: "Où part l'argent", titre: 'Dépenses'), children: [
           Padding(padding: bord, child: depenses),
           const SizedBox(height: 14),
           Padding(padding: bord, child: repartition),
         ]);
     }
   }
-}
-
-/// Une colonne de l'écran déplié : tout doit se voir d'un coup. Si la
-/// hauteur manque, la colonne se réduit un peu plutôt que d'être coupée.
-class _SansDefiler extends StatelessWidget {
-  const _SansDefiler({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, contraintes) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: contraintes.maxWidth,
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
-            ),
-          ),
-        ),
-      );
 }
 
 class _CarteBudget extends ConsumerWidget {
@@ -342,7 +317,7 @@ class _CarteEpargne extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (!aDesLivrets) {
       return Carte(
-        onTap: () => context.go('/epargne'),
+        onTap: () => context.push('/livret/nouveau'),
         child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -472,11 +447,10 @@ class _LigneCompte extends StatelessWidget {
 }
 
 class _LigneCategorie extends StatelessWidget {
-  const _LigneCategorie({required this.categorie, required this.montant, required this.part});
+  const _LigneCategorie({required this.categorie, required this.montant});
 
   final Categorie categorie;
   final int montant;
-  final double part;
 
   @override
   Widget build(BuildContext context) {
@@ -493,7 +467,6 @@ class _LigneCategorie extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(categorie.nom, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                  Text('${(part * 100).round()} %', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                 ],
               ),
             ),
