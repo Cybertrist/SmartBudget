@@ -1,0 +1,44 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+*.lock.bak
+
+# Android
+android/.gradle/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Divers
+*.log
+coverage/
+
+
+# Généré par flutter pub get
+.flutter-plugins-dependencies
+
+# Clés : celle d'Enable Banking et celles de signature ne quittent jamais
+# la machine. La clé bancaire s'importe sur le téléphone, jamais par git.
+*.pem
+*.p12
+*.key

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Rien ne sort du téléphone, ni vers une sauvegarde dans le nuage, ni vers
+  un autre appareil lors d'un transfert. La base est chiffrée, mais sa clé
+  vit dans le Keystore, qui ne se transfère pas : une copie emportée
+  ailleurs serait de toute façon illisible, autant ne pas la produire.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

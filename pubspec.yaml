@@ -1,0 +1,47 @@
+name: smartbudget
+description: "SmartBudget, suivi de budget personnel"
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Base de données chiffrée (SQLCipher)
+  sqflite_sqlcipher: ^3.1.0+1
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+  # Chiffrement et trousseau
+  flutter_secure_storage: ^9.2.4
+  cryptography: ^2.7.0
+
+  # État et navigation
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.8.1
+
+  # Empreinte
+  local_auth: ^2.3.0
+
+  # Dates et montants en français
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Comme pour BodyCount : SQLCipher et le Keystore n'existent que sur un
+  # appareil, les tests qui les touchent tournent sur un émulateur.
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo.png
