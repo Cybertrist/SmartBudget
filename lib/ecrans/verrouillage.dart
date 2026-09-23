@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/logo_neon.dart';
 
 /// L'écran d'ouverture : le logo, et l'empreinte.
 ///
@@ -57,25 +58,7 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
             child: Column(
               children: [
                 const Spacer(flex: 3),
-                Container(
-                  width: 112,
-                  height: 112,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: AppColors.neon.withValues(alpha: 0.75), width: 1.5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.neon.withValues(alpha: 0.22),
-                        blurRadius: 34,
-                      ),
-                    ],
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Transform.scale(
-                    scale: 1.3,
-                    child: Image.asset('assets/logo.png', fit: BoxFit.cover),
-                  ),
-                ),
+                const LogoNeon(taille: 128),
                 const SizedBox(height: 28),
                 const Text.rich(
                   TextSpan(children: [
