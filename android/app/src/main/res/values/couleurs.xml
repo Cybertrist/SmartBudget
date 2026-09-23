@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Généré par tool/icone.mjs : la couleur de la plaque du logo. -->
+<!-- Généré par tool/icone.mjs. -->
 <resources>
-    <color name="fond_icone">#02140c</color>
+    <!-- Le fond de l'icône adaptative : le vert du liseré. -->
+    <color name="fond_icone">#3FD97F</color>
+    <!-- La plaque du logo, pour l'écran de démarrage. -->
+    <color name="plaque">#02140c</color>
     <color name="fond">#121212</color>
 </resources>
