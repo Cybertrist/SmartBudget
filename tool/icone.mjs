@@ -27,7 +27,7 @@ const cibles = [];
 for (const [d, t] of Object.entries(tailles)) {
   cibles.push({ fichier: `mipmap-${d}/ic_launcher.png`, taille: t, zoom: 1 });
   // 108 dp de côté, dont 72 visibles : le logo agrandi remplit la zone sûre.
-  cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), zoom: 0.72, fond: true, plein: true, contour: true });
+  cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), zoom: 0.64, fond: true, plein: true, contour: true });
 }
 // Android 12 ne montre du démarrage qu'un disque des deux tiers de l'icône :
 // le logo y est posé en grand, le cadre néon tombe hors du disque et seules
@@ -66,12 +66,12 @@ img.onload = () => {
       // arrondi posé juste à l'intérieur de la zone visible (72 dp sur 108),
       // qui épouse le bord de l'icône sur le lanceur de Samsung.
       const v = c.taille * 72 / 108;
-      const cx = (c.taille - v) / 2 + v * 0.035;
-      const w = v * 0.93;
+      const cx = (c.taille - v) / 2 + v * 0.09;
+      const w = v * 0.82;
       g.save();
       g.shadowColor = 'rgba(80,244,141,0.55)'; g.shadowBlur = c.taille * 0.022;
       g.strokeStyle = 'rgba(80,244,141,0.9)'; g.lineWidth = c.taille * 0.0075;
-      g.beginPath(); g.roundRect(cx, cx, w, w, w * 0.26); g.stroke();
+      g.beginPath(); g.roundRect(cx, cx, w, w, w * 0.3); g.stroke();
       g.restore();
     }
     sortie[c.fichier] = k.toDataURL('image/png');
