@@ -13,7 +13,8 @@
         "Boucherie et poissonnerie",
         "Drive et livraison",
         "Cave et alcool",
-        "Produits bio"
+        "Produits bio",
+        "Autres"
       ]
     },
     {
@@ -25,10 +26,11 @@
         "Restaurant",
         "Fast-food",
         "Bar et café",
+        "Bars et clubs",
         "Livraison de repas",
-        "Soirées et boîte",
         "Cantine et resto U",
-        "Snack et distributeur"
+        "Snack et distributeur",
+        "Autres"
       ]
     },
     {
@@ -38,14 +40,17 @@
       "couleur": "#5AB2FF",
       "sous": [
         "Loyer",
-        "Électricité et gaz",
+        "Électricité",
+        "Gaz",
         "Eau",
         "Assurance habitation",
-        "Internet et box",
-        "Charges et syndic",
-        "Travaux et bricolage",
-        "Mobilier et déco",
-        "Électroménager"
+        "Charges diverses",
+        "Entretien et bricolage",
+        "Décoration",
+        "Mobilier",
+        "Électroménager",
+        "Extérieur et jardin",
+        "Autres"
       ]
     },
     {
@@ -59,12 +64,13 @@
         "Parking",
         "Transports en commun",
         "Train",
+        "Avion",
         "Taxi et VTC",
         "Entretien et réparation",
         "Assurance auto",
         "Location de véhicule",
-        "Permis et auto-école",
-        "Vélo et trottinette"
+        "Vélo et trottinette",
+        "Autres"
       ]
     },
     {
@@ -76,11 +82,16 @@
         "Streaming vidéo",
         "Musique",
         "Forfait mobile",
+        "Téléphonie fixe",
+        "Internet",
+        "Câble et satellite",
         "Cloud et logiciels",
+        "Licences",
         "Presse et livres audio",
         "Salle de sport",
         "Jeux vidéo en ligne",
-        "Applications"
+        "Applications",
+        "Autres"
       ]
     },
     {
@@ -97,11 +108,14 @@
         "Accessoires et bijoux",
         "Beauté et parfum",
         "Maison et déco",
-        "Livres et culture",
+        "Livres",
+        "Films et séries",
+        "Musique",
         "Jeux vidéo et jouets",
+        "Cadeaux",
         "Marketplace",
         "Seconde main",
-        "Autres achats"
+        "Autres"
       ]
     },
     {
@@ -113,11 +127,12 @@
         "Médecin",
         "Pharmacie",
         "Dentiste",
-        "Opticien",
+        "Opticien et ophtalmo",
         "Mutuelle",
         "Kiné et soins",
         "Compléments alimentaires",
-        "Psy et bien-être"
+        "Psy et bien-être",
+        "Autres"
       ]
     },
     {
@@ -130,7 +145,9 @@
         "Cosmétiques",
         "Parfum",
         "Esthétique",
-        "Onglerie"
+        "Spa et massage",
+        "Onglerie",
+        "Autres"
       ]
     },
     {
@@ -140,26 +157,77 @@
       "couleur": "#C6F45A",
       "sous": [
         "Sport et activités",
-        "Voyages",
-        "Hébergement",
-        "Culture et musées",
+        "Sports d'hiver",
+        "Voyages et vacances",
+        "Hôtels et hébergement",
+        "Sorties culturelles",
         "Cinéma et concerts",
+        "Divertissements",
         "Hobbies",
         "Jeux et paris",
-        "Photo et vidéo"
+        "Photo et vidéo",
+        "Autres"
       ]
     },
     {
-      "nom": "Études et travail",
+      "nom": "Études",
       "genre": "depense",
       "icone": "etudes",
       "couleur": "#7FD4FF",
       "sous": [
         "Frais de scolarité",
-        "Fournitures",
         "Formations et certifications",
         "Matériel informatique",
-        "Frais professionnels"
+        "Fournitures",
+        "Logement étudiant",
+        "Prêt étudiant",
+        "Autres"
+      ]
+    },
+    {
+      "nom": "Permis de conduire",
+      "genre": "depense",
+      "icone": "volant",
+      "couleur": "#FFB86B",
+      "sous": [
+        "Auto-école",
+        "Code",
+        "Heures de conduite",
+        "Examen",
+        "Frais de dossier",
+        "Autres"
+      ]
+    },
+    {
+      "nom": "Enfants",
+      "genre": "depense",
+      "icone": "enfant",
+      "couleur": "#FFD27F",
+      "sous": [
+        "Baby-sitter et crèche",
+        "École",
+        "Fournitures scolaires",
+        "Jouets",
+        "Vêtements enfant",
+        "Pensions",
+        "Autres"
+      ]
+    },
+    {
+      "nom": "Dépenses pro",
+      "genre": "depense",
+      "icone": "pro",
+      "couleur": "#9FB4FF",
+      "sous": [
+        "Fournitures de bureau",
+        "Frais de déplacement",
+        "Frais d'expédition",
+        "Frais d'impression",
+        "Cotisations sociales",
+        "Comptabilité et conseils",
+        "Frais de recrutement",
+        "Logiciels pro",
+        "Autres"
       ]
     },
     {
@@ -171,7 +239,8 @@
         "Cadeaux",
         "Anniversaires",
         "Fêtes",
-        "Dons et associations"
+        "Dons et associations",
+        "Autres"
       ]
     },
     {
@@ -182,7 +251,8 @@
       "sous": [
         "Nourriture",
         "Vétérinaire",
-        "Accessoires"
+        "Accessoires",
+        "Autres"
       ]
     },
     {
@@ -192,10 +262,15 @@
       "couleur": "#A3B8AB",
       "sous": [
         "Frais bancaires",
+        "Incidents de paiement",
         "Cotisation carte",
+        "Débit mensuel carte",
         "Agios",
         "Frais à l'étranger",
-        "Remboursement de prêt"
+        "Services bancaires",
+        "Remboursement de prêt",
+        "Prêt immobilier",
+        "Autres"
       ]
     },
     {
@@ -206,8 +281,11 @@
       "sous": [
         "Impôt sur le revenu",
         "Taxe foncière",
+        "Taxe d'habitation",
+        "TVA",
         "Amendes",
-        "Taxes diverses"
+        "Taxes diverses",
+        "Autres"
       ]
     },
     {
@@ -219,7 +297,8 @@
         "Retraits d'espèces",
         "Chèques émis",
         "Virements à des proches",
-        "Virements à d'autres"
+        "Virements à d'autres",
+        "Autres"
       ]
     },
     {
@@ -238,7 +317,8 @@
         "Salaire",
         "Alternance",
         "Primes",
-        "Heures supplémentaires"
+        "Heures supplémentaires",
+        "Autres"
       ]
     },
     {
@@ -252,7 +332,8 @@
         "Ventes (Vinted, Leboncoin)",
         "Aides et CAF",
         "Intérêts",
-        "Cadeaux reçus"
+        "Cadeaux reçus",
+        "Autres"
       ]
     },
     {
@@ -265,7 +346,8 @@
         "Livret jeune",
         "LDD",
         "Assurance vie",
-        "Investissement"
+        "Investissement",
+        "Autres"
       ]
     },
     {
