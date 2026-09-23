@@ -33,6 +33,7 @@ class Bilan {
 
   int essentiel = 0;
   int plaisir = 0;
+  int imprevu = 0;
 
   /// Virements internes du mois.
   int misDeCote = 0;
@@ -110,10 +111,13 @@ Bilan calculerBilan({
     bilan.sorties += d;
     _ajouter(bilan, top, cat, d, o);
     final nature = o.nature ?? cat.nature;
-    if (nature == Nature.essentiel) {
-      bilan.essentiel += d;
-    } else {
-      bilan.plaisir += d;
+    switch (nature) {
+      case Nature.essentiel:
+        bilan.essentiel += d;
+      case Nature.plaisir:
+        bilan.plaisir += d;
+      case Nature.imprevu:
+        bilan.imprevu += d;
     }
   }
   return bilan;

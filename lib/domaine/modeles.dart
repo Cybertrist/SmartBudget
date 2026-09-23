@@ -15,8 +15,19 @@ enum Genre {
   static Genre lire(String s) => Genre.values.firstWhere((g) => g.name == s);
 }
 
-/// Essentiel ou plaisir, la question que pose chaque dépense.
-enum Nature { essentiel, plaisir }
+/// Ce que pose chaque dépense : essentielle, un plaisir, ou un imprévu
+/// qui n'avait pas sa place dans le mois.
+enum Nature {
+  essentiel,
+  plaisir,
+  imprevu;
+
+  String get libelle => switch (this) {
+        Nature.essentiel => 'Essentiel',
+        Nature.plaisir => 'Plaisir',
+        Nature.imprevu => 'Imprévu',
+      };
+}
 
 class Categorie {
   const Categorie({

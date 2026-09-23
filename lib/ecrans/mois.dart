@@ -15,7 +15,8 @@ import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import '../widgets/graphiques.dart';
 import '../config/layout.dart';
-import '../widgets/logo_neon.dart';
+import '../providers/auth_provider.dart';
+import 'lancement.dart';
 import 'dialogues.dart';
 
 /// L'accueil : le mois en un coup d'œil.
@@ -97,7 +98,6 @@ class _Contenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final courant = comptes.firstWhere((c) => c.nature == NatureCompte.courant);
     final livrets = comptes.where((c) => c.nature == NatureCompte.livret).toList();
-    final estCourant = mois == Mois.de(DateTime.now());
     final budget = ref.watch(budgetProvider).value ?? 0;
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
     final epargne = livrets.fold<int>(0, (s, c) => s + c.soldeCentimes);
@@ -116,53 +116,69 @@ class _Contenu extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
           child: Row(
             children: [
-              // Sur l'écran déplié, le rail porte déjà le logo.
-              if (!AppLayout.usesRail(context)) ...[
-                const LogoNeon(taille: 44),
-                const SizedBox(width: 12),
-              ],
-              if (avecSelecteur) const Expanded(child: SelecteurMois()) else Expanded(child: Text(nomMois(mois), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800))),
+              // Le nom de l'application, comme sur la bannière du dépôt. Sur
+              // l'écran déplié, le rail porte déjà le logo et l'en-tête
+              // donne le mois.
+              if (AppLayout.usesRail(context))
+                Expanded(child: Text(nomMois(mois), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)))
+              else
+                const Expanded(child: NomApp(taille: 26)),
+              if (!AppLayout.usesRail(context))
+                BoutonRond(icone: 'lock', label: 'Verrouiller', onTap: () => ref.read(authServiceProvider).lock()),
             ],
           ),
         ),
+        if (avecSelecteur && !AppLayout.usesRail(context))
+          const Padding(padding: EdgeInsets.fromLTRB(16, 14, 16, 0), child: SelecteurMois()),
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 22, 24, 6),
+          padding: const EdgeInsets.fromLTRB(24, 22, 24, 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(estCourant ? 'Compte courant' : 'Solde du mois',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
+              const Text('Sur tes comptes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
               const SizedBox(height: 6),
-              Montant(estCourant ? courant.soldeCentimes : bilan.solde, taille: 46),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 10,
-                runSpacing: 6,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  _Pastille(
-                    icone: 'call_made',
-                    texte: '${euros(bilan.sorties)} ${estCourant ? 'depuis le 1er' : 'dépensés'}',
-                    couleur: AppColors.alerte,
-                  ),
-                  if (courant.soldeLe != null)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(iconeDe('sync'), size: 14, color: AppColors.texteDiscret),
-                        const SizedBox(width: 5),
-                        Text('Mis à jour le ${jourCourt(courant.soldeLe!)}',
-                            style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
-                      ],
-                    ),
-                ],
-              ),
+              Montant(courant.soldeCentimes + epargne, taille: 46),
+              if (courant.soldeLe != null) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(iconeDe('sync'), size: 14, color: AppColors.texteDiscret),
+                    const SizedBox(width: 5),
+                    Text('Mis à jour le ${jourCourt(courant.soldeLe!)}', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 118,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+            children: [
+              _CarteCompte(icone: 'credit_card', nom: 'Compte courant', solde: courant.soldeCentimes, couleur: AppColors.vert, onTap: () => context.go('/analyse')),
+              for (final l in livrets) _CarteCompte(icone: 'savings', nom: l.nom, solde: l.soldeCentimes, couleur: AppColors.epargne, onTap: () => context.go('/epargne')),
+              _CarteAjout(onTap: () => context.go('/epargne')),
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 10, 24, 22),
-          child: _Courbe(mois: mois, ops: ops, soldeFinal: estCourant ? courant.soldeCentimes : null),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+          child: Carte(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: IntrinsicHeight(
+              child: Row(
+                children: [
+                  Expanded(child: _Chiffre(titre: 'Reçu', montant: bilan.entrees, couleur: AppColors.vert, signe: true)),
+                  const VerticalDivider(width: 1, color: AppColors.trait),
+                  Expanded(child: _Chiffre(titre: 'Dépensé', montant: -bilan.sorties, couleur: AppColors.texte)),
+                  const VerticalDivider(width: 1, color: AppColors.trait),
+                  Expanded(child: _Chiffre(titre: 'Reste', montant: bilan.solde, couleur: bilan.solde < 0 ? AppColors.alerte : AppColors.texte, signe: true)),
+                ],
+              ),
+            ),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -200,12 +216,20 @@ class _Contenu extends ConsumerWidget {
                     for (final e in top.take(5))
                       _LigneCategorie(categorie: categories[e.key]!, montant: e.value, part: bilan.sorties == 0 ? 0 : e.value / bilan.sorties),
                     const SizedBox(height: 8),
-                    _BoutonTexte(texte: 'Analyser le mois', onTap: () => context.go('/analyse')),
+                    Row(
+                      children: [
+                        Expanded(child: _BoutonTexte(texte: 'Analyser', onTap: () => context.go('/analyse'))),
+                        if (!AppLayout.usesRail(context)) ...[
+                          const SizedBox(width: 10),
+                          Expanded(child: _BoutonTexte(texte: 'Opérations', onTap: () => context.push('/operations'))),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 14),
-              _CarteNature(bilan: bilan),
+              _CarteRepartition(bilan: bilan),
               const SizedBox(height: 14),
               Carte(
                 child: Column(
@@ -252,78 +276,6 @@ Categorie? _racine(Map<int, Categorie> c, int id) {
   return x.parentId == null ? x : c[x.parentId];
 }
 
-class _Courbe extends StatelessWidget {
-  const _Courbe({required this.mois, required this.ops, this.soldeFinal});
-
-  final Mois mois;
-  final List<Operation> ops;
-  final int? soldeFinal;
-
-  @override
-  Widget build(BuildContext context) {
-    final jours = DateTime(mois.annee, mois.mois + 1, 0).day;
-    final aujourdhui = DateTime.now();
-    final dernier = mois == Mois.de(aujourdhui) ? aujourdhui.day : jours;
-    final parJour = List<int>.filled(jours + 1, 0);
-    for (final o in ops) {
-      if (o.le.month == mois.mois && o.le.year == mois.annee) parJour[o.le.day] += o.montantCentimes;
-    }
-    final points = <int>[];
-    var cumul = 0;
-    for (var j = 1; j <= dernier; j++) {
-      cumul += parJour[j];
-      points.add(cumul);
-    }
-    if (soldeFinal != null && points.isNotEmpty) {
-      final decalage = soldeFinal! - points.last;
-      for (var i = 0; i < points.length; i++) {
-        points[i] += decalage;
-      }
-    }
-    return Column(
-      children: [
-        CourbeSolde(points: points, jours: jours),
-        const SizedBox(height: 6),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('1 ${nomMoisSeul(mois).toLowerCase().substring(0, 4)}.', style: _petit),
-            if (dernier < jours) const Text("aujourd'hui", style: _petit),
-            Text('$jours ${nomMoisSeul(mois).toLowerCase().substring(0, 4)}.', style: _petit),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-const _petit = TextStyle(fontSize: 11.5, color: AppColors.texteDiscret, fontFeatures: chiffres);
-
-class _Pastille extends StatelessWidget {
-  const _Pastille({required this.icone, required this.texte, required this.couleur});
-
-  final String icone;
-  final String texte;
-  final Color couleur;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: couleur.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(99),
-          border: Border.all(color: couleur.withValues(alpha: 0.2)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(iconeDe(icone), size: 13, color: couleur),
-            const SizedBox(width: 6),
-            Text(texte, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: couleur, fontFeatures: chiffres)),
-          ],
-        ),
-      );
-}
 
 class _AlertePioche extends StatelessWidget {
   const _AlertePioche({required this.total, required this.nombre, required this.derniere});
@@ -452,55 +404,140 @@ class _CarteEpargne extends ConsumerWidget {
   }
 }
 
-class _CarteNature extends StatelessWidget {
-  const _CarteNature({required this.bilan});
+class _CarteRepartition extends StatelessWidget {
+  const _CarteRepartition({required this.bilan});
 
   final Bilan bilan;
 
   @override
   Widget build(BuildContext context) {
-    final total = bilan.essentiel + bilan.plaisir;
-    int pc(int v) => total == 0 ? 0 : (v * 100 / total).round();
+    final lignes = [
+      ('Essentiel', 'essentiel', bilan.essentiel),
+      ('Plaisir', 'plaisir', bilan.plaisir),
+      ('Épargne', 'epargne', bilan.misDeCote),
+      ('Imprévu', 'imprevu', bilan.imprevu),
+    ];
+    final total = lignes.fold<int>(0, (s, l) => s + (l.$3 > 0 ? l.$3 : 0));
     return Carte(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Surtitre('Essentiel et plaisir'),
+          const Surtitre('Répartition des dépenses'),
           const SizedBox(height: 16),
-          BarreSegmentee(parts: [(bilan.essentiel, const Color(0xFF5AB2FF)), (bilan.plaisir, const Color(0xFFFF8FD1))]),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(child: _Legende(couleur: const Color(0xFF5AB2FF), texte: 'Essentiel · ${pc(bilan.essentiel)} %', montant: bilan.essentiel)),
-              Expanded(child: _Legende(couleur: const Color(0xFFFF8FD1), texte: 'Plaisir · ${pc(bilan.plaisir)} %', montant: bilan.plaisir)),
-            ],
-          ),
+          BarreSegmentee(parts: [for (final l in lignes) (l.$3, couleurNature(l.$2))]),
+          const SizedBox(height: 8),
+          for (final l in lignes)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: couleurNature(l.$2).withValues(alpha: l.$3 > 0 ? 1 : 0.18),
+                    ),
+                    child: Icon(iconeDe(iconeNature(l.$2)), size: 19, color: l.$3 > 0 ? Colors.black : couleurNature(l.$2), fill: 1),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l.$1, style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600)),
+                        if (total > 0)
+                          Text('${(l.$3.clamp(0, total) * 100 / total).round()} %', style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
+                      ],
+                    ),
+                  ),
+                  Montant(l.$3, couleur: l.$3 > 0 ? AppColors.texte : AppColors.texteDiscret),
+                ],
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-class _Legende extends StatelessWidget {
-  const _Legende({required this.couleur, required this.texte, required this.montant});
+class _CarteCompte extends StatelessWidget {
+  const _CarteCompte({required this.icone, required this.nom, required this.solde, required this.couleur, required this.onTap});
 
+  final String icone;
+  final String nom;
+  final int solde;
   final Color couleur;
-  final String texte;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: SizedBox(
+          width: 168,
+          child: Carte(
+            onTap: onTap,
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(iconeDe(icone), size: 18, color: couleur, fill: 1),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(nom, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire))),
+                  ],
+                ),
+                const Spacer(),
+                FittedBox(child: Montant(solde, taille: 19, couleur: solde < 0 ? AppColors.alerte : null)),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _CarteAjout extends StatelessWidget {
+  const _CarteAjout({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 96,
+        child: Material(
+          color: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0x1FFFFFFF))),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: onTap,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(iconeDe('add'), color: AppColors.texteSecondaire),
+                const SizedBox(height: 4),
+                const Text('Livret', style: TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _Chiffre extends StatelessWidget {
+  const _Chiffre({required this.titre, required this.montant, required this.couleur, this.signe = false});
+
+  final String titre;
   final int montant;
+  final Color couleur;
+  final bool signe;
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(width: 8, height: 8, decoration: BoxDecoration(color: couleur, borderRadius: BorderRadius.circular(3))),
-              const SizedBox(width: 6),
-              Text(texte, style: const TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Montant(montant, taille: 20),
+          Text(titre, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
+          const SizedBox(height: 6),
+          FittedBox(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Montant(montant, taille: 16, couleur: couleur, signe: signe))),
         ],
       );
 }

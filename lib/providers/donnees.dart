@@ -94,6 +94,7 @@ Bilan fusionner(Mois mois, List<Bilan> bilans) {
     b.entrees += x.entrees;
     b.essentiel += x.essentiel;
     b.plaisir += x.plaisir;
+    b.imprevu += x.imprevu;
     b.misDeCote += x.misDeCote;
     b.pioche += x.pioche;
     b.virementsInternes += x.virementsInternes;

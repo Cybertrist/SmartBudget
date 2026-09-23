@@ -143,10 +143,29 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                             _Ligne(
                               icone: 'favorite',
                               libelle: 'Type',
-                              valeur: nature == Nature.essentiel ? 'Essentiel' : 'Plaisir',
-                              couleur: nature == Nature.essentiel ? const Color(0xFF5AB2FF) : const Color(0xFFFF8FD1),
-                              onTap: () => modifier(() => const DepotOperations()
-                                  .modifier(o.id, nature: nature == Nature.essentiel ? Nature.plaisir : Nature.essentiel)),
+                              valeur: nature.libelle,
+                              couleur: couleurNature(nature),
+                              onTap: () async {
+                                final choix = await showModalBottomSheet<Nature>(
+                                  context: context,
+                                  showDragHandle: true,
+                                  builder: (ctx) => SafeArea(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        for (final n in Nature.values)
+                                          ListTile(
+                                            leading: Icon(iconeDe(iconeNature(n)), color: couleurNature(n), fill: 1),
+                                            title: Text(n.libelle, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                            trailing: n == nature ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                                            onTap: () => Navigator.pop(ctx, n),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                                if (choix != null) await modifier(() => const DepotOperations().modifier(o.id, nature: choix));
+                              },
                             ),
                           _Ligne(
                             icone: 'calendar_month',

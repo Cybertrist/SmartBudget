@@ -227,3 +227,18 @@ class Hachures extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+/// Les couleurs et icônes de la répartition des dépenses.
+Color couleurNature(Object n) => switch (n.toString().split('.').last) {
+      'essentiel' => const Color(0xFF5AB2FF),
+      'plaisir' => const Color(0xFFFF8FD1),
+      'imprevu' => const Color(0xFFFF9F5A),
+      _ => AppColors.epargne,
+    };
+
+String iconeNature(Object n) => switch (n.toString().split('.').last) {
+      'essentiel' => 'favorite',
+      'plaisir' => 'thumb_up',
+      'imprevu' => 'bolt',
+      _ => 'savings',
+    };

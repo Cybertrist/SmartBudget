@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12 et plus imposent leur propre écran de démarrage : l'icône
+         au centre, sur une couleur de fond. On leur donne le logo et le fond
+         de l'application. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowSplashScreenBackground">@color/fond</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/fond_icone</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/logo_demarrage</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@color/fond</item>
+    </style>
+</resources>

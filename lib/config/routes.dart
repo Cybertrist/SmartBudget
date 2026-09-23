@@ -7,6 +7,7 @@ import '../ecrans/categorie.dart';
 import '../ecrans/epargne.dart';
 import '../ecrans/mois.dart';
 import '../ecrans/operation.dart';
+import '../ecrans/operations.dart';
 import '../ecrans/reglages.dart';
 import '../ecrans/verrouillage.dart';
 import '../security/lock_state.dart';
@@ -46,11 +47,13 @@ final router = GoRouter(
     GoRoute(path: '/sous/:id', builder: (_, e) => EcranSousCategorie(id: int.parse(e.pathParameters['id']!))),
     GoRoute(path: '/operation/:id', builder: (_, e) => EcranOperation(id: int.parse(e.pathParameters['id']!))),
     GoRoute(path: '/operation/:id/lier', builder: (_, e) => EcranLier(id: int.parse(e.pathParameters['id']!))),
+    GoRoute(path: '/operations', builder: (_, _) => const EcranOperations()),
     GoRoute(path: '/internes', builder: (_, _) => const EcranInternes()),
   ],
 );
 
-/// Le mois : seul sur téléphone, à côté de l'analyse sur l'écran déplié.
+/// Le mois : seul sur téléphone ; sur l'écran déplié, ses opérations à
+/// côté, plutôt que l'analyse, qui aurait répété ses catégories.
 class _VoletsMois extends StatelessWidget {
   const _VoletsMois();
 
@@ -61,7 +64,7 @@ class _VoletsMois extends StatelessWidget {
       children: [
         Expanded(child: EcranMois(avecSelecteur: false)),
         VerticalDivider(width: 1, color: AppColors.trait),
-        Expanded(child: EcranAnalyse()),
+        Expanded(child: EcranOperations(dansVolet: true)),
       ],
     );
   }

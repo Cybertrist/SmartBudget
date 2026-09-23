@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/logo_neon.dart';
+import 'lancement.dart';
 
 /// L'écran d'ouverture : le logo, et l'empreinte.
 ///
@@ -24,7 +25,10 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _ouvrir());
+    // L'empreinte attend la fin de l'animation de lancement.
+    Lancement.termine.then((_) {
+      if (mounted) _ouvrir();
+    });
   }
 
   Future<void> _ouvrir() async {
