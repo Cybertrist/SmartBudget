@@ -81,10 +81,14 @@ void revenir(BuildContext context) {
 /// Montre les [nombre] derniers volets d'une pile de chemins, et fait
 /// glisser le tout vers la gauche quand un volet s'ajoute.
 class PileVolets extends StatefulWidget {
-  const PileVolets({super.key, required this.racine, required this.construire, required this.nombre});
+  const PileVolets({super.key, required this.racine, required this.construire, required this.nombre, this.ouverts = const []});
 
   /// Les premiers volets, toujours là au fond de la pile.
   final List<String> racine;
+
+  /// Des volets déjà ouverts à l'arrivée : une catégorie touchée sur
+  /// l'accueil s'ouvre ici, à côté de la liste.
+  final List<String> ouverts;
 
   /// Le widget d'un chemin.
   final Widget Function(String chemin) construire;
@@ -95,8 +99,14 @@ class PileVolets extends StatefulWidget {
 }
 
 class _EtatPile extends State<PileVolets> {
-  late List<String> _pile = [...widget.racine];
+  late List<String> _pile = [...widget.racine, ...widget.ouverts];
   bool _enAvant = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.ouverts.isNotEmpty) WidgetsBinding.instance.addPostFrameCallback((_) => _publier());
+  }
 
   void _pousser(int depuis, String chemin) {
     // Toucher la ligne déjà ouverte ne rouvre rien.
@@ -184,7 +194,7 @@ class TitreVolet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 14),
+        padding: const EdgeInsets.fromLTRB(24, 10, 24, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

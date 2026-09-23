@@ -239,3 +239,54 @@ class _OngletRail extends StatelessWidget {
     );
   }
 }
+
+/// Une page d'onglet : sur téléphone, une liste qui défile sous son titre ;
+/// sur l'écran déplié, deux colonnes qui tiennent sans défiler, avec les
+/// mêmes titres que les volets.
+class DeuxColonnes extends StatelessWidget {
+  const DeuxColonnes({
+    super.key,
+    required this.titre,
+    required this.gauche,
+    required this.droite,
+    this.surtitre,
+    this.titreDroite = '',
+    this.surtitreDroite,
+  });
+
+  final String titre;
+  final String? surtitre;
+  final String titreDroite;
+  final String? surtitreDroite;
+  final List<Widget> gauche;
+  final List<Widget> droite;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!AppLayout.usesRail(context)) {
+      return ListView(
+        padding: EdgeInsets.fromLTRB(16, 16, 16, margeCapsule(context)),
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 14),
+            child: Text(titre, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
+          ),
+          ...gauche,
+          const SizedBox(height: 14),
+          ...droite,
+        ],
+      );
+    }
+    const marges = EdgeInsets.fromLTRB(16, 0, 16, 20);
+    return SafeArea(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: Contenu(ajuster: true, padding: marges, tete: TitreVolet(surtitre: surtitre, titre: titre), children: gauche)),
+          const VerticalDivider(width: 1, color: AppColors.trait),
+          Expanded(child: Contenu(ajuster: true, padding: marges, tete: TitreVolet(surtitre: surtitreDroite, titre: titreDroite), children: droite)),
+        ],
+      ),
+    );
+  }
+}

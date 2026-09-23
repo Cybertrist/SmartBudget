@@ -484,11 +484,7 @@ class _Recurrences extends ConsumerWidget {
                             children: [
                               Text(l[i].libelle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                               const SizedBox(height: 2),
-                              Text(switch (l[i].frequence) {
-                                Frequence.hebdomadaire => 'Toutes les semaines',
-                                Frequence.mensuelle => 'Tous les mois',
-                                Frequence.annuelle => 'Tous les ans',
-                              }, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                              Text(l[i].frequence.libelle, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                             ],
                           ),
                         ),

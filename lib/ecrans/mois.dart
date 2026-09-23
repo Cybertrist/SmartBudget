@@ -49,7 +49,7 @@ class EcranMois extends ConsumerWidget {
       children: [
         if (partie == PartieMois.tout) const _Lueur(couleur: Color(0xFF1E3A2A)),
         SafeArea(
-          bottom: false,
+          bottom: partie != PartieMois.tout,
           child: !pret
               ? const Center(child: CircularProgressIndicator())
               : _Contenu(
@@ -455,7 +455,10 @@ class _LigneCategorie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.push('/categorie/${categorie.id}'),
+      // Sur l'écran déplié, la catégorie s'ouvre dans l'analyse, en volet.
+      onTap: () => AppLayout.usesRail(context)
+          ? context.go('/analyse?ouvrir=${Uri.encodeQueryComponent('/categorie/${categorie.id}')}')
+          : context.push('/categorie/${categorie.id}'),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(

@@ -78,119 +78,169 @@ class _EtatNouveauLivret extends ConsumerState<EcranNouveauLivret> {
   @override
   Widget build(BuildContext context) {
     final icone = _types[_type].$2;
+    // Sur l'écran déplié, le clavier ne s'ouvre pas tout seul : il
+    // mangerait la moitié de la page.
+    final large = MediaQuery.sizeOf(context).width >= 720;
+
+    // Le solde, en grand : c'est ce qui compte.
+    final solde = Carte(
+      padding: const EdgeInsets.fromLTRB(18, 24, 18, 22),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Tuile(icone: icone, couleur: AppColors.epargne, taille: 64),
+          const SizedBox(height: 14),
+          // Le champ épouse la largeur du montant, et le symbole euro le
+          // suit, même tant que rien n'est tapé.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IntrinsicWidth(
+                stepWidth: 24,
+                child: TextField(
+                  controller: _solde,
+                  autofocus: !large,
+                  textAlign: TextAlign.center,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9 ,.]'))],
+                  style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, letterSpacing: -1),
+                  decoration: const InputDecoration(hintText: '0', filled: false, border: InputBorder.none),
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Text('€', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
+            ],
+          ),
+          const Text('Solde actuel du livret', style: TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
+        ],
+      ),
+    );
+
+    final type = Carte(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Surtitre('Type'),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (var i = 0; i < _types.length; i++)
+                _Choix(texte: _types[i].$1, icone: _types[i].$2, actif: i == _type, onTap: () => _choisir(i)),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    final nom = Carte(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Surtitre('Nom'),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _nom,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(hintText: 'Livret A, Livret vacances…'),
+          ),
+          const SizedBox(height: 18),
+          const Surtitre('Sur ton relevé'),
+          // Sur l'écran déplié, l'indice du champ suffit : tout tient.
+          if (!large) ...[
+            const SizedBox(height: 6),
+            const Text(
+              'Le mot du libellé quand tu verses sur ce livret. Laisse vide si c\'est le nom.',
+              style: TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texteDiscret),
+            ),
+          ],
+          const SizedBox(height: 10),
+          TextField(
+            controller: _motif,
+            textCapitalization: TextCapitalization.characters,
+            decoration: InputDecoration(hintText: _nom.text.trim().isEmpty ? 'LIVRET A' : _nom.text.trim().toUpperCase()),
+          ),
+        ],
+      ),
+    );
+
+    final bouton = FilledButton(
+      onPressed: _nom.text.trim().isEmpty || _enCours ? null : _ajouter,
+      style: FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(54),
+        shape: const StadiumBorder(),
+        backgroundColor: AppColors.vert,
+        foregroundColor: Colors.black,
+        disabledBackgroundColor: AppColors.surfaceHaute,
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+      ),
+      child: const Text('Ajouter le livret'),
+    );
+
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: Column(
+        child: LayoutBuilder(
+          builder: (context, contraintes) {
+            // Sur l'écran déplié, deux colonnes : le solde à gauche, le
+            // reste à droite, et le bouton sous la colonne de droite.
+            if (large) {
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const BarreRetour(titre: 'Nouveau livret'),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(child: solde),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [type, const SizedBox(height: 14), nom],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    bouton,
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const BarreRetour(titre: 'Nouveau livret'),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    children: [
-                      // Le solde, en grand : c'est ce qui compte.
-                      Carte(
-                        padding: const EdgeInsets.fromLTRB(18, 24, 18, 18),
-                        child: Column(
-                          children: [
-                            Tuile(icone: icone, couleur: AppColors.epargne, taille: 56),
-                            const SizedBox(height: 10),
-                            // Le champ épouse la largeur du montant : le symbole euro le suit.
-                            Center(
-                              child: IntrinsicWidth(
-                                stepWidth: 24,
-                                child: TextField(
-                                  controller: _solde,
-                                  autofocus: true,
-                                  textAlign: TextAlign.center,
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9 ,.]'))],
-                                  style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: -1),
-                                  decoration: const InputDecoration(
-                                    hintText: '0',
-                                    suffixText: '€',
-                                    suffixStyle: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire),
-                                    filled: false,
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const Text('Solde actuel du livret', style: TextStyle(fontSize: 13, color: AppColors.texteSecondaire)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Carte(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Surtitre('Type'),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                for (var i = 0; i < _types.length; i++)
-                                  _Choix(texte: _types[i].$1, icone: _types[i].$2, actif: i == _type, onTap: () => _choisir(i)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Carte(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Surtitre('Nom'),
-                            const SizedBox(height: 10),
-                            TextField(
-                              controller: _nom,
-                              textCapitalization: TextCapitalization.sentences,
-                              decoration: const InputDecoration(hintText: 'Livret A, Livret vacances…'),
-                            ),
-                            const SizedBox(height: 20),
-                            const Surtitre('Sur ton relevé'),
-                            const SizedBox(height: 6),
-                            const Text(
-                              'Le mot qui apparaît dans le libellé quand tu verses sur ce livret, par exemple LIVRET A. Laisse vide si c\'est le nom.',
-                              style: TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texteDiscret),
-                            ),
-                            const SizedBox(height: 10),
-                            TextField(
-                              controller: _motif,
-                              textCapitalization: TextCapitalization.characters,
-                              decoration: InputDecoration(hintText: _nom.text.trim().isEmpty ? 'LIVRET A' : _nom.text.trim().toUpperCase()),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    children: [solde, const SizedBox(height: 14), type, const SizedBox(height: 14), nom],
                   ),
                 ),
                 // Le bouton reste au-dessus du clavier.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                  child: FilledButton(
-                    onPressed: _nom.text.trim().isEmpty || _enCours ? null : _ajouter,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(54),
-                      shape: const StadiumBorder(),
-                      backgroundColor: AppColors.vert,
-                      foregroundColor: Colors.black,
-                      disabledBackgroundColor: AppColors.surfaceHaute,
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-                    ),
-                    child: const Text('Ajouter le livret'),
-                  ),
-                ),
+                Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 16), child: bouton),
               ],
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

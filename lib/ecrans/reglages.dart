@@ -77,13 +77,12 @@ class EcranReglages extends ConsumerWidget {
 
     return SafeArea(
       bottom: false,
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(16, 16, 16, margeCapsule(context)),
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 8, bottom: 16),
-            child: Text('Réglages', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
-          ),
+      child: DeuxColonnes(
+        titre: 'Réglages',
+        surtitre: 'Banque et budget',
+        titreDroite: 'Sécurité',
+        surtitreDroite: 'Tes données',
+        gauche: [
           Carte(
             child: Row(
               children: [
@@ -110,7 +109,8 @@ class EcranReglages extends ConsumerWidget {
                 () => fixerMontant(context, ref, cle: 'objectif_epargne', titre: 'Objectif d\'épargne')),
             ligne('calendar_month', 'Le mois commence le', debut == 1 ? '1er' : '$debut', () => _choisirDebut(context, ref, debut)),
           ]),
-          const SizedBox(height: 14),
+        ],
+        droite: [
           bloc('Sécurité', [
             bascule('fingerprint', 'Empreinte à l\'ouverture', securite.verrou, (v) async {
               if (!v) {

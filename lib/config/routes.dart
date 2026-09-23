@@ -40,8 +40,8 @@ final router = GoRouter(
         ),
         GoRoute(
           path: '/analyse',
-          pageBuilder: (_, _) =>
-              const NoTransitionPage(child: _VoletsAnalyse()),
+          pageBuilder: (_, etat) =>
+              NoTransitionPage(child: _VoletsAnalyse(ouvrir: etat.uri.queryParameters['ouvrir'])),
         ),
         GoRoute(
           path: '/epargne',
@@ -53,33 +53,33 @@ final router = GoRouter(
         ),
       ],
     ),
-    GoRoute(path: '/categories', builder: (_, _) => const EcranCategories()),
+    GoRoute(path: '/categories', builder: (_, _) => const _Pleine(EcranCategories())),
     GoRoute(
       path: '/categorie/:id',
-      builder: (_, e) => EcranCategorie(id: int.parse(e.pathParameters['id']!)),
+      builder: (_, e) => _Pleine(EcranCategorie(id: int.parse(e.pathParameters['id']!))),
     ),
     GoRoute(
       path: '/categorie/:id/nouvelle',
-      builder: (_, e) => EcranNouvelleSousCategorie(
+      builder: (_, e) => _Pleine(EcranNouvelleSousCategorie(
         parentId: int.parse(e.pathParameters['id']!),
-      ),
+      )),
     ),
     GoRoute(
       path: '/sous/:id',
       builder: (_, e) =>
-          EcranSousCategorie(id: int.parse(e.pathParameters['id']!)),
+          _Pleine(EcranSousCategorie(id: int.parse(e.pathParameters['id']!))),
     ),
     GoRoute(
       path: '/operation/:id',
-      builder: (_, e) => EcranOperation(id: int.parse(e.pathParameters['id']!)),
+      builder: (_, e) => _Pleine(EcranOperation(id: int.parse(e.pathParameters['id']!))),
     ),
     GoRoute(
       path: '/operation/:id/lier',
-      builder: (_, e) => EcranLier(id: int.parse(e.pathParameters['id']!)),
+      builder: (_, e) => _Pleine(EcranLier(id: int.parse(e.pathParameters['id']!))),
     ),
-    GoRoute(path: '/operations', builder: (_, _) => const EcranOperations()),
+    GoRoute(path: '/operations', builder: (_, _) => const _Pleine(EcranOperations())),
     GoRoute(path: '/livret/nouveau', builder: (_, _) => const EcranNouveauLivret()),
-    GoRoute(path: '/internes', builder: (_, _) => const EcranInternes()),
+    GoRoute(path: '/internes', builder: (_, _) => const _Pleine(EcranInternes())),
   ],
 );
 
@@ -106,14 +106,19 @@ class _VoletsMois extends StatelessWidget {
 /// et les dépenses à droite ; toucher une catégorie fait glisser le tout
 /// vers la gauche et l'ouvre à droite, jusqu'à l'opération.
 class _VoletsAnalyse extends StatelessWidget {
-  const _VoletsAnalyse();
+  const _VoletsAnalyse({this.ouvrir});
+
+  /// Un volet à ouvrir d'emblée à côté de la liste.
+  final String? ouvrir;
 
   @override
   Widget build(BuildContext context) {
     final n = Volets.nombre(context);
     if (n == 1) return const EcranAnalyse();
     return PileVolets(
+      key: ValueKey(ouvrir),
       racine: const ['resume', 'liste'],
+      ouverts: [?ouvrir],
       nombre: 2,
       construire: (chemin) {
         final id = int.tryParse(chemin.split('/').last) ?? 0;
@@ -131,6 +136,24 @@ class _VoletsAnalyse extends StatelessWidget {
         if (chemin == '/internes') return const EcranInternes();
         return const SizedBox.shrink();
       },
+    );
+  }
+}
+
+/// Une page ouverte par-dessus les onglets. Sur l'écran déplié, elle garde
+/// la largeur d'une colonne, centrée, au lieu de s'étirer d'un bord à
+/// l'autre.
+class _Pleine extends StatelessWidget {
+  const _Pleine(this.page);
+
+  final Widget page;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!AppLayout.isExpanded(context)) return page;
+    return ColoredBox(
+      color: AppColors.fond,
+      child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640), child: page)),
     );
   }
 }

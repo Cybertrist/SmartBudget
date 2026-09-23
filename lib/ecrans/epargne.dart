@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../config/format.dart';
+import '../config/layout.dart';
 import '../config/theme.dart';
 import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
@@ -38,6 +39,7 @@ class EcranEpargne extends ConsumerWidget {
 
     return Stack(
       children: [
+        if (!AppLayout.usesRail(context))
         IgnorePointer(
           child: Container(
             height: 300,
@@ -48,13 +50,12 @@ class EcranEpargne extends ConsumerWidget {
         ),
         SafeArea(
           bottom: false,
-          child: ListView(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, margeCapsule(context)),
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 8, bottom: 12),
-                child: Text('Épargne', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
-              ),
+          child: DeuxColonnes(
+            titre: 'Épargne',
+            surtitre: 'Sur tes livrets',
+            titreDroite: 'Mouvements',
+            surtitreDroite: 'Ce mois-ci',
+            gauche: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 10, 8, 20),
                 child: Column(
@@ -131,7 +132,8 @@ class EcranEpargne extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 14),
+            ],
+            droite: [
               Carte(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
                 child: Column(

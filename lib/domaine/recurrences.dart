@@ -5,7 +5,24 @@ import 'libelle.dart';
 /// Rien n'est saisi : les récurrences se déduisent des opérations. Un même
 /// marchand, un montant qui ne bouge presque pas, et un écart régulier
 /// entre deux passages, d'une semaine, d'un mois ou d'un an.
-enum Frequence { hebdomadaire, mensuelle, annuelle }
+enum Frequence {
+  hebdomadaire('Chaque semaine'),
+  mensuelle('Chaque mois'),
+  trimestrielle('Chaque trimestre'),
+  annuelle('Chaque année');
+
+  const Frequence(this.libelle);
+
+  final String libelle;
+}
+
+/// Le passage suivant, une fréquence après [d].
+DateTime suivante(DateTime d, Frequence f) => switch (f) {
+      Frequence.hebdomadaire => d.add(const Duration(days: 7)),
+      Frequence.mensuelle => DateTime(d.year, d.month + 1, d.day),
+      Frequence.trimestrielle => DateTime(d.year, d.month + 3, d.day),
+      Frequence.annuelle => DateTime(d.year + 1, d.month, d.day),
+    };
 
 class Recurrence {
   const Recurrence({
@@ -83,11 +100,7 @@ List<Recurrence> detecterRecurrences(List<Passage> passages) {
     if (freq == null) return;
 
     final derniere = stables.last.le;
-    final prochaine = switch (freq) {
-      Frequence.hebdomadaire => derniere.add(const Duration(days: 7)),
-      Frequence.mensuelle => DateTime(derniere.year, derniere.month + 1, derniere.day),
-      Frequence.annuelle => DateTime(derniere.year + 1, derniere.month, derniere.day),
-    };
+    final prochaine = suivante(derniere, freq);
     trouvees.add(Recurrence(
       cle: cle,
       libelle: joli(stables.last.libelle),
@@ -106,6 +119,33 @@ Frequence? _frequence(List<int> ecarts) {
   bool tous(int min, int max) => ecarts.every((e) => e >= min && e <= max);
   if (tous(6, 8)) return Frequence.hebdomadaire;
   if (tous(25, 35)) return Frequence.mensuelle;
+  if (tous(85, 95)) return Frequence.trimestrielle;
   if (tous(350, 380)) return Frequence.annuelle;
   return null;
+}
+
+/// Applique les choix faits à la main, marchand par marchand : une
+/// fréquence imposée, même si la détection n'a rien vu, ou aucune
+/// (`null`), même si elle a cru voir quelque chose.
+List<Recurrence> appliquerChoix(List<Recurrence> trouvees, List<Passage> passages, Map<String, Frequence?> choix) {
+  final resultat = [for (final r in trouvees) if (!choix.containsKey(r.cle)) r];
+  choix.forEach((cle, freq) {
+    if (freq == null) return;
+    final liste = passages.where((p) => p.montantCentimes < 0 && cleMarchand(p.libelle) == cle).toList()
+      ..sort((a, b) => a.le.compareTo(b.le));
+    if (liste.isEmpty) return;
+    final montants = liste.map((p) => p.montantCentimes).toList()..sort();
+    final derniere = liste.last.le;
+    resultat.add(Recurrence(
+      cle: cle,
+      libelle: joli(liste.last.libelle),
+      montantCentimes: montants[montants.length ~/ 2],
+      frequence: freq,
+      derniere: derniere,
+      prochaine: suivante(derniere, freq),
+      nombre: liste.length,
+    ));
+  });
+  resultat.sort((a, b) => a.prochaine.compareTo(b.prochaine));
+  return resultat;
 }

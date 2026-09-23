@@ -8,6 +8,7 @@ import '../domaine/classement.dart';
 import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
 import '../domaine/mois.dart';
+import '../domaine/recurrences.dart';
 import '../domaine/virements.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
@@ -61,6 +62,8 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     final moisOp = Mois.de(o.le);
     final moisCompte = o.moisCompte == null ? moisOp : Mois.lire(o.moisCompte!);
     final lies = liens.value ?? const <Lien>[];
+    final cle = cleMarchand(o.libelle);
+    final repetition = ref.watch(recurrencesProvider).value?.where((r) => r.cle == cle).firstOrNull;
 
     Future<void> modifier(Future<void> Function() f) async {
       await f();
@@ -205,12 +208,43 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Surtitre('Suivi'),
-                        _Bascule(
-                          icone: 'autorenew',
-                          libelle: 'Dépense récurrente',
-                          valeur: o.recurrente ?? false,
-                          onChanged: (v) => modifier(() => const DepotOperations().modifier(o.id, recurrente: v)),
-                        ),
+                        if (!o.entree && o.interne == null)
+                          _Ligne(
+                            icone: 'autorenew',
+                            libelle: 'Répétition',
+                            valeur: repetition?.frequence.libelle ?? 'Aucune',
+                            couleur: repetition == null ? null : AppColors.vert,
+                            onTap: () async {
+                              // Un enregistrement, pour distinguer « aucune » d'une feuille refermée.
+                              final choix = await showModalBottomSheet<(Frequence?,)>(
+                                context: context,
+                                showDragHandle: true,
+                                isScrollControlled: true,
+                                constraints: const BoxConstraints(maxWidth: 560),
+                                builder: (ctx) => SafeArea(
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+                                        child: Text('Toutes les opérations « ${joli(cle)} » suivent ce choix.',
+                                            textAlign: TextAlign.center, style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
+                                      ),
+                                      for (final (f, texte) in [(null, 'Aucune'), for (final f in Frequence.values) (f, f.libelle)])
+                                        ListTile(
+                                          title: Text(texte, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                          trailing: f == repetition?.frequence ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                                          onTap: () => Navigator.pop(ctx, (f,)),
+                                        ),
+                                    ],
+                                  ),
+                                  ),
+                                ),
+                              );
+                              if (choix != null) await modifier(() => const DepotOperations().choisirRepetition(cle, choix.$1));
+                            },
+                          ),
                         _Bascule(
                           icone: 'visibility_off',
                           libelle: 'Masquer de l\'analyse',

@@ -256,11 +256,28 @@ class DepotOperations {
     final fin = maintenant ?? DateTime.now();
     final ops = await entre(fin.subtract(const Duration(days: 400)), fin.add(const Duration(days: 1)));
     final forcees = ops.where((o) => o.recurrente == false).map((o) => cleMarchand(o.libelle)).toSet();
-    return detecterRecurrences([
+    final passages = [
       for (final o in ops)
         if (o.interne == null && !o.masquee) Passage(o.libelle, o.le, o.montantCentimes),
-    ]).where((r) => !forcees.contains(r.cle)).toList();
+    ];
+    final choix = <String, Frequence?>{
+      for (final e in (await const DepotReglages().commencantPar(_repetition)).entries)
+        e.key.substring(_repetition.length): Frequence.values.where((f) => f.name == e.value).firstOrNull,
+    };
+    return appliquerChoix(
+      detecterRecurrences(passages).where((r) => !forcees.contains(r.cle)).toList(),
+      passages,
+      choix,
+    );
   }
+
+  static const _repetition = 'repetition:';
+
+  /// Fixe la répétition d'un marchand : toutes ses opérations suivent.
+  /// [frequence] à null : ce marchand ne revient pas, quoi qu'en dise la
+  /// détection.
+  Future<void> choisirRepetition(String cleMarchand, Frequence? frequence) =>
+      const DepotReglages().ecrire('$_repetition$cleMarchand', frequence?.name ?? 'aucune');
 }
 
 const _rien = Object();
@@ -323,6 +340,12 @@ class DepotReglages {
   Future<void> ecrire(String cle, String? valeur) async {
     await (await _db).insert('reglages', {'cle': cle, 'valeur': valeur},
         conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  /// Les réglages dont la clé commence par [prefixe].
+  Future<Map<String, String>> commencantPar(String prefixe) async {
+    final l = await (await _db).query('reglages', where: 'cle LIKE ?', whereArgs: ['$prefixe%']);
+    return {for (final r in l) if (r['valeur'] != null) r['cle']! as String: r['valeur']! as String};
   }
 
   /// Le jour où commence le mois budgétaire, 1 par défaut.
