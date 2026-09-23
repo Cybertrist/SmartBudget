@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +7,6 @@ import '../config/theme.dart';
 import '../domaine/bilan.dart';
 import '../domaine/modeles.dart';
 import '../domaine/mois.dart';
-import '../domaine/virements.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
@@ -103,7 +100,6 @@ class _Contenu extends ConsumerWidget {
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
     final epargne = livrets.fold<int>(0, (s, c) => s + c.soldeCentimes);
 
-    final pioches = ops.where((o) => o.interne == SensInterne.depuisEpargne && !o.masquee).toList();
 
     final top = bilan.parCategorie.entries
         .where((e) => categories[e.key]?.genre == Genre.depense && e.value > 0)
@@ -177,32 +173,12 @@ class _Contenu extends ConsumerWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
-          child: Carte(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: IntrinsicHeight(
-              child: Row(
-                children: [
-                  Expanded(child: _Chiffre(titre: 'Reçu', montant: bilan.entrees, couleur: AppColors.vert, signe: true)),
-                  const VerticalDivider(width: 1, color: AppColors.trait),
-                  Expanded(child: _Chiffre(titre: 'Dépensé', montant: -bilan.sorties, couleur: AppColors.texte)),
-                  const VerticalDivider(width: 1, color: AppColors.trait),
-                  Expanded(child: _Chiffre(titre: 'Reste', montant: bilan.solde, couleur: bilan.solde < 0 ? AppColors.alerte : AppColors.texte, signe: true)),
-                ],
-              ),
-            ),
-          ),
-        ),
+        const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (pioches.isNotEmpty) ...[
-                _AlertePioche(total: bilan.pioche, nombre: pioches.length, derniere: pioches.first.le),
-                const SizedBox(height: 14),
-              ],
               IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -244,87 +220,10 @@ class _Contenu extends ConsumerWidget {
               ),
               const SizedBox(height: 14),
               _CarteRepartition(bilan: bilan),
-              const SizedBox(height: 14),
-              Carte(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Surtitre('Par semaine'),
-                    const SizedBox(height: 16),
-                    BarresSemaines(semaines: _semaines(mois, ops, categories)),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  /// Les dépenses par tranche de sept jours, jusqu'à aujourd'hui pour le
-  /// mois en cours.
-  static List<(String, int)> _semaines(Mois mois, List<Operation> ops, Map<int, Categorie> categories) {
-    final fin = DateTime(mois.annee, mois.mois + 1, 0).day;
-    final aujourdhui = DateTime.now();
-    final estCourant = mois == Mois.de(aujourdhui);
-    final tranches = <(int, int)>[(1, 7), (8, 14), (15, 21), (22, fin)];
-    final sortie = <(String, int)>[];
-    for (final (a, b) in tranches) {
-      if (estCourant && a > aujourdhui.day) break;
-      var somme = 0;
-      for (final o in ops) {
-        final top = _racine(categories, o.categorieId);
-        if (o.masquee || top == null || top.genre != Genre.depense) continue;
-        if (o.le.month == mois.mois && o.le.day >= a && o.le.day <= b) somme -= o.montantCentimes;
-      }
-      sortie.add(('$a-$b', max(somme, 0)));
-    }
-    return sortie;
-  }
-}
-
-Categorie? _racine(Map<int, Categorie> c, int id) {
-  final x = c[id];
-  if (x == null) return null;
-  return x.parentId == null ? x : c[x.parentId];
-}
-
-
-class _AlertePioche extends StatelessWidget {
-  const _AlertePioche({required this.total, required this.nombre, required this.derniere});
-
-  final int total;
-  final int nombre;
-  final DateTime derniere;
-
-  @override
-  Widget build(BuildContext context) {
-    return Carte(
-      couleur: const Color(0xFF2B1519),
-      onTap: () => context.go('/epargne'),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      child: Row(
-        children: [
-          const Tuile(icone: 'warning', couleur: AppColors.alerte),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${euros(total)} piochés dans l\'épargne',
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, fontFeatures: chiffres)),
-                const SizedBox(height: 3),
-                Text(
-                  nombre > 1 ? '$nombre retraits ce mois-ci, le dernier le ${jourCourt(derniere)}' : 'Le ${jourCourt(derniere)}',
-                  style: const TextStyle(fontSize: 13, height: 1.4, color: Color(0xFFE9AEB6)),
-                ),
-              ],
-            ),
-          ),
-          Icon(iconeDe('chevron_right'), color: const Color(0xFFE9AEB6)),
-        ],
-      ),
     );
   }
 }
@@ -509,24 +408,6 @@ class _LigneCompte extends StatelessWidget {
             ],
           ),
         ),
-      );
-}
-
-class _Chiffre extends StatelessWidget {
-  const _Chiffre({required this.titre, required this.montant, required this.couleur, this.signe = false});
-
-  final String titre;
-  final int montant;
-  final Color couleur;
-  final bool signe;
-
-  @override
-  Widget build(BuildContext context) => Column(
-        children: [
-          Text(titre, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
-          const SizedBox(height: 6),
-          FittedBox(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Montant(montant, taille: 16, couleur: couleur, signe: signe))),
-        ],
       );
 }
 

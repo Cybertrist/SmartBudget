@@ -78,7 +78,7 @@ class _EtatLancement extends State<AnimationLancement> with TickerProviderStateM
           ignoring: _sortie.value > 0.5,
           child: Opacity(
             opacity: 1 - sortie,
-            child: ColoredBox(
+            child: Material(
               color: AppColors.fond,
               child: Center(
                 child: Transform.scale(
