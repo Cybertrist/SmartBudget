@@ -6,6 +6,7 @@ import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
 import '../domaine/mois.dart';
 import '../domaine/recurrences.dart';
+import '../domaine/virements.dart';
 import 'base.dart';
 
 Future<Database> get _db => Base.instance.db;
@@ -143,6 +144,7 @@ class DepotOperations {
   Future<int> importer(int compteId, List<OperationBrute> brutes) async {
     final db = await _db;
     final classeur = await _classeur();
+    final livrets = (await db.query('comptes', where: "nature = 'livret'")).map(Compte.lire).toList();
     var nouvelles = 0;
     await db.transaction((t) async {
       for (final b in brutes) {
@@ -160,6 +162,19 @@ class DepotOperations {
           'interne': c.interne?.name,
         });
         nouvelles++;
+        // Un virement vers ou depuis un livret suivi fait vivre son solde,
+        // s'il est postérieur au solde saisi.
+        final v = c.interne == null ? null : reconnaitreInterne(b.libelle);
+        if (v == null) continue;
+        for (final l in livrets) {
+          final motif = normaliser(l.motif ?? l.nom);
+          if (l.soldeLe != null && !b.le.isAfter(l.soldeLe!)) continue;
+          if (v.destination.contains(motif)) {
+            await t.rawUpdate('UPDATE comptes SET solde_centimes = solde_centimes + ? WHERE id = ?', [b.montantCentimes.abs(), l.id]);
+          } else if (v.source.contains(motif)) {
+            await t.rawUpdate('UPDATE comptes SET solde_centimes = solde_centimes - ? WHERE id = ?', [b.montantCentimes.abs(), l.id]);
+          }
+        }
       }
     });
     return nouvelles;

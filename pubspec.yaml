@@ -30,6 +30,7 @@ dependencies:
 
   # Dates et montants en français
   intl: ^0.20.2
+  material_symbols_icons: ^4.2960.0
 
 dev_dependencies:
   flutter_test:
@@ -46,3 +47,19 @@ flutter:
   assets:
     - assets/logo.png
     - assets/categories.json
+
+  # Figtree, embarquée : l'application ne va jamais sur le réseau, même
+  # pas pour une police.
+  fonts:
+    - family: Figtree
+      fonts:
+        - asset: assets/fonts/Figtree-400.ttf
+          weight: 400
+        - asset: assets/fonts/Figtree-500.ttf
+          weight: 500
+        - asset: assets/fonts/Figtree-600.ttf
+          weight: 600
+        - asset: assets/fonts/Figtree-700.ttf
+          weight: 700
+        - asset: assets/fonts/Figtree-800.ttf
+          weight: 800
