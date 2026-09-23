@@ -33,6 +33,7 @@ class Recurrence {
     required this.derniere,
     required this.prochaine,
     required this.nombre,
+    this.derniereId,
   });
 
   final String cle;
@@ -47,6 +48,9 @@ class Recurrence {
   /// Combien de passages l'ont fait reconnaître.
   final int nombre;
 
+  /// La dernière opération passée, qu'on ouvre en touchant la récurrence.
+  final int? derniereId;
+
   /// Attendue depuis plus de [grace] jours sans être passée.
   bool enRetard(DateTime maintenant, {int grace = 4}) =>
       maintenant.isAfter(prochaine.add(Duration(days: grace)));
@@ -60,11 +64,14 @@ class Recurrence {
 
 /// Une opération vue par la détection : juste ce qu'il lui faut.
 class Passage {
-  const Passage(this.libelle, this.le, this.montantCentimes);
+  const Passage(this.libelle, this.le, this.montantCentimes, [this.id]);
 
   final String libelle;
   final DateTime le;
   final int montantCentimes;
+
+  /// L'opération d'où vient le passage, pour l'ouvrir.
+  final int? id;
 }
 
 /// Les récurrences de sorties trouvées dans une liste d'opérations.
@@ -109,6 +116,7 @@ List<Recurrence> detecterRecurrences(List<Passage> passages) {
       derniere: derniere,
       prochaine: prochaine,
       nombre: stables.length,
+      derniereId: stables.last.id,
     ));
   });
   trouvees.sort((a, b) => a.prochaine.compareTo(b.prochaine));
@@ -144,6 +152,7 @@ List<Recurrence> appliquerChoix(List<Recurrence> trouvees, List<Passage> passage
       derniere: derniere,
       prochaine: suivante(derniere, freq),
       nombre: liste.length,
+      derniereId: liste.last.id,
     ));
   });
   resultat.sort((a, b) => a.prochaine.compareTo(b.prochaine));

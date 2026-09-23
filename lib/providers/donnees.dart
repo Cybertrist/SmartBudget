@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../config/format.dart';
 import '../domaine/bilan.dart';
 import '../domaine/modeles.dart';
 import '../domaine/mois.dart';
@@ -32,26 +33,55 @@ final bilanProvider = FutureProvider.family<Bilan, Mois>((ref, mois) async {
 
 /// Le bilan de la période choisie, qui se termine au mois affiché.
 final bilanPeriodeProvider = FutureProvider<Bilan>((ref) async {
-  final mois = ref.watch(moisProvider);
-  final periode = ref.watch(periodeProvider);
-  final n = switch (periode) {
-    Periode.mois => 1,
-    Periode.trimestre => 3,
-    Periode.annee => 12,
-  };
-  var m = mois;
+  final liste = ref.watch(moisPeriodeProvider);
   final bilans = <Bilan>[];
-  for (var i = 0; i < n; i++) {
+  for (final m in liste) {
     bilans.add(await ref.watch(bilanProvider(m).future));
-    m = m.precedent;
   }
-  return fusionner(mois, bilans);
+  return fusionner(liste.first, bilans);
 });
 
 final operationsMoisProvider = FutureProvider.family<List<Operation>, Mois>((ref, mois) async {
   ref.watch(versionProvider);
   final debut = await const DepotReglages().debutMois();
   return const DepotOperations().duMois(mois, debut: debut);
+});
+
+/// Les mois de la période choisie, du plus récent au plus ancien.
+final moisPeriodeProvider = Provider<List<Mois>>((ref) {
+  final n = switch (ref.watch(periodeProvider)) {
+    Periode.mois => 1,
+    Periode.trimestre => 3,
+    Periode.annee => 12,
+  };
+  var m = ref.watch(moisProvider);
+  final liste = <Mois>[];
+  for (var i = 0; i < n; i++) {
+    liste.add(m);
+    m = m.precedent;
+  }
+  return liste;
+});
+
+/// Toutes les opérations de la période choisie, les plus récentes d'abord :
+/// sur un an, la liste remonte les douze mois.
+final operationsPeriodeProvider = FutureProvider<List<Operation>>((ref) async {
+  final tous = <Operation>[];
+  for (final m in ref.watch(moisPeriodeProvider)) {
+    tous.addAll(await ref.watch(operationsMoisProvider(m).future));
+  }
+  return tous;
+});
+
+/// La période en toutes lettres : « septembre 2026 », « 3 mois jusqu'à
+/// septembre », « 12 mois jusqu'à septembre ».
+final libellePeriodeProvider = Provider<String>((ref) {
+  final mois = ref.watch(moisProvider);
+  return switch (ref.watch(periodeProvider)) {
+    Periode.mois => nomMois(mois),
+    Periode.trimestre => "3 mois jusqu'à ${nomMoisSeul(mois).toLowerCase()}",
+    Periode.annee => "12 mois jusqu'à ${nomMoisSeul(mois).toLowerCase()}",
+  };
 });
 
 final operationProvider = FutureProvider.family<Operation?, int>((ref, id) async {

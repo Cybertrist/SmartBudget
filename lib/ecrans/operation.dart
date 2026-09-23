@@ -127,8 +127,30 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
       body: SafeArea(
         child: Contenu(
           padding: const EdgeInsets.only(bottom: 24),
-          tete: EnTetePage(surtitre: cat.nom, titre: 'Opération'),
+          // Dans un volet, le montant monte à côté du titre et l'en-tête
+          // tient sur une ligne : la page n'est plus qu'un bloc serré.
+          tete: EnTetePage(surtitre: cat.nom, titre: joli(o.libelle), montant: Montant(o.montantCentimes, taille: 24, signe: true)),
           children: [
+            if (dansUnVolet(context))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                child: Row(
+                  children: [
+                    if (o.interne != null)
+                      const _TuileInterne(taille: 40)
+                    else
+                      Tuile(icone: cat.icone ?? parent.icone, couleur: couleur, taille: 40),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text('${jour(o.le)} ${o.le.year} · Compte courant\n${o.libelle.toUpperCase()}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texteDiscret, fontFeatures: chiffres)),
+                    ),
+                  ],
+                ),
+              )
+            else
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
               child: Column(
@@ -334,13 +356,58 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                     const SizedBox(height: 14),
                     _BlocRembourse(operation: o, liens: lies.where((l) => l.entreeId == o.id).toList()),
                   ],
-                  if (!o.entree && lies.any((l) => l.depenseId == o.id)) ...[
+                  if (!o.entree && o.interne == null) ...[
                     const SizedBox(height: 14),
-                    _Info(
-                      texte: 'Remboursée de ${euros(lies.where((l) => l.depenseId == o.id).fold(0, (s, l) => s + l.montantCentimes))} : '
-                          'elle ne compte plus que pour ${euros(-o.montantCentimes - lies.where((l) => l.depenseId == o.id).fold(0, (s, l) => s + l.montantCentimes))}.',
-                    ),
+                    Builder(builder: (context) {
+                      final rembourse = lies.where((l) => l.depenseId == o.id).fold(0, (s, l) => s + l.montantCentimes);
+                      return Carte(
+                        padding: const EdgeInsets.fromLTRB(18, 6, 18, 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _Ligne(
+                              icone: 'link',
+                              libelle: 'Remboursement',
+                              valeur: rembourse == 0 ? 'Aucun' : '${euros(rembourse)} reçus',
+                              couleur: rembourse == 0 ? null : AppColors.vert,
+                              onTap: () => context.push('/operation/${o.id}/rembourse'),
+                            ),
+                            if (rembourse > 0)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Text('Elle ne compte plus que pour ${euros(-o.montantCentimes - rembourse)}.',
+                                    style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                              ),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
+                  const SizedBox(height: 18),
+                  // Pointer : tu confirmes que la catégorie est la bonne.
+                  o.pointee
+                      ? OutlinedButton.icon(
+                          onPressed: () => modifier(() => const DepotOperations().pointer(o.id, false)),
+                          icon: Icon(iconeDe('task_alt'), color: AppColors.vert),
+                          label: const Text('Pointée', style: TextStyle(color: AppColors.vert, fontWeight: FontWeight.w800)),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            shape: const StadiumBorder(),
+                            side: BorderSide(color: AppColors.vert.withValues(alpha: 0.4)),
+                            backgroundColor: AppColors.vert.withValues(alpha: 0.08),
+                          ),
+                        )
+                      : FilledButton.icon(
+                          onPressed: () => modifier(() => const DepotOperations().pointer(o.id, true)),
+                          icon: Icon(iconeDe('task_alt'), color: Colors.black),
+                          label: const Text('Pointer', style: TextStyle(fontWeight: FontWeight.w800)),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            shape: const StadiumBorder(),
+                            backgroundColor: AppColors.vert,
+                            foregroundColor: Colors.black,
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -691,4 +758,166 @@ class _EtatLier extends ConsumerState<EcranLier> {
       ),
     );
   }
+}
+
+/// Depuis une dépense : choisir l'entrée d'argent qui la rembourse.
+class EcranChoisirRemboursement extends ConsumerStatefulWidget {
+  const EcranChoisirRemboursement({super.key, required this.id});
+
+  final int id;
+
+  @override
+  ConsumerState<EcranChoisirRemboursement> createState() => _EtatChoisirRemboursement();
+}
+
+class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement> {
+  Operation? _depense;
+  List<Operation> _entrees = const [];
+  int? _choix;
+  bool _pret = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _charger();
+  }
+
+  Future<void> _charger() async {
+    final d = await const DepotOperations().une(widget.id);
+    if (d == null) return;
+    final entrees = await const DepotOperations().remboursementsPossibles(d);
+    final liens = await const DepotLiens().concernant([d.id]);
+    if (!mounted) return;
+    setState(() {
+      _depense = d;
+      _entrees = entrees;
+      _choix = liens.where((l) => l.depenseId == d.id).firstOrNull?.entreeId;
+      _pret = true;
+    });
+  }
+
+  Future<void> _valider() async {
+    try {
+      await const DepotLiens().rembourser(widget.id, _choix);
+      rafraichir(ref);
+      if (mounted) context.pop();
+    } on ArgumentError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${e.message}')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final categories = ref.watch(categoriesProvider).value ?? const <int, Categorie>{};
+    final jours = <DateTime, List<Operation>>{};
+    for (final o in _entrees) {
+      jours.putIfAbsent(DateTime(o.le.year, o.le.month, o.le.day), () => []).add(o);
+    }
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const BarreRetour(titre: 'Associer à un remboursement'),
+            if (_depense != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+                child: Text(
+                  'Pour « ${joli(_depense!.libelle)} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse.',
+                  style: const TextStyle(fontSize: 13.5, height: 1.5, color: AppColors.texteSecondaire),
+                ),
+              ),
+            Expanded(
+              child: !_pret
+                  ? const Center(child: CircularProgressIndicator())
+                  : _entrees.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Text('Aucune entrée d\'argent autour de cette date.',
+                              textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire)),
+                        )
+                      : ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          children: [
+                            for (final e in jours.entries) ...[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+                                child: Text(jour(e.key),
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
+                              ),
+                              Carte(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                child: Column(
+                                  children: [
+                                    for (var i = 0; i < e.value.length; i++)
+                                      _LigneChoix(
+                                        operation: e.value[i],
+                                        categorie: categories[e.value[i].categorieId]?.nom ?? '',
+                                        choisie: _choix == e.value[i].id,
+                                        separateur: i > 0,
+                                        onTap: () => setState(() => _choix = _choix == e.value[i].id ? null : e.value[i].id),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                          ],
+                        ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+              child: FilledButton(
+                onPressed: _pret ? _valider : null,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(54),
+                  shape: const StadiumBorder(),
+                  backgroundColor: AppColors.vert,
+                  foregroundColor: Colors.black,
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ),
+                child: Text(_choix == null ? 'Aucun remboursement' : 'Valider'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LigneChoix extends StatelessWidget {
+  const _LigneChoix({required this.operation, required this.categorie, required this.choisie, required this.separateur, required this.onTap});
+
+  final Operation operation;
+  final String categorie;
+  final bool choisie;
+  final bool separateur;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
+          child: Row(
+            children: [
+              Icon(iconeDe(choisie ? 'task_alt' : 'radio_button_unchecked'), color: choisie ? AppColors.vert : AppColors.texteDiscret),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(joli(operation.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 2),
+                    Text('$categorie · Compte courant', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                  ],
+                ),
+              ),
+              Montant(operation.montantCentimes, taille: 15.5, signe: true, couleur: AppColors.vert),
+            ],
+          ),
+        ),
+      );
 }

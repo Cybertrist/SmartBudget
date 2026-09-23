@@ -213,7 +213,7 @@ class DepotOperations {
     if (op == null) return 0;
     var suivies = 0;
     await db.transaction((t) async {
-      await t.update('operations', {'categorie_id': categorieId, 'origine': Origine.main.name, 'interne': null},
+      await t.update('operations', {'categorie_id': categorieId, 'origine': Origine.main.name, 'interne': null, 'pointee': 1},
           where: 'id = ?', whereArgs: [id]);
       if (!apprendre || op.interne != null) return;
       final motif = motifAApprendre(op.libelle);
@@ -240,7 +240,7 @@ class DepotOperations {
     if (categorie == null) return;
     await (await _db).update(
       'operations',
-      {'categorie_id': categorie, 'origine': Origine.main.name, 'interne': sens.name},
+      {'categorie_id': categorie, 'origine': Origine.main.name, 'interne': sens.name, 'pointee': 1},
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -260,7 +260,27 @@ class DepotOperations {
 
   /// Garde la catégorie proposée : l'opération quitte la liste à vérifier.
   Future<void> valider(int id) async {
-    await (await _db).update('operations', {'origine': Origine.main.name}, where: 'id = ?', whereArgs: [id]);
+    await (await _db).update('operations', {'origine': Origine.main.name, 'pointee': 1}, where: 'id = ?', whereArgs: [id]);
+  }
+
+  /// Pointe une opération : tu as vérifié qu'elle est bien classée.
+  Future<void> pointer(int id, bool pointee) async {
+    await (await _db).update('operations', {'pointee': pointee ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
+  }
+
+  /// Les entrées d'argent qui peuvent rembourser une dépense : reçues dans
+  /// les trois mois autour d'elle, hors virements internes.
+  Future<List<Operation>> remboursementsPossibles(Operation depense) async {
+    final l = await (await _db).query(
+      'operations',
+      where: 'montant_centimes > 0 AND interne IS NULL AND le >= ? AND le < ?',
+      whereArgs: [
+        _date(depense.le.subtract(const Duration(days: 31))),
+        _date(depense.le.add(const Duration(days: 62))),
+      ],
+      orderBy: 'le DESC, id DESC',
+    );
+    return l.map(Operation.lire).toList();
   }
 
   Future<void> modifier(
@@ -289,7 +309,7 @@ class DepotOperations {
     final forcees = ops.where((o) => o.recurrente == false).map((o) => cleMarchand(o.libelle)).toSet();
     final passages = [
       for (final o in ops)
-        if (o.interne == null && !o.masquee) Passage(o.libelle, o.le, o.montantCentimes),
+        if (o.interne == null && !o.masquee) Passage(o.libelle, o.le, o.montantCentimes, o.id),
     ];
     final choix = <String, Frequence?>{
       for (final e in (await const DepotReglages().commencantPar(_repetition)).entries)
@@ -342,6 +362,26 @@ class DepotLiens {
       for (final e in parDepense.entries) {
         await t.insert('liens', {'entree_id': entreeId, 'depense_id': e.key, 'montant_centimes': e.value});
       }
+    });
+  }
+
+  /// Lie une dépense à l'entrée qui la rembourse, pour ce qui reste de
+  /// l'une et de l'autre. Sans [entreeId], délie la dépense.
+  Future<void> rembourser(int depenseId, int? entreeId) async {
+    final db = await _db;
+    const ops = DepotOperations();
+    final d = await ops.une(depenseId);
+    if (d == null || d.entree) throw ArgumentError('Pas une dépense.');
+    await db.transaction((t) async {
+      await t.delete('liens', where: 'depense_id = ?', whereArgs: [depenseId]);
+      if (entreeId == null) return;
+      final e = await ops.une(entreeId);
+      if (e == null || !e.entree) throw ArgumentError('Pas une entrée d\'argent.');
+      final deja = (await t.query('liens', where: 'entree_id = ?', whereArgs: [entreeId]))
+          .fold<int>(0, (s, r) => s + (r['montant_centimes']! as int));
+      final part = [-d.montantCentimes, e.montantCentimes - deja].reduce((a, b) => a < b ? a : b);
+      if (part <= 0) throw ArgumentError('Ce remboursement est déjà entièrement réparti.');
+      await t.insert('liens', {'entree_id': entreeId, 'depense_id': depenseId, 'montant_centimes': part});
     });
   }
 

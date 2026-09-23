@@ -142,6 +142,7 @@ class Operation {
     this.masquee = false,
     this.recurrente,
     this.interne,
+    this.pointee = false,
   });
 
   final int id;
@@ -166,6 +167,9 @@ class Operation {
   final bool? recurrente;
   final SensInterne? interne;
 
+  /// Vérifiée à la main : sa catégorie est la bonne.
+  final bool pointee;
+
   bool get entree => montantCentimes > 0;
 
   factory Operation.lire(Map<String, Object?> l) => Operation(
@@ -183,6 +187,7 @@ class Operation {
         masquee: (l['masquee'] as int? ?? 0) == 1,
         recurrente: l['recurrente'] == null ? null : (l['recurrente']! as int) == 1,
         interne: l['interne'] == null ? null : SensInterne.values.byName(l['interne']! as String),
+        pointee: (l['pointee'] as int? ?? 0) == 1,
       );
 }
 

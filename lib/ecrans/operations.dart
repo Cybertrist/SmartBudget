@@ -18,8 +18,10 @@ class EcranOperations extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mois = ref.watch(moisProvider);
-    final ops = ref.watch(operationsMoisProvider(mois));
+    // Toute la période choisie dans l'analyse : sur un an, la liste
+    // remonte les douze mois.
+    final ops = ref.watch(operationsPeriodeProvider);
+    final periode = ref.watch(libellePeriodeProvider);
     final categories = ref.watch(categoriesProvider);
     if (!ops.hasValue || !categories.hasValue) return const Center(child: CircularProgressIndicator());
     final cats = categories.value!;
@@ -32,9 +34,9 @@ class EcranOperations extends ConsumerWidget {
     final liste = ListView(
       padding: const EdgeInsets.only(bottom: 40),
       children: [
-        EnTetePage(surtitre: nomMois(mois), titre: 'Opérations'),
+        EnTetePage(surtitre: periode, titre: 'Opérations'),
         if (jours.isEmpty)
-          const Padding(padding: EdgeInsets.all(32), child: Text('Aucune opération ce mois-ci.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire))),
+          const Padding(padding: EdgeInsets.all(32), child: Text('Aucune opération sur la période.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire))),
         for (final e in jours.entries)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),

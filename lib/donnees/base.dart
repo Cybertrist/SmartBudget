@@ -34,7 +34,7 @@ class Base {
 
   /// 2 : sous-catégories, liens de remboursement, virements internes. La
   /// version 1 n'a jamais porté de vraie donnée : elle est refaite à neuf.
-  static const _version = 2;
+  static const _version = 3;
 
   /// L'ouverture en cours ou faite. On garde le futur, pas la base : au
   /// déverrouillage, plusieurs écrans la demandent au même instant, et
@@ -85,6 +85,11 @@ class Base {
           }
           await _creerSchema(base);
           await _semerCategories(base);
+          return;
+        }
+        // Version 3 : une opération se pointe, une fois vérifiée à la main.
+        if (ancienne < 3) {
+          await base.execute('ALTER TABLE operations ADD COLUMN pointee INTEGER NOT NULL DEFAULT 0');
         }
       },
     );
@@ -155,7 +160,8 @@ class Base {
         note TEXT,
         masquee INTEGER NOT NULL DEFAULT 0,
         recurrente INTEGER,
-        interne TEXT
+        interne TEXT,
+        pointee INTEGER NOT NULL DEFAULT 0
       )
     ''');
     await base.execute('CREATE INDEX operations_le ON operations(le)');

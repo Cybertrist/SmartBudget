@@ -492,7 +492,10 @@ class _Recurrences extends ConsumerWidget {
               children: [
                 Surtitre(titre),
                 for (var i = 0; i < l.length; i++)
-                  Container(
+                  // Toucher une récurrence ouvre sa dernière opération.
+                  InkWell(
+                    onTap: l[i].derniereId == null ? null : () => ouvrirPage(context, '/operation/${l[i].derniereId}'),
+                    child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: i > 0 ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
                     child: Row(
@@ -524,8 +527,10 @@ class _Recurrences extends ConsumerWidget {
                             ),
                           ],
                         ),
+                        Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret),
                       ],
                     ),
+                  ),
                   ),
               ],
             ),

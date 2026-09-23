@@ -344,6 +344,7 @@ const iconesSymbols = <String, IconData>{
   'qr_code_2': Symbols.qr_code_2_rounded,
   'queue_music': Symbols.queue_music_rounded,
   'radio': Symbols.radio_rounded,
+  'radio_button_unchecked': Symbols.radio_button_unchecked_rounded,
   'ramen_dining': Symbols.ramen_dining_rounded,
   'raven': Symbols.raven_rounded,
   'real_estate_agent': Symbols.real_estate_agent_rounded,

@@ -78,6 +78,10 @@ final router = GoRouter(
       path: '/operation/:id/lier',
       builder: (_, e) => _Pleine(EcranLier(id: int.parse(e.pathParameters['id']!))),
     ),
+    GoRoute(
+      path: '/operation/:id/rembourse',
+      builder: (_, e) => _Pleine(EcranChoisirRemboursement(id: int.parse(e.pathParameters['id']!))),
+    ),
     GoRoute(path: '/operations', builder: (_, _) => const _Pleine(EcranOperations())),
     GoRoute(path: '/verifier', builder: (_, _) => const _Pleine(EcranAVerifier())),
     GoRoute(path: '/livret/nouveau', builder: (_, _) => const EcranNouveauLivret()),

@@ -116,8 +116,9 @@ class EcranCategorie extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mois = ref.watch(moisProvider);
-    final bilan = ref.watch(bilanProvider(mois));
+    // La même période que la liste de l'analyse d'où l'on vient.
+    final bilan = ref.watch(bilanPeriodeProvider);
+    final periode = ref.watch(periodeProvider);
     final categories = ref.watch(categoriesProvider);
     if (!bilan.hasValue || !categories.hasValue) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -157,7 +158,7 @@ class EcranCategorie extends ConsumerWidget {
                   icone: cat.icone,
                   couleur: couleur,
                   montant: revenu ? total : -total,
-                  texte: '$part % de tes ${revenu ? 'entrées' : 'dépenses'} du mois',
+                  texte: '$part % de tes ${revenu ? 'entrées' : 'dépenses'} ${periode == Periode.mois ? 'du mois' : 'de la période'}',
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -348,8 +349,8 @@ class EcranSousCategorie extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mois = ref.watch(moisProvider);
-    final ops = ref.watch(operationsMoisProvider(mois));
+    final ops = ref.watch(operationsPeriodeProvider);
+    final periode = ref.watch(libellePeriodeProvider);
     final categories = ref.watch(categoriesProvider);
     if (!ops.hasValue || !categories.hasValue) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     final cat = categories.value![id];
@@ -383,7 +384,7 @@ class EcranSousCategorie extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text('${parent.nom}  ›  ${cat.nom}', style: const TextStyle(fontSize: 13, color: AppColors.texteDiscret)),
                   ),
-                TeteDetail(icone: cat.icone ?? parent.icone, couleur: couleur, montant: total, texte: 'en ${nomMois(mois).toLowerCase()}'),
+                TeteDetail(icone: cat.icone ?? parent.icone, couleur: couleur, montant: total, texte: periode.startsWith(RegExp(r'[0-9]')) ? 'sur $periode' : 'en ${periode.toLowerCase()}'),
                 if (liste.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(24),
@@ -453,7 +454,17 @@ class LigneOperation extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(joli(o.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(joli(o.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                      ),
+                      if (o.pointee) ...[
+                        const SizedBox(width: 6),
+                        Icon(iconeDe('task_alt'), size: 15, color: AppColors.vert),
+                      ],
+                    ],
+                  ),
                   const SizedBox(height: 3),
                   if (o.note != null && o.note!.isNotEmpty)
                     Row(

@@ -242,9 +242,9 @@ class EcranInternes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mois = ref.watch(moisProvider);
-    final ops = ref.watch(operationsMoisProvider(mois));
-    final bilan = ref.watch(bilanProvider(mois));
+    final ops = ref.watch(operationsPeriodeProvider);
+    final bilan = ref.watch(bilanPeriodeProvider);
+    final periode = ref.watch(libellePeriodeProvider);
     if (!ops.hasValue || !bilan.hasValue) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     final liste = ops.value!.where((o) => o.interne != null).toList();
     final b = bilan.value!;
@@ -261,7 +261,7 @@ class EcranInternes extends ConsumerWidget {
                 children: [
                   Montant(b.virementsInternes, taille: 38),
                   const SizedBox(height: 6),
-                  Text('déplacés entre tes comptes en ${nomMoisSeul(mois).toLowerCase()}',
+                  Text('déplacés entre tes comptes, ${periode.toLowerCase()}',
                       style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
                 ],
               ),
