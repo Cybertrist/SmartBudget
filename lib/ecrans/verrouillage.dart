@@ -91,7 +91,8 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: AppColors.texteSecondaire),
                 ),
-                const Spacer(flex: 2),
+                // Le bouton suit le nom, et le tout reste au milieu de l'écran.
+                const SizedBox(height: 44),
                 if (_erreur != null) ...[
                   Text(
                     _erreur!,
@@ -104,12 +105,18 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
                   ),
                   const SizedBox(height: 18),
                 ],
-                FilledButton.icon(
-                  onPressed: _enCours ? null : _ouvrir,
-                  icon: const Icon(Icons.fingerprint_rounded, size: 24),
-                  label: Text(_enCours ? 'En attente du capteur…' : 'Ouvrir'),
+                // Un bouton à la largeur du nom de l'application, centré
+                // sous lui, plutôt qu'une barre d'un bord à l'autre.
+                SizedBox(
+                  width: 260,
+                  child: FilledButton.icon(
+                    onPressed: _enCours ? null : _ouvrir,
+                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                    icon: const Icon(Icons.fingerprint_rounded, size: 24),
+                    label: Text(_enCours ? 'En attente…' : 'Ouvrir'),
+                  ),
                 ),
-                const SizedBox(height: 36),
+                const Spacer(flex: 3),
               ],
             ),
           ),
