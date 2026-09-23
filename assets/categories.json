@@ -185,15 +185,18 @@
       ]
     },
     {
-      "nom": "Permis de conduire",
+      "nom": "Permis",
       "genre": "depense",
       "icone": "volant",
       "couleur": "#FFB86B",
       "sous": [
-        "Auto-école",
-        "Code",
+        "Permis voiture",
+        "Permis moto",
+        "Permis bateau",
+        "Permis poids lourd",
+        "Code de la route",
         "Heures de conduite",
-        "Examen",
+        "Examens",
         "Frais de dossier",
         "Autres"
       ]
