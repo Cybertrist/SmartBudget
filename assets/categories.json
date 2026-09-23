@@ -1,40 +1,283 @@
 {
-  "_": "Les catégories de départ et leurs sous-catégories. Chaque entrée : nom, genre (depense, revenu, epargne), icône, couleur, puis ses sous-catégories. Tout se renomme, se déplace ou se supprime ensuite dans l'application.",
+  "_": "Les catégories de départ et leurs sous-catégories. Chaque entrée : nom, genre (depense, revenu, epargne, interne), icône, couleur, puis ses sous-catégories. Le genre interne ne compte ni comme dépense ni comme revenu : l'argent ne fait que changer de compte. Tout se renomme, se déplace ou se supprime ensuite dans l'application.",
   "categories": [
-    { "nom": "Courses", "genre": "depense", "icone": "courses", "couleur": "#50F48D", "sous": [
-      "Supermarché", "Boulangerie", "Marché et primeur", "Boucherie et poissonnerie", "Drive et livraison", "Cave et alcool", "Produits bio" ] },
-    { "nom": "Restaurants et sorties", "genre": "depense", "icone": "sorties", "couleur": "#FFC857", "sous": [
-      "Restaurant", "Fast-food", "Bar et café", "Livraison de repas", "Soirées et boîte", "Cantine et resto U", "Snack et distributeur" ] },
-    { "nom": "Logement", "genre": "depense", "icone": "logement", "couleur": "#5AB2FF", "sous": [
-      "Loyer", "Électricité et gaz", "Eau", "Assurance habitation", "Internet et box", "Charges et syndic", "Travaux et bricolage", "Mobilier et déco", "Électroménager" ] },
-    { "nom": "Transports", "genre": "depense", "icone": "transports", "couleur": "#9B8CFF", "sous": [
-      "Carburant", "Péage", "Parking", "Transports en commun", "Train", "Taxi et VTC", "Entretien et réparation", "Assurance auto", "Location de véhicule", "Permis et auto-école", "Vélo et trottinette" ] },
-    { "nom": "Abonnements", "genre": "depense", "icone": "abonnements", "couleur": "#FF8FD1", "sous": [
-      "Streaming vidéo", "Musique", "Forfait mobile", "Cloud et logiciels", "Presse et livres audio", "Salle de sport", "Jeux vidéo en ligne", "Applications" ] },
-    { "nom": "Shopping", "genre": "depense", "icone": "shopping", "couleur": "#FF9F5A", "sous": [
-      "Vêtements", "Chaussures", "Vêtements de sport", "Articles de sport", "High-tech", "Accessoires et bijoux", "Beauté et parfum", "Maison et déco", "Livres et culture", "Jeux vidéo et jouets", "Marketplace", "Seconde main", "Autres achats" ] },
-    { "nom": "Santé", "genre": "depense", "icone": "sante", "couleur": "#4DE2D0", "sous": [
-      "Médecin", "Pharmacie", "Dentiste", "Opticien", "Mutuelle", "Kiné et soins", "Compléments alimentaires", "Psy et bien-être" ] },
-    { "nom": "Soins et beauté", "genre": "depense", "icone": "beaute", "couleur": "#F5A3FF", "sous": [
-      "Coiffeur et barbier", "Cosmétiques", "Parfum", "Esthétique", "Onglerie" ] },
-    { "nom": "Loisirs", "genre": "depense", "icone": "loisirs", "couleur": "#C6F45A", "sous": [
-      "Sport et activités", "Voyages", "Hébergement", "Culture et musées", "Cinéma et concerts", "Hobbies", "Jeux et paris", "Photo et vidéo" ] },
-    { "nom": "Études et travail", "genre": "depense", "icone": "etudes", "couleur": "#7FD4FF", "sous": [
-      "Frais de scolarité", "Fournitures", "Formations et certifications", "Matériel informatique", "Frais professionnels" ] },
-    { "nom": "Cadeaux et dons", "genre": "depense", "icone": "cadeau", "couleur": "#FF7FA8", "sous": [
-      "Cadeaux", "Anniversaires", "Fêtes", "Dons et associations" ] },
-    { "nom": "Animaux", "genre": "depense", "icone": "animaux", "couleur": "#E8B98A", "sous": [
-      "Nourriture", "Vétérinaire", "Accessoires" ] },
-    { "nom": "Banque et frais", "genre": "depense", "icone": "banque", "couleur": "#A3B8AB", "sous": [
-      "Frais bancaires", "Cotisation carte", "Agios", "Frais à l'étranger", "Retrait d'espèces", "Remboursement de prêt" ] },
-    { "nom": "Impôts et taxes", "genre": "depense", "icone": "impots", "couleur": "#B0B8FF", "sous": [
-      "Impôt sur le revenu", "Taxe foncière", "Amendes", "Taxes diverses" ] },
-    { "nom": "À classer", "genre": "depense", "icone": "aclasser", "couleur": "#71877A", "sous": [] },
-    { "nom": "Salaire", "genre": "revenu", "icone": "salaire", "couleur": "#1BCC6D", "sous": [
-      "Salaire", "Alternance", "Primes", "Heures supplémentaires" ] },
-    { "nom": "Autres revenus", "genre": "revenu", "icone": "revenus", "couleur": "#7FE0A8", "sous": [
-      "Remboursements", "Virements reçus", "Ventes (Vinted, Leboncoin)", "Aides et CAF", "Intérêts", "Cadeaux reçus" ] },
-    { "nom": "Épargne", "genre": "epargne", "icone": "epargne", "couleur": "#3CE0FF", "sous": [
-      "Livret A", "Livret jeune", "LDD", "Assurance vie", "Investissement" ] }
+    {
+      "nom": "Courses",
+      "genre": "depense",
+      "icone": "courses",
+      "couleur": "#50F48D",
+      "sous": [
+        "Supermarché",
+        "Boulangerie",
+        "Marché et primeur",
+        "Boucherie et poissonnerie",
+        "Drive et livraison",
+        "Cave et alcool",
+        "Produits bio"
+      ]
+    },
+    {
+      "nom": "Restaurants et sorties",
+      "genre": "depense",
+      "icone": "sorties",
+      "couleur": "#FFC857",
+      "sous": [
+        "Restaurant",
+        "Fast-food",
+        "Bar et café",
+        "Livraison de repas",
+        "Soirées et boîte",
+        "Cantine et resto U",
+        "Snack et distributeur"
+      ]
+    },
+    {
+      "nom": "Logement",
+      "genre": "depense",
+      "icone": "logement",
+      "couleur": "#5AB2FF",
+      "sous": [
+        "Loyer",
+        "Électricité et gaz",
+        "Eau",
+        "Assurance habitation",
+        "Internet et box",
+        "Charges et syndic",
+        "Travaux et bricolage",
+        "Mobilier et déco",
+        "Électroménager"
+      ]
+    },
+    {
+      "nom": "Transports",
+      "genre": "depense",
+      "icone": "transports",
+      "couleur": "#9B8CFF",
+      "sous": [
+        "Carburant",
+        "Péage",
+        "Parking",
+        "Transports en commun",
+        "Train",
+        "Taxi et VTC",
+        "Entretien et réparation",
+        "Assurance auto",
+        "Location de véhicule",
+        "Permis et auto-école",
+        "Vélo et trottinette"
+      ]
+    },
+    {
+      "nom": "Abonnements",
+      "genre": "depense",
+      "icone": "abonnements",
+      "couleur": "#FF8FD1",
+      "sous": [
+        "Streaming vidéo",
+        "Musique",
+        "Forfait mobile",
+        "Cloud et logiciels",
+        "Presse et livres audio",
+        "Salle de sport",
+        "Jeux vidéo en ligne",
+        "Applications"
+      ]
+    },
+    {
+      "nom": "Shopping",
+      "genre": "depense",
+      "icone": "shopping",
+      "couleur": "#FF9F5A",
+      "sous": [
+        "Vêtements",
+        "Chaussures",
+        "Vêtements de sport",
+        "Articles de sport",
+        "High-tech",
+        "Accessoires et bijoux",
+        "Beauté et parfum",
+        "Maison et déco",
+        "Livres et culture",
+        "Jeux vidéo et jouets",
+        "Marketplace",
+        "Seconde main",
+        "Autres achats"
+      ]
+    },
+    {
+      "nom": "Santé",
+      "genre": "depense",
+      "icone": "sante",
+      "couleur": "#4DE2D0",
+      "sous": [
+        "Médecin",
+        "Pharmacie",
+        "Dentiste",
+        "Opticien",
+        "Mutuelle",
+        "Kiné et soins",
+        "Compléments alimentaires",
+        "Psy et bien-être"
+      ]
+    },
+    {
+      "nom": "Soins et beauté",
+      "genre": "depense",
+      "icone": "beaute",
+      "couleur": "#F5A3FF",
+      "sous": [
+        "Coiffeur et barbier",
+        "Cosmétiques",
+        "Parfum",
+        "Esthétique",
+        "Onglerie"
+      ]
+    },
+    {
+      "nom": "Loisirs",
+      "genre": "depense",
+      "icone": "loisirs",
+      "couleur": "#C6F45A",
+      "sous": [
+        "Sport et activités",
+        "Voyages",
+        "Hébergement",
+        "Culture et musées",
+        "Cinéma et concerts",
+        "Hobbies",
+        "Jeux et paris",
+        "Photo et vidéo"
+      ]
+    },
+    {
+      "nom": "Études et travail",
+      "genre": "depense",
+      "icone": "etudes",
+      "couleur": "#7FD4FF",
+      "sous": [
+        "Frais de scolarité",
+        "Fournitures",
+        "Formations et certifications",
+        "Matériel informatique",
+        "Frais professionnels"
+      ]
+    },
+    {
+      "nom": "Cadeaux et dons",
+      "genre": "depense",
+      "icone": "cadeau",
+      "couleur": "#FF7FA8",
+      "sous": [
+        "Cadeaux",
+        "Anniversaires",
+        "Fêtes",
+        "Dons et associations"
+      ]
+    },
+    {
+      "nom": "Animaux",
+      "genre": "depense",
+      "icone": "animaux",
+      "couleur": "#E8B98A",
+      "sous": [
+        "Nourriture",
+        "Vétérinaire",
+        "Accessoires"
+      ]
+    },
+    {
+      "nom": "Banque et frais",
+      "genre": "depense",
+      "icone": "banque",
+      "couleur": "#A3B8AB",
+      "sous": [
+        "Frais bancaires",
+        "Cotisation carte",
+        "Agios",
+        "Frais à l'étranger",
+        "Remboursement de prêt"
+      ]
+    },
+    {
+      "nom": "Impôts et taxes",
+      "genre": "depense",
+      "icone": "impots",
+      "couleur": "#B0B8FF",
+      "sous": [
+        "Impôt sur le revenu",
+        "Taxe foncière",
+        "Amendes",
+        "Taxes diverses"
+      ]
+    },
+    {
+      "nom": "Retraits et virements",
+      "genre": "depense",
+      "icone": "retrait",
+      "couleur": "#2EE6A0",
+      "sous": [
+        "Retraits d'espèces",
+        "Chèques émis",
+        "Virements à des proches",
+        "Virements à d'autres"
+      ]
+    },
+    {
+      "nom": "À classer",
+      "genre": "depense",
+      "icone": "aclasser",
+      "couleur": "#71877A",
+      "sous": []
+    },
+    {
+      "nom": "Salaire",
+      "genre": "revenu",
+      "icone": "salaire",
+      "couleur": "#1BCC6D",
+      "sous": [
+        "Salaire",
+        "Alternance",
+        "Primes",
+        "Heures supplémentaires"
+      ]
+    },
+    {
+      "nom": "Autres revenus",
+      "genre": "revenu",
+      "icone": "revenus",
+      "couleur": "#7FE0A8",
+      "sous": [
+        "Remboursements",
+        "Virements reçus",
+        "Ventes (Vinted, Leboncoin)",
+        "Aides et CAF",
+        "Intérêts",
+        "Cadeaux reçus"
+      ]
+    },
+    {
+      "nom": "Épargne",
+      "genre": "epargne",
+      "icone": "epargne",
+      "couleur": "#3CE0FF",
+      "sous": [
+        "Livret A",
+        "Livret jeune",
+        "LDD",
+        "Assurance vie",
+        "Investissement"
+      ]
+    },
+    {
+      "nom": "Virements internes",
+      "genre": "interne",
+      "icone": "interne",
+      "couleur": "#8FA3B8",
+      "sous": [
+        "Vers l'épargne",
+        "Depuis l'épargne",
+        "Entre mes comptes courants"
+      ]
+    }
   ]
 }
