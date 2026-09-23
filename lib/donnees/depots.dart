@@ -103,6 +103,11 @@ class DepotComptes {
     });
   }
 
+  /// Supprime un livret. Le compte courant, lui, ne se supprime pas.
+  Future<void> supprimerLivret(int id) async {
+    await (await _db).delete('comptes', where: "id = ? AND nature = 'livret'", whereArgs: [id]);
+  }
+
   Future<void> definirSolde(int id, int centimes, {DateTime? le}) async {
     await (await _db).update(
       'comptes',

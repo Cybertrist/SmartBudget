@@ -329,12 +329,40 @@ class EcranInternes extends ConsumerWidget {
 
 /// Ajouter un livret : son nom, son solde, et comment la banque l'appelle.
 Future<void> modifierSolde(BuildContext context, WidgetRef ref, Compte livret) async {
+  var supprimer = false;
   final v = await demanderMontant(
     context,
     titre: livret.nom,
     aide: 'Le solde actuel, tel que ta banque l\'affiche.',
     initial: livret.soldeCentimes,
+    gauche: Builder(
+      builder: (ctx) => TextButton(
+        onPressed: () {
+          supprimer = true;
+          Navigator.pop(ctx);
+        },
+        child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte)),
+      ),
+    ),
   );
+  if (supprimer) {
+    if (!context.mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Supprimer « ${livret.nom} » ?'),
+        content: const Text('Le livret et son solde disparaissent de l\'épargne. Les virements passés restent dans tes opérations.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await const DepotComptes().supprimerLivret(livret.id);
+    rafraichir(ref);
+    return;
+  }
   if (v == null) return;
   await const DepotComptes().definirSolde(livret.id, v);
   rafraichir(ref);

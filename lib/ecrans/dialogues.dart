@@ -93,7 +93,8 @@ Future<T?> carteSaisie<T>(
                             style: FilledButton.styleFrom(
                               // Le thème étire les boutons : dans une rangée,
                               // il faut une largeur finie.
-                              minimumSize: const Size(140, 48),
+                              minimumSize: const Size(0, 48),
+                              padding: const EdgeInsets.symmetric(horizontal: 22),
                               shape: const StadiumBorder(),
                               backgroundColor: AppColors.vert,
                               foregroundColor: Colors.black,
@@ -117,12 +118,13 @@ Future<T?> carteSaisie<T>(
 
 /// Demande un montant. Rend le montant en centimes, ou rien si l'on
 /// referme. Avec [vide], un champ vide vaut zéro.
-Future<int?> demanderMontant(BuildContext context, {required String titre, String? aide, int? initial, bool vide = false}) {
+Future<int?> demanderMontant(BuildContext context, {required String titre, String? aide, int? initial, bool vide = false, Widget? gauche}) {
   final champ = TextEditingController(text: initial == null || initial == 0 ? '' : saisieEuros(initial));
   return carteSaisie<int>(
     context,
     titre: titre,
     aide: aide,
+    gauche: gauche,
     resultat: () {
       final v = lireEuros(champ.text);
       if (v == null && !(vide && champ.text.trim().isEmpty)) return null;
