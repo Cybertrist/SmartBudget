@@ -11,6 +11,7 @@ import '../donnees/depots.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import '../widgets/graphiques.dart';
+import '../widgets/volets.dart';
 
 /// Une barre de titre avec son bouton retour.
 class BarreRetour extends StatelessWidget {
@@ -29,7 +30,7 @@ class BarreRetour extends StatelessWidget {
           BoutonRond(
             icone: 'arrow_back',
             label: 'Retour',
-            onTap: surRetour ?? () => context.canPop() ? context.pop() : context.go('/analyse'),
+            onTap: surRetour ?? () => revenir(context),
           ),
           const SizedBox(width: 12),
           Expanded(child: Text(titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
@@ -82,14 +83,8 @@ class EcranCategorie extends ConsumerWidget {
             child: ListView(
               padding: const EdgeInsets.only(bottom: 40),
               children: [
-                if (dansVolet)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
-                    child: Text(cat.nom, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                  )
-                else
-                  BarreRetour(titre: cat.nom),
-                if (!dansVolet) const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SelecteurMois()),
+                BarreRetour(titre: cat.nom),
+                if (VoletScope.de(context) == null) const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SelecteurMois()),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 22),
                   child: Column(
@@ -121,7 +116,7 @@ class EcranCategorie extends ConsumerWidget {
                         ),
                         const SizedBox(height: 6),
                         if (direct > 0)
-                          _LigneSous(nom: cat.nom, icone: cat.icone, couleur: couleur, montant: direct, detail: 'sans sous-catégorie', onTap: () => context.push('/sous/$id')),
+                          _LigneSous(nom: cat.nom, icone: cat.icone, couleur: couleur, montant: direct, detail: 'sans sous-catégorie', onTap: () => ouvrirPage(context, '/sous/$id')),
                         for (final s in sous)
                           _LigneSous(
                             nom: s.nom,
@@ -131,7 +126,7 @@ class EcranCategorie extends ConsumerWidget {
                             detail: (b.parSous[s.id] ?? 0) > 0
                                 ? '${total == 0 ? 0 : (b.parSous[s.id]! * 100 / total).round()} % · ${pluriel(b.operationsParSous[s.id] ?? 0, 'op.', 'op.')}'
                                 : 'aucune opération',
-                            onTap: () => context.push('/sous/${s.id}'),
+                            onTap: () => ouvrirPage(context, '/sous/${s.id}'),
                           ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
@@ -324,7 +319,7 @@ class LigneOperation extends StatelessWidget {
   Widget build(BuildContext context) {
     final o = operation;
     return InkWell(
-      onTap: () => context.push('/operation/${o.id}'),
+      onTap: () => ouvrirPage(context, '/operation/${o.id}'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,

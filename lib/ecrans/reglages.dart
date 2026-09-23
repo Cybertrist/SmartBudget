@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../config/essais.dart';
 import '../config/format.dart';
@@ -29,10 +28,7 @@ class EcranReglages extends ConsumerWidget {
     final budget = ref.watch(budgetProvider).value ?? 0;
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
     final debut = ref.watch(_debutProvider).value ?? 1;
-    final categories = ref.watch(categoriesProvider).value;
     final securite = ref.watch(securiteProvider);
-    final nbCat = categories?.values.where((c) => c.parentId == null).length ?? 0;
-    final nbSous = (categories?.length ?? 0) - nbCat;
 
     Widget ligne(String icone, String libelle, String valeur, VoidCallback onTap, {Color? couleur}) => InkWell(
           onTap: onTap,
@@ -113,7 +109,6 @@ class EcranReglages extends ConsumerWidget {
             ligne('savings', 'Objectif d\'épargne', objectif == 0 ? 'Non fixé' : euros(objectif, centimesSiRond: false),
                 () => fixerMontant(context, ref, cle: 'objectif_epargne', titre: 'Objectif d\'épargne')),
             ligne('calendar_month', 'Le mois commence le', debut == 1 ? '1er' : '$debut', () => _choisirDebut(context, ref, debut)),
-            ligne('category', 'Catégories', '$nbCat · $nbSous sous-cat.', () => context.push('/categories')),
           ]),
           const SizedBox(height: 14),
           bloc('Sécurité', [

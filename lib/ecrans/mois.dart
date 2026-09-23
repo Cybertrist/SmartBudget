@@ -27,7 +27,9 @@ class EcranMois extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mois = ref.watch(moisProvider);
+    // L'accueil, c'est maintenant : toujours le mois en cours. On remonte
+    // le temps dans l'analyse.
+    final mois = Mois.de(DateTime.now());
     final bilan = ref.watch(bilanProvider(mois));
     final ops = ref.watch(operationsMoisProvider(mois));
     final comptes = ref.watch(comptesProvider);
@@ -120,13 +122,13 @@ class _Contenu extends ConsumerWidget {
               // donne le mois.
               if (AppLayout.usesRail(context))
                 Expanded(child: Text(nomMois(mois), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)))
-              else
+              else ...[
                 const Expanded(child: NomApp(taille: 26)),
+                Text(nomMois(mois), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
+              ],
             ],
           ),
         ),
-        if (avecSelecteur && !AppLayout.usesRail(context))
-          const Padding(padding: EdgeInsets.fromLTRB(16, 14, 16, 0), child: SelecteurMois()),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 22, 24, 4),
           child: Column(
@@ -148,16 +150,31 @@ class _Contenu extends ConsumerWidget {
             ],
           ),
         ),
-        SizedBox(
-          height: 118,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
-            children: [
-              _CarteCompte(icone: 'credit_card', nom: 'Compte courant', solde: courant.soldeCentimes, couleur: AppColors.vert, onTap: () => context.go('/analyse')),
-              for (final l in livrets) _CarteCompte(icone: 'savings', nom: l.nom, solde: l.soldeCentimes, couleur: AppColors.epargne, onTap: () => context.go('/epargne')),
-              _CarteAjout(onTap: () => context.go('/epargne')),
-            ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+          child: Carte(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Surtitre('Mes comptes', droite: Text(pluriel(1 + livrets.length, 'compte'), style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret))),
+                const SizedBox(height: 6),
+                for (final c in comptes)
+                  _LigneCompte(
+                    icone: c.nature == NatureCompte.courant ? 'credit_card' : 'savings',
+                    nom: c.nom,
+                    detail: c.nature == NatureCompte.courant ? 'Crédit Mutuel de Bretagne' : 'Livret, suivi par les virements',
+                    solde: c.soldeCentimes,
+                    couleur: c.nature == NatureCompte.courant ? AppColors.vert : AppColors.epargne,
+                    onTap: () => context.go(c.nature == NatureCompte.courant ? '/analyse' : '/epargne'),
+                  ),
+                TextButton.icon(
+                  onPressed: () => context.go('/epargne'),
+                  icon: Icon(iconeDe('add'), size: 18),
+                  label: const Text('Ajouter un livret'),
+                ),
+              ],
+            ),
           ),
         ),
         Padding(
@@ -458,64 +475,38 @@ class _CarteRepartition extends StatelessWidget {
   }
 }
 
-class _CarteCompte extends StatelessWidget {
-  const _CarteCompte({required this.icone, required this.nom, required this.solde, required this.couleur, required this.onTap});
+class _LigneCompte extends StatelessWidget {
+  const _LigneCompte({required this.icone, required this.nom, required this.detail, required this.solde, required this.couleur, required this.onTap});
 
   final String icone;
   final String nom;
+  final String detail;
   final int solde;
   final Color couleur;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: SizedBox(
-          width: 168,
-          child: Carte(
-            onTap: onTap,
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.trait))),
+          child: Row(
+            children: [
+              Tuile(icone: icone, couleur: couleur, taille: 40),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(iconeDe(icone), size: 18, color: couleur, fill: 1),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(nom, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire))),
+                    Text(nom, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 2),
+                    Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                   ],
                 ),
-                const Spacer(),
-                FittedBox(child: Montant(solde, taille: 19, couleur: solde < 0 ? AppColors.alerte : null)),
-              ],
-            ),
-          ),
-        ),
-      );
-}
-
-class _CarteAjout extends StatelessWidget {
-  const _CarteAjout({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-        width: 96,
-        child: Material(
-          color: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0x1FFFFFFF))),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: onTap,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(iconeDe('add'), color: AppColors.texteSecondaire),
-                const SizedBox(height: 4),
-                const Text('Livret', style: TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
-              ],
-            ),
+              ),
+              Montant(solde, couleur: solde < 0 ? AppColors.alerte : null),
+            ],
           ),
         ),
       );

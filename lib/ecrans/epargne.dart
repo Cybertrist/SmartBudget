@@ -6,12 +6,14 @@ import '../config/format.dart';
 import '../config/theme.dart';
 import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
+import '../domaine/mois.dart';
 import '../domaine/virements.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import '../widgets/graphiques.dart';
+import '../widgets/volets.dart';
 import 'categorie.dart';
 import 'dialogues.dart';
 
@@ -22,7 +24,9 @@ class EcranEpargne extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mois = ref.watch(moisProvider);
+    // L'épargne, c'est maintenant : ce qu'il y a sur les livrets à cet
+    // instant, et les mouvements du mois en cours.
+    final mois = Mois.de(DateTime.now());
     final comptes = ref.watch(comptesProvider);
     final bilan = ref.watch(bilanProvider(mois));
     final ops = ref.watch(operationsMoisProvider(mois));
@@ -51,9 +55,8 @@ class EcranEpargne extends ConsumerWidget {
                 padding: EdgeInsets.only(left: 8, bottom: 12),
                 child: Text('Épargne', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
               ),
-              const SelecteurMois(),
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 22, 8, 20),
+                padding: const EdgeInsets.fromLTRB(8, 10, 8, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -194,7 +197,7 @@ class LigneVirement extends StatelessWidget {
     final couleur = pioche ? AppColors.alerte : (o.interne == SensInterne.versEpargne ? AppColors.vert : AppColors.interne);
     String nom(String compte) => compte == 'CARTE BANCAIRE' ? 'Compte courant' : joli(compte);
     return InkWell(
-      onTap: () => context.push('/operation/${o.id}'),
+      onTap: () => ouvrirPage(context, '/operation/${o.id}'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),

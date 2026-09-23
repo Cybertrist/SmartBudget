@@ -27,7 +27,7 @@ const cibles = [];
 for (const [d, t] of Object.entries(tailles)) {
   cibles.push({ fichier: `mipmap-${d}/ic_launcher.png`, taille: t, zoom: 1 });
   // 108 dp de côté, dont 72 visibles : le logo agrandi remplit la zone sûre.
-  cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), zoom: 0.95, fond: true, plein: true });
+  cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), zoom: 0.72, fond: true, plein: true, contour: true });
 }
 // Android 12 ne montre du démarrage qu'un disque des deux tiers de l'icône :
 // le logo y est posé en grand, le cadre néon tombe hors du disque et seules
@@ -51,15 +51,28 @@ img.onload = () => {
     const cote = c.taille * c.zoom * (c.fond && !c.plein ? 72 / 108 : 1);
     const x = (c.taille - cote) / 2;
     if (c.plein) {
-      // Sans le cadre néon : chaque lanceur découpe l'icône à sa forme,
-      // cercle ou carré arrondi, et un cadre dessiné dedans ressortirait
-      // en petit carré tronqué. On ne garde que l'intérieur, les barres.
-      const m = cote * 0.16;
-      g.save(); g.beginPath(); g.roundRect(x + m, x + m, cote - 2 * m, cote - 2 * m, cote * 0.1); g.clip();
+      // Le logo sans son propre cadre : chaque lanceur découpe l'icône à
+      // sa forme, et un cadre dessiné dans le fichier ressortirait en petit
+      // carré tronqué. On garde l'intérieur du logo, à la même échelle.
+      const m = cote * 0.1;
+      g.save(); g.beginPath(); g.roundRect(x + m, x + m, cote - 2 * m, cote - 2 * m, cote * 0.12); g.clip();
       g.drawImage(img, x, x, cote, cote);
       g.restore();
     } else {
       g.drawImage(img, x, x, cote, cote);
+    }
+    if (c.contour) {
+      // Le contour néon, redessiné à la forme des icônes Android : un carré
+      // arrondi posé juste à l'intérieur de la zone visible (72 dp sur 108),
+      // qui épouse le bord de l'icône sur le lanceur de Samsung.
+      const v = c.taille * 72 / 108;
+      const cx = (c.taille - v) / 2 + v * 0.035;
+      const w = v * 0.93;
+      g.save();
+      g.shadowColor = 'rgba(80,244,141,0.55)'; g.shadowBlur = c.taille * 0.022;
+      g.strokeStyle = 'rgba(80,244,141,0.9)'; g.lineWidth = c.taille * 0.0075;
+      g.beginPath(); g.roundRect(cx, cx, w, w, w * 0.26); g.stroke();
+      g.restore();
     }
     sortie[c.fichier] = k.toDataURL('image/png');
   }

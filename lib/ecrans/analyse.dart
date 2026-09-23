@@ -12,18 +12,28 @@ import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import '../widgets/graphiques.dart';
+import '../widgets/volets.dart';
 
 enum Vue { sorties, entrees, recurrences }
 
 final vueProvider = StateProvider<Vue>((ref) => Vue.sorties);
 
 /// L'analyse : où part l'argent, d'où il vient, et ce qui revient.
-class EcranAnalyse extends ConsumerWidget {
-  const EcranAnalyse({super.key, this.onCategorie});
+enum ModeAnalyse {
+  /// Tout sur un seul écran, sur téléphone.
+  complet,
 
-  /// Sur l'écran déplié, une catégorie s'ouvre dans le volet voisin au
-  /// lieu d'une nouvelle page.
-  final void Function(int id)? onCategorie;
+  /// L'en-tête, l'anneau et le budget : le volet de gauche du déplié.
+  resume,
+
+  /// La liste des catégories seule : le volet de droite du déplié.
+  liste,
+}
+
+class EcranAnalyse extends ConsumerWidget {
+  const EcranAnalyse({super.key, this.mode = ModeAnalyse.complet});
+
+  final ModeAnalyse mode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,6 +47,7 @@ class EcranAnalyse extends ConsumerWidget {
       child: ListView(
         padding: EdgeInsets.only(bottom: margeCapsule(context)),
         children: [
+          if (mode != ModeAnalyse.liste)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Column(
@@ -64,14 +75,17 @@ class EcranAnalyse extends ConsumerWidget {
           if (!bilan.hasValue || !categories.hasValue)
             const Padding(padding: EdgeInsets.all(60), child: Center(child: CircularProgressIndicator()))
           else if (vue == Vue.recurrences)
-            const _Recurrences()
-          else
+            mode == ModeAnalyse.liste ? const _TitreVolet('Récurrences') : const _Recurrences()
+          else ...[
+            if (mode == ModeAnalyse.liste) _TitreVolet(vue == Vue.entrees ? 'Entrées' : 'Dépenses'),
             _Repartition(
               bilan: bilan.value!,
               categories: categories.value!,
               entrees: vue == Vue.entrees,
-              onCategorie: onCategorie,
+              anneau: mode != ModeAnalyse.liste,
+              liste: mode != ModeAnalyse.resume,
             ),
+          ],
         ],
       ),
     );
@@ -146,13 +160,26 @@ class _Onglets extends StatelessWidget {
   }
 }
 
+class _TitreVolet extends StatelessWidget {
+  const _TitreVolet(this.texte);
+
+  final String texte;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 6),
+        child: Text(texte, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+      );
+}
+
 class _Repartition extends ConsumerWidget {
-  const _Repartition({required this.bilan, required this.categories, required this.entrees, this.onCategorie});
+  const _Repartition({required this.bilan, required this.categories, required this.entrees, this.anneau = true, this.liste = true});
 
   final Bilan bilan;
   final Map<int, Categorie> categories;
   final bool entrees;
-  final void Function(int id)? onCategorie;
+  final bool anneau;
+  final bool liste;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -167,11 +194,12 @@ class _Repartition extends ConsumerWidget {
     final plusGrand = lignes.isEmpty ? 1 : lignes.first.value;
     final nbOps = lignes.fold<int>(0, (s, e) => s + (bilan.operationsParCategorie[e.key] ?? 0));
 
-    void ouvrir(int id) => onCategorie != null ? onCategorie!(id) : context.push('/categorie/$id');
+    void ouvrir(int id) => ouvrirPage(context, '/categorie/$id');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (anneau) ...[
         const SizedBox(height: 10),
         Center(
           child: Anneau(
@@ -196,12 +224,13 @@ class _Repartition extends ConsumerWidget {
               child: _PiluleInterne(montant: bilan.virementsInternes),
             ),
           ),
+        ],
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!entrees && budget > 0 && periode == Periode.mois) ...[
+              if (anneau && !entrees && budget > 0 && periode == Periode.mois) ...[
                 Carte(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -227,7 +256,7 @@ class _Repartition extends ConsumerWidget {
                 ),
                 const SizedBox(height: 14),
               ],
-              Carte(
+              if (liste) Carte(
                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -250,7 +279,7 @@ class _Repartition extends ConsumerWidget {
                         onTap: () => ouvrir(lignes[i].key),
                       ),
                     if (!entrees && bilan.virementsInternes > 0)
-                      _LigneInterne(montant: bilan.virementsInternes, onTap: () => context.push('/internes')),
+                      _LigneInterne(montant: bilan.virementsInternes, onTap: () => ouvrirPage(context, '/internes')),
                   ],
                 ),
               ),
