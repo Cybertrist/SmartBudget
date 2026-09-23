@@ -246,3 +246,38 @@ String iconeNature(Object n) => switch (n.toString().split('.').last) {
       'imprevu' => 'bolt',
       _ => 'savings',
     };
+
+/// Pose une pastille verte cochée au coin bas droit de [child] quand
+/// l'opération est pointée.
+class AvecCoche extends StatelessWidget {
+  const AvecCoche({super.key, required this.pointee, required this.child, this.taille = 18});
+
+  final bool pointee;
+  final Widget child;
+  final double taille;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!pointee) return child;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned(
+          right: -taille * 0.3,
+          bottom: -taille * 0.3,
+          child: Container(
+            width: taille,
+            height: taille,
+            decoration: BoxDecoration(
+              color: AppColors.vert,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.surface, width: 2),
+            ),
+            child: Icon(iconeDe('check'), size: taille * 0.62, color: Colors.black, weight: 700),
+          ),
+        ),
+      ],
+    );
+  }
+}

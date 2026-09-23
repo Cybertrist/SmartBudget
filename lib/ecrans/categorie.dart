@@ -448,23 +448,13 @@ class LigneOperation extends StatelessWidget {
         decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
         child: Row(
           children: [
-            Tuile(icone: icone, couleur: couleur, taille: 40),
+            AvecCoche(pointee: o.pointee, child: Tuile(icone: icone, couleur: couleur, taille: 40)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(joli(o.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                      ),
-                      if (o.pointee) ...[
-                        const SizedBox(width: 6),
-                        Icon(iconeDe('task_alt'), size: 15, color: AppColors.vert),
-                      ],
-                    ],
-                  ),
+                  Text(joli(o.libelle), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 3),
                   if (o.note != null && o.note!.isNotEmpty)
                     Row(

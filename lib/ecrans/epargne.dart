@@ -205,15 +205,18 @@ class LigneVirement extends StatelessWidget {
         decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.interne.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.interne.withValues(alpha: 0.3)),
+            AvecCoche(
+              pointee: o.pointee,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.interne.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.interne.withValues(alpha: 0.3)),
+                ),
+                child: Icon(iconeDe('sync_alt'), size: 19, color: AppColors.interne),
               ),
-              child: Icon(iconeDe('sync_alt'), size: 19, color: AppColors.interne),
             ),
             const SizedBox(width: 12),
             Expanded(

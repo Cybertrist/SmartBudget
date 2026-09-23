@@ -136,10 +136,10 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
                 child: Row(
                   children: [
-                    if (o.interne != null)
-                      const _TuileInterne(taille: 40)
-                    else
-                      Tuile(icone: cat.icone ?? parent.icone, couleur: couleur, taille: 40),
+                    AvecCoche(
+                      pointee: o.pointee,
+                      child: o.interne != null ? const _TuileInterne(taille: 40) : Tuile(icone: cat.icone ?? parent.icone, couleur: couleur, taille: 40),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text('${jour(o.le)} ${o.le.year} · Compte courant\n${o.libelle.toUpperCase()}',
@@ -155,10 +155,11 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
               padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
               child: Column(
                 children: [
-                  if (o.interne != null)
-                    const _TuileInterne(taille: 72)
-                  else
-                    Tuile(icone: cat.icone ?? parent.icone, couleur: couleur, taille: 72),
+                  AvecCoche(
+                    pointee: o.pointee,
+                    taille: 26,
+                    child: o.interne != null ? const _TuileInterne(taille: 72) : Tuile(icone: cat.icone ?? parent.icone, couleur: couleur, taille: 72),
+                  ),
                   const SizedBox(height: 14),
                   Montant(o.montantCentimes, taille: 44, signe: true),
                   const SizedBox(height: 10),
