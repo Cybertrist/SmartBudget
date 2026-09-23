@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import '../security/key_vault.dart';
+import 'icones.dart';
 
 /// La base, chiffrée par SQLCipher.
 ///
@@ -12,22 +15,26 @@ import '../security/key_vault.dart';
 /// d'une synchronisation. Sans la clé du trousseau, le fichier n'est
 /// qu'un bloc d'octets.
 ///
-/// Cinq tables :
+/// Six tables :
 /// - `comptes` : le compte courant venu de la banque, et les livrets saisis
-///   à la main, que la DSP2 ne partage pas.
-/// - `operations` : une ligne par mouvement. Les montants sont en centimes,
-///   négatifs pour une sortie : un double ne sait pas écrire 0,10 €.
-/// - `categories` : le classement des dépenses et des revenus.
-/// - `regles` : ce que l'application a appris de tes corrections. Un
-///   libellé reclassé à la main l'est ensuite tout seul.
-/// - `reglages` : quelques valeurs, dont l'état de l'accès bancaire.
+///   à la main, que la DSP2 ne partage pas ;
+/// - `categories` : catégories et sous-catégories, les secondes pointant
+///   sur les premières par `parent_id` ;
+/// - `operations` : une ligne par mouvement, en centimes, négatif pour une
+///   sortie : un double ne sait pas écrire 0,10 € ;
+/// - `regles` : ce que l'application a appris de tes corrections ;
+/// - `liens` : la part d'une entrée qui rembourse une dépense ;
+/// - `reglages` : quelques valeurs, dont le jour où commence le mois.
 class Base {
   Base._();
 
   static final Base instance = Base._();
 
   static const _fichier = 'smartbudget.db';
-  static const _version = 1;
+
+  /// 2 : sous-catégories, liens de remboursement, virements internes. La
+  /// version 1 n'a jamais porté de vraie donnée : elle est refaite à neuf.
+  static const _version = 2;
 
   /// L'ouverture en cours ou faite. On garde le futur, pas la base : au
   /// déverrouillage, plusieurs écrans la demandent au même instant, et
@@ -71,6 +78,15 @@ class Base {
         await _creerSchema(base);
         await _semerCategories(base);
       },
+      onUpgrade: (base, ancienne, nouvelle) async {
+        if (ancienne < 2) {
+          for (final t in ['liens', 'regles', 'operations', 'categories', 'comptes', 'reglages']) {
+            await base.execute('DROP TABLE IF EXISTS $t');
+          }
+          await _creerSchema(base);
+          await _semerCategories(base);
+        }
+      },
     );
   }
 
@@ -88,8 +104,7 @@ class Base {
   /// Supprime le fichier. Avec [KeyVault.destroy], c'est l'effacement total.
   Future<void> effacer() async {
     await fermer();
-    final chemin = join(await getDatabasesPath(), _fichier);
-    final fichier = File(chemin);
+    final fichier = File(join(await getDatabasesPath(), _fichier));
     if (await fichier.exists()) await fichier.delete();
   }
 
@@ -105,7 +120,7 @@ class Base {
         iban_fin TEXT,
         solde_centimes INTEGER NOT NULL DEFAULT 0,
         solde_le TEXT,
-        motif_virement TEXT,
+        motif TEXT,
         cree_le TEXT NOT NULL
       )
     ''');
@@ -113,12 +128,15 @@ class Base {
     await base.execute('''
       CREATE TABLE categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nom TEXT NOT NULL UNIQUE,
+        parent_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+        nom TEXT NOT NULL,
         genre TEXT NOT NULL,
-        icone TEXT NOT NULL,
+        icone TEXT,
         couleur INTEGER NOT NULL,
         budget_centimes INTEGER,
-        ordre INTEGER NOT NULL DEFAULT 0
+        ordre INTEGER NOT NULL DEFAULT 0,
+        nature TEXT NOT NULL DEFAULT 'plaisir',
+        UNIQUE (parent_id, nom)
       )
     ''');
 
@@ -130,21 +148,33 @@ class Base {
         le TEXT NOT NULL,
         libelle TEXT NOT NULL,
         montant_centimes INTEGER NOT NULL,
-        categorie_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-        classee_a_la_main INTEGER NOT NULL DEFAULT 0,
-        livret_id INTEGER REFERENCES comptes(id) ON DELETE SET NULL,
-        note TEXT
+        categorie_id INTEGER NOT NULL REFERENCES categories(id),
+        origine TEXT NOT NULL,
+        nature TEXT,
+        mois_compte TEXT,
+        note TEXT,
+        masquee INTEGER NOT NULL DEFAULT 0,
+        recurrente INTEGER,
+        interne TEXT
       )
     ''');
     await base.execute('CREATE INDEX operations_le ON operations(le)');
-    await base.execute(
-        'CREATE INDEX operations_categorie ON operations(categorie_id)');
+    await base.execute('CREATE INDEX operations_categorie ON operations(categorie_id)');
 
     await base.execute('''
       CREATE TABLE regles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         motif TEXT NOT NULL UNIQUE,
         categorie_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE
+      )
+    ''');
+
+    await base.execute('''
+      CREATE TABLE liens (
+        entree_id INTEGER NOT NULL REFERENCES operations(id) ON DELETE CASCADE,
+        depense_id INTEGER NOT NULL REFERENCES operations(id) ON DELETE CASCADE,
+        montant_centimes INTEGER NOT NULL,
+        PRIMARY KEY (entree_id, depense_id)
       )
     ''');
 
@@ -156,41 +186,41 @@ class Base {
     ''');
   }
 
-  /// Les catégories de départ. Chacune se renomme, se recolore ou se
-  /// supprime ensuite : ce n'est qu'un point de départ, pas un plan
-  /// comptable.
+  /// Les catégories de départ, lues dans `assets/categories.json`. Chacune
+  /// se renomme, se recolore ou se supprime ensuite.
   Future<void> _semerCategories(Database base) async {
-    // L'icône est un nom, traduit en icône Material par le code : un
-    // numéro de glyphe rangé en base empêcherait la version de publication
-    // d'élaguer la police d'icônes.
-    const categories = <(String, String, String, int)>[
-      // nom, genre, icône, couleur
-      ('Courses', 'depense', 'courses', 0xFF50F48D),
-      ('Restaurants et sorties', 'depense', 'sorties', 0xFFFFC857),
-      ('Logement', 'depense', 'logement', 0xFF5AB2FF),
-      ('Transports', 'depense', 'transports', 0xFF9B8CFF),
-      ('Abonnements', 'depense', 'abonnements', 0xFFFF8FD1),
-      ('Shopping', 'depense', 'shopping', 0xFFFF9F5A),
-      ('Santé', 'depense', 'sante', 0xFF4DE2D0),
-      ('Loisirs', 'depense', 'loisirs', 0xFFC6F45A),
-      ('Banque et frais', 'depense', 'banque', 0xFF8FA89A),
-      ('Impôts', 'depense', 'impots', 0xFFB0B8FF),
-      ('À classer', 'depense', 'aclasser', 0xFF5B7266),
-      ('Salaire', 'revenu', 'salaire', 0xFF1BCC6D),
-      ('Autres revenus', 'revenu', 'revenus', 0xFF7FE0A8),
-      ('Épargne', 'epargne', 'epargne', 0xFF3CE0FF),
-    ];
-    final lot = base.batch();
-    for (var i = 0; i < categories.length; i++) {
-      final (nom, genre, icone, couleur) = categories[i];
-      lot.insert('categories', {
-        'nom': nom,
-        'genre': genre,
-        'icone': icone,
-        'couleur': couleur,
-        'ordre': i,
-      });
-    }
-    await lot.commit(noResult: true);
+    final json = jsonDecode(await rootBundle.loadString('assets/categories.json'))
+        as Map<String, Object?>;
+    final liste = (json['categories']! as List).cast<Map<String, Object?>>();
+
+    await base.transaction((t) async {
+      for (var i = 0; i < liste.length; i++) {
+        final c = liste[i];
+        final nom = c['nom']! as String;
+        final couleur = int.parse('FF${(c['couleur']! as String).substring(1)}', radix: 16);
+        final nature = naturesEssentielles.contains(nom) ? 'essentiel' : 'plaisir';
+        final id = await t.insert('categories', {
+          'nom': nom,
+          'genre': c['genre'],
+          'icone': iconeDeCategorie[c['icone']] ?? 'category',
+          'couleur': couleur,
+          'ordre': i,
+          'nature': nature,
+        });
+        final sous = (c['sous']! as List).cast<String>();
+        for (var j = 0; j < sous.length; j++) {
+          final s = sous[j];
+          await t.insert('categories', {
+            'parent_id': id,
+            'nom': s,
+            'genre': c['genre'],
+            'icone': iconeDeSous[s],
+            'couleur': couleur,
+            'ordre': j,
+            'nature': sousEssentielles.contains(s) ? 'essentiel' : nature,
+          });
+        }
+      }
+    });
   }
 }
