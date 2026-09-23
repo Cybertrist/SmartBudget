@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../config/essais.dart';
 import '../config/format.dart';
@@ -111,17 +110,6 @@ class EcranReglages extends ConsumerWidget {
             ligne('calendar_month', 'Le mois commence le', debut == 1 ? '1er' : '$debut', () => _choisirDebut(context, ref, debut)),
           ]),
           const SizedBox(height: 14),
-          bloc('À propos', [
-            ligne('code', 'Code source', 'GitHub', () => _ouvrirLien('https://github.com/Cybertrist/SmartBudget')),
-            ligne('gavel', 'Licence', 'MIT', () => _ouvrirLien('https://github.com/Cybertrist/SmartBudget/blob/main/LICENSE')),
-            ligne('description', 'Bibliothèques utilisées', '', () => showLicensePage(
-                  context: context,
-                  applicationName: 'Smart Budget',
-                  applicationVersion: 'Version $_version',
-                  applicationLegalese: '© 2026 Tristan Joncour · licence MIT',
-                )),
-            ligne('person', 'Auteur', 'Tristan Joncour', () => _ouvrirLien('https://github.com/Cybertrist')),
-          ]),
           const SizedBox(height: 14),
           Carte(
             child: Row(
@@ -204,10 +192,6 @@ class EcranReglages extends ConsumerWidget {
 
   /// La version affichée, celle du pubspec.
   static const _version = '0.1.0';
-
-  /// Ouvre un lien dans le navigateur.
-  static Future<void> _ouvrirLien(String adresse) =>
-      launchUrl(Uri.parse(adresse), mode: LaunchMode.externalApplication);
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 

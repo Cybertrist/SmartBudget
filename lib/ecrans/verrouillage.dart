@@ -55,7 +55,10 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DecoratedBox(
+      // Toute la largeur : sans cela, l'écran se réduisait à sa plus longue
+      // ligne et restait collé à gauche.
+      body: SizedBox.expand(
+        child: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: RadialGradient(
             center: Alignment(0, -0.35),
@@ -121,6 +124,7 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
             ),
           ),
         ),
+      ),
       ),
     );
   }
