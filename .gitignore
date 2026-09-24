@@ -42,3 +42,4 @@ coverage/
 *.pem
 *.p12
 *.key
+docs/tools/html/
