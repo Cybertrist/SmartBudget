@@ -1,7 +1,10 @@
 package com.cybertrist.smartbudget
 
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
+import android.provider.OpenableColumns
+import android.util.Base64
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,6 +12,9 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import java.security.KeyFactory
+import java.security.Signature
+import java.security.spec.PKCS8EncodedKeySpec
 
 /**
  * FlutterFragmentActivity et non FlutterActivity : la demande d'empreinte
@@ -27,6 +33,20 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val canalEcran = "smartbudget/ecran"
     private val canalFichiers = "smartbudget/fichiers"
+    private val canalBanque = "smartbudget/banque"
+
+    /** Le canal de la banque, gardé pour lui passer le lien de retour. */
+    private var canalBanqueOuvert: MethodChannel? = null
+
+    /**
+     * Le lien de retour de la banque, smartbudget://banque?code=…, en
+     * attente que le Dart le lise : il peut arriver avant que l'application
+     * soit déverrouillée, ou avant que le moteur ait démarré.
+     */
+    private var lienEnAttente: String? = null
+
+    /** Le nom du dernier fichier choisi, tel que le sélecteur le montre. */
+    private var nomChoisi: String? = null
 
     /**
      * Les sauvegardes passent par le sélecteur du système : il laisse choisir
@@ -49,6 +69,9 @@ class MainActivity : FlutterFragmentActivity() {
             }
             // Recopié dans le cache privé : le Dart lit un chemin, et l'accès
             // à l'URI ne survit pas forcément à l'activité.
+            nomChoisi = contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
+                if (it.moveToFirst()) it.getString(0) else null
+            }
             Thread {
                 val copie = File(cacheDir, "restauration.sbx")
                 val ok = copier(uri, copie, versUri = false)
@@ -95,6 +118,36 @@ class MainActivity : FlutterFragmentActivity() {
         val debogable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
         if (!debogable) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         super.onCreate(savedInstanceState)
+        retenirLien(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        retenirLien(intent)
+        lienEnAttente?.let { canalBanqueOuvert?.invokeMethod("lien", it) }
+    }
+
+    private fun retenirLien(intent: Intent?) {
+        val lien = intent?.data ?: return
+        if (lien.scheme == "smartbudget") lienEnAttente = lien.toString()
+    }
+
+    /**
+     * Signe en RS256 avec la clé privée d'Enable Banking, au format PKCS#8
+     * que donne son portail. La clé n'est déchiffrée que pour l'appel, et
+     * ne reste pas ici.
+     */
+    private fun signer(pem: String, donnees: String): ByteArray {
+        val corps = pem
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
+            .replace("\\s".toRegex(), "")
+        val cle = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(Base64.decode(corps, Base64.DEFAULT)))
+        return Signature.getInstance("SHA256withRSA").run {
+            initSign(cle)
+            update(donnees.toByteArray(Charsets.UTF_8))
+            sign()
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -116,6 +169,41 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        canalBanqueOuvert = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, canalBanque).apply {
+            setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "signer" -> {
+                        val pem = call.argument<String>("pem")
+                        val donnees = call.argument<String>("donnees")
+                        if (pem == null || donnees == null) {
+                            result.error("arguments", "Clé ou données absentes", null)
+                        } else {
+                            try {
+                                result.success(signer(pem, donnees))
+                            } catch (e: Exception) {
+                                result.error("cle", "Clé privée illisible : ${e.message}", null)
+                            }
+                        }
+                    }
+                    "ouvrirLien" -> {
+                        val url = call.argument<String>("url")
+                        if (url == null) {
+                            result.error("url", "Adresse absente", null)
+                        } else {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            result.success(true)
+                        }
+                    }
+                    "lienEnAttente" -> {
+                        result.success(lienEnAttente)
+                        lienEnAttente = null
+                    }
+                    "nomChoisi" -> result.success(nomChoisi)
+                    else -> result.notImplemented()
+                }
+            }
+        }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, canalFichiers)
             .setMethodCallHandler { call, result ->

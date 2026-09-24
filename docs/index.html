@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Smart Budget, retour de la banque</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #121212; color: #fff; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { min-height: 100%; display: grid; place-items: center; padding: 24px; box-sizing: border-box; text-align: center; }
+  .carte { max-width: 420px; }
+  img { width: 96px; height: 96px; }
+  h1 { font-size: 26px; margin: 18px 0 6px; letter-spacing: -.5px; }
+  h1 span { color: #50F48D; }
+  p { color: #B3B3B3; margin: 0 0 22px; }
+  a { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #1ED760; color: #000; font-weight: 800; text-decoration: none; }
+  .erreur { color: #FF6B7A; }
+</style>
+</head>
+<body>
+<main>
+  <div class="carte">
+    <img src="logo.png" alt="">
+    <h1>Smart <span>Budget</span></h1>
+    <p id="texte">Retour à l'application…</p>
+    <a id="lien" href="#" hidden>Ouvrir Smart Budget</a>
+  </div>
+</main>
+<script>
+  // La banque revient ici avec ?code=…&state=… : la page ne garde rien et
+  // n'envoie rien ailleurs, elle rend la main à l'application sur le
+  // téléphone, qui échange elle-même le code contre l'accès.
+  const q = location.search;
+  const texte = document.getElementById('texte');
+  const lien = document.getElementById('lien');
+  if (!q) {
+    texte.textContent = "Cette page sert au retour de la banque vers l'application Smart Budget.";
+  } else {
+    const cible = 'smartbudget://banque' + q;
+    lien.href = cible;
+    lien.hidden = false;
+    if (new URLSearchParams(q).has('error')) {
+      texte.textContent = "La banque n'a pas donné l'accès. Retourne dans l'application pour réessayer.";
+      texte.className = 'erreur';
+    } else {
+      texte.textContent = "Accès accordé. Si l'application ne s'ouvre pas toute seule, touche le bouton.";
+    }
+    location.replace(cible);
+  }
+</script>
+</body>
+</html>

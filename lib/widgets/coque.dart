@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../config/layout.dart';
 import '../config/theme.dart';
+import '../banque/carte_banque.dart';
+import '../banque/connexion.dart';
 import 'base.dart';
 import 'volets.dart';
 
@@ -19,8 +21,53 @@ const onglets = [
 
 /// La coque : la capsule flottante en bas sur téléphone et sur l'écran de
 /// couverture, le rail à gauche sur l'écran déplié.
-class Coque extends ConsumerWidget {
+class Coque extends ConsumerStatefulWidget {
   const Coque({super.key, required this.child, required this.chemin});
+
+  final Widget child;
+  final String chemin;
+
+  @override
+  ConsumerState<Coque> createState() => _EtatCoque();
+}
+
+/// À l'ouverture : terminer une autorisation revenue de la banque, sinon
+/// synchroniser si la dernière fois date de plus d'une heure. Le retour de
+/// la banque rouvre aussi l'application : on le guette à chaque reprise.
+class _EtatCoque extends ConsumerState<Coque> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _auRetour(demarrage: true));
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState etat) {
+    if (etat == AppLifecycleState.resumed) _auRetour();
+  }
+
+  Future<void> _auRetour({bool demarrage = false}) async {
+    if (!mounted) return;
+    await terminerSiRetour(context, ref);
+    if (!demarrage || !mounted) return;
+    final e = await const ConnexionBanque().etat();
+    final vieille = e.derniere == null || DateTime.now().difference(e.derniere!) > const Duration(hours: 1);
+    if (e.relie && vieille && mounted) await synchroniser(context, ref, silencieux: true);
+  }
+
+  @override
+  Widget build(BuildContext context) => _CoqueVue(chemin: widget.chemin, child: widget.child);
+}
+
+class _CoqueVue extends ConsumerWidget {
+  const _CoqueVue({required this.child, required this.chemin});
 
   final Widget child;
   final String chemin;

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/essais.dart';
 import '../config/format.dart';
 import '../config/theme.dart';
+import '../banque/carte_banque.dart';
 import '../donnees/base.dart';
 import '../donnees/demonstration.dart';
 import '../donnees/depots.dart';
@@ -88,24 +89,7 @@ class EcranReglages extends ConsumerWidget {
         titreDroite: 'Sécurité',
         surtitreDroite: 'Tes données',
         gauche: [
-          Carte(
-            child: Row(
-              children: [
-                const Tuile(icone: 'account_balance', couleur: AppColors.vert, taille: 48),
-                const SizedBox(width: 14),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Crédit Mutuel de Bretagne', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                      SizedBox(height: 3),
-                      Text('Pas encore relié : c\'est l\'étape suivante.', style: TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const CarteBanque(),
           const SizedBox(height: 14),
           bloc('Budget', [
             ligne('target', 'Budget mensuel', budget == 0 ? 'Non fixé' : euros(budget, centimesSiRond: false),
@@ -114,7 +98,6 @@ class EcranReglages extends ConsumerWidget {
                 () => fixerMontant(context, ref, cle: 'objectif_epargne', titre: 'Objectif d\'épargne')),
             ligne('calendar_month', 'Le mois commence le', debut == 1 ? '1er' : '$debut', () => _choisirDebut(context, ref, debut)),
           ]),
-          const SizedBox(height: 14),
           const SizedBox(height: 14),
           Carte(
             child: Row(

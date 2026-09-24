@@ -2,6 +2,8 @@
 
     <!-- BiometricPrompt, pour l'écran d'ouverture. -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- La banque, et elle seule : Enable Banking, pour lire le compte. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="SmartBudget"
         android:allowBackup="false"
@@ -29,6 +31,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Le retour de la banque : la page de redirection renvoie ici
+                 le code d'autorisation, smartbudget://banque?code=… -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="smartbudget" android:host="banque"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
