@@ -124,7 +124,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text('${jour(o.le)} ${o.le.year} · Compte courant\n${o.libelle.toUpperCase()}',
+                      child: Text(o.especes ? '${jour(o.le)} ${o.le.year} · Espèces' : '${jour(o.le)} ${o.le.year} · Compte courant\n${o.libelle.toUpperCase()}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texteDiscret, fontFeatures: chiffres)),
@@ -147,7 +147,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                   const SizedBox(height: 10),
                   Text(o.titre, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 6),
-                  Text('${o.libelle.toUpperCase()}\n${jour(o.le)} ${o.le.year} · Compte courant',
+                  Text(o.especes ? '${jour(o.le)} ${o.le.year} · Espèces' : '${o.libelle.toUpperCase()}\n${jour(o.le)} ${o.le.year} · Compte courant',
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 12.5, height: 1.5, color: AppColors.texteDiscret, fontFeatures: chiffres)),
                 ],
@@ -376,6 +376,30 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                         ),
                       );
                     }),
+                  ],
+                  if (o.uidBanque == null) ...[
+                    const SizedBox(height: 14),
+                    TextButton.icon(
+                      onPressed: () async {
+                        final ok = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Supprimer cette dépense ?'),
+                            content: const Text('Elle a été saisie à la main : la banque ne la connaît pas.'),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte))),
+                            ],
+                          ),
+                        );
+                        if (ok != true) return;
+                        await const DepotOperations().supprimerManuelle(o.id);
+                        rafraichir(ref);
+                        if (context.mounted) revenir(context);
+                      },
+                      icon: Icon(iconeDe('delete'), color: AppColors.alerte),
+                      label: const Text('Supprimer la dépense', style: TextStyle(color: AppColors.alerte, fontWeight: FontWeight.w700)),
+                    ),
                   ],
                   const SizedBox(height: 18),
                   // Pointer : tu confirmes que la catégorie est la bonne.

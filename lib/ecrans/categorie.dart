@@ -464,7 +464,7 @@ class LigneOperation extends StatelessWidget {
                       ],
                     )
                   else
-                    Text(o.masquee ? 'Masquée de l\'analyse' : 'Compte courant', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                    Text(o.masquee ? 'Masquée de l\'analyse' : (o.especes ? 'Espèces' : 'Compte courant'), style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                 ],
               ),
             ),

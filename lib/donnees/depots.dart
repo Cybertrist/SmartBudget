@@ -295,6 +295,44 @@ class DepotOperations {
     });
   }
 
+  /// Ajoute une dépense payée en espèces : sur le compte courant, sans
+  /// identifiant bancaire, déjà vérifiée puisque tu l'as saisie.
+  Future<int> ajouterEspeces({required DateTime le, required String nom, required int centimes, required int categorieId, String? note}) async {
+    final courant = await const DepotComptes().courant();
+    return (await _db).insert('operations', {
+      'compte_id': courant.id,
+      'le': _date(le),
+      'libelle': 'ESPECES ${normaliser(nom)}',
+      'nom': nom,
+      'montant_centimes': -centimes.abs(),
+      'categorie_id': categorieId,
+      'origine': Origine.main.name,
+      'note': note,
+      'pointee': 1,
+      'especes': 1,
+    });
+  }
+
+  /// Supprime une opération saisie à la main. Celles de la banque restent.
+  Future<void> supprimerManuelle(int id) async {
+    await (await _db).delete('operations', where: 'id = ? AND uid_banque IS NULL', whereArgs: [id]);
+  }
+
+  /// Cherche dans toutes les opérations, depuis la première : le nom, le
+  /// libellé, la note, ou le montant s'il s'agit d'un nombre.
+  Future<List<Operation>> chercher(String texte, {int? centimes}) async {
+    final t = '%${texte.trim()}%';
+    final n = '%${normaliser(texte)}%';
+    final l = await (await _db).query(
+      'operations',
+      where: 'nom LIKE ? OR libelle LIKE ? OR note LIKE ?${centimes != null ? ' OR ABS(montant_centimes) = ?' : ''}',
+      whereArgs: [t, n, t, if (centimes != null) centimes.abs()],
+      orderBy: 'le DESC, id DESC',
+      limit: 300,
+    );
+    return l.map(Operation.lire).toList();
+  }
+
   /// Pointe une opération : tu as vérifié qu'elle est bien classée.
   Future<void> pointer(int id, bool pointee) async {
     await (await _db).update('operations', {'pointee': pointee ? 1 : 0}, where: 'id = ?', whereArgs: [id]);

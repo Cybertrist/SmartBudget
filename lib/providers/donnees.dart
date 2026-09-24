@@ -100,6 +100,14 @@ final recurrencesProvider = FutureProvider<List<Recurrence>>((ref) async {
   return const DepotOperations().recurrences();
 });
 
+/// Le résultat d'une recherche dans toutes les opérations.
+final rechercheProvider = FutureProvider.family<List<Operation>, String>((ref, texte) async {
+  ref.watch(versionProvider);
+  final t = texte.trim();
+  final v = double.tryParse(t.replaceAll(RegExp(r'[\s €]'), '').replaceAll(',', '.'));
+  return const DepotOperations().chercher(t, centimes: v == null ? null : (v * 100).round());
+});
+
 /// Les opérations non reconnues, à vérifier.
 final aVerifierProvider = FutureProvider<List<Operation>>((ref) async {
   ref.watch(versionProvider);

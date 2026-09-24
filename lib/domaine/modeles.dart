@@ -145,6 +145,7 @@ class Operation {
     this.interne,
     this.pointee = false,
     this.nom,
+    this.especes = false,
   });
 
   final int id;
@@ -176,6 +177,9 @@ class Operation {
   /// Stockholm ».
   final String? nom;
 
+  /// Payée en espèces, saisie à la main : elle ne vient pas de la banque.
+  final bool especes;
+
   /// Ce qu'on affiche : le nom choisi, sinon celui tiré du libellé.
   String get titre => (nom == null || nom!.isEmpty) ? joli(libelle) : nom!;
 
@@ -198,6 +202,7 @@ class Operation {
         interne: l['interne'] == null ? null : SensInterne.values.byName(l['interne']! as String),
         pointee: (l['pointee'] as int? ?? 0) == 1,
         nom: l['nom'] as String?,
+        especes: (l['especes'] as int? ?? 0) == 1,
       );
 }
 

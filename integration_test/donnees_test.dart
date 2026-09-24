@@ -262,4 +262,24 @@ void main() {
     expect(b.sorties, 4000);
     expect(b.essentiel, 4000);
   });
+
+  test('calculerBilan sans base : une dépense en espèces sort des retraits', () {
+    const retraits = Categorie(id: 1, parentId: null, nom: 'Retraits et virements', genre: Genre.depense, icone: null, couleur: 0, budgetCentimes: null, ordre: 0, nature: Nature.essentiel);
+    const dab = Categorie(id: 2, parentId: 1, nom: "Retraits d'espèces", genre: Genre.depense, icone: null, couleur: 0, budgetCentimes: null, ordre: 0, nature: Nature.essentiel);
+    const marche = Categorie(id: 3, parentId: null, nom: 'Courses', genre: Genre.depense, icone: null, couleur: 0, budgetCentimes: null, ordre: 1, nature: Nature.essentiel);
+    final b = calculerBilan(
+      mois: const Mois(2026, 9),
+      operations: [
+        Operation(id: 1, compteId: 1, uidBanque: 'a', le: DateTime(2026, 9, 1), libelle: 'RETRAIT DAB', montantCentimes: -5000, categorieId: 2, origine: Origine.dictionnaire),
+        Operation(id: 2, compteId: 1, uidBanque: null, le: DateTime(2026, 9, 2), libelle: 'ESPECES MARCHE', montantCentimes: -2000, categorieId: 3, origine: Origine.main, especes: true),
+      ],
+      liens: const [],
+      categories: {1: retraits, 2: dab, 3: marche},
+    );
+    // 50 € retirés dont 20 € dépensés au marché : 50 € sortis en tout, pas 70.
+    expect(b.sorties, 5000);
+    expect(b.parCategorie[3], 2000);
+    expect(b.parCategorie[1], 3000);
+    expect(b.parSous[2], 3000);
+  });
 }

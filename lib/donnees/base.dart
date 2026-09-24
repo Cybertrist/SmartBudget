@@ -34,7 +34,7 @@ class Base {
 
   /// 2 : sous-catégories, liens de remboursement, virements internes. La
   /// version 1 n'a jamais porté de vraie donnée : elle est refaite à neuf.
-  static const _version = 4;
+  static const _version = 5;
 
   /// L'ouverture en cours ou faite. On garde le futur, pas la base : au
   /// déverrouillage, plusieurs écrans la demandent au même instant, et
@@ -94,6 +94,10 @@ class Base {
         // Version 4 : une opération peut porter un nom choisi.
         if (ancienne < 4) {
           await base.execute('ALTER TABLE operations ADD COLUMN nom TEXT');
+        }
+        // Version 5 : une dépense payée en espèces, saisie à la main.
+        if (ancienne < 5) {
+          await base.execute('ALTER TABLE operations ADD COLUMN especes INTEGER NOT NULL DEFAULT 0');
         }
       },
     );
@@ -166,7 +170,8 @@ class Base {
         recurrente INTEGER,
         interne TEXT,
         pointee INTEGER NOT NULL DEFAULT 0,
-        nom TEXT
+        nom TEXT,
+        especes INTEGER NOT NULL DEFAULT 0
       )
     ''');
     await base.execute('CREATE INDEX operations_le ON operations(le)');

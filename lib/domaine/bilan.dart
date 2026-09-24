@@ -77,6 +77,10 @@ Bilan calculerBilan({
     return c.parentId == null ? c : categories[c.parentId];
   }
 
+  // Les retraits au distributeur, et ce qui a été dépensé en espèces.
+  var especes = 0;
+  final retraits = <(Categorie top, Categorie cat, Nature nature), int>{};
+
   for (final o in operations) {
     if (o.masquee || moisDe(o) != mois) continue;
     final cat = categories[o.categorieId];
@@ -111,6 +115,8 @@ Bilan calculerBilan({
     bilan.sorties += d;
     _ajouter(bilan, top, cat, d, o);
     final nature = o.nature ?? cat.nature;
+    if (o.especes) especes += d;
+    if (cat.nom == "Retraits d'espèces" && d > 0) retraits.update((top, cat, nature), (v) => v + d, ifAbsent: () => d);
     switch (nature) {
       case Nature.essentiel:
         bilan.essentiel += d;
@@ -118,6 +124,26 @@ Bilan calculerBilan({
         bilan.plaisir += d;
       case Nature.imprevu:
         bilan.imprevu += d;
+    }
+  }
+
+  // L'argent retiré puis dépensé en espèces : la dépense compte, le retrait
+  // n'est plus qu'un passage du compte au porte-monnaie.
+  for (final e in retraits.entries) {
+    if (especes <= 0) break;
+    final x = e.value < especes ? e.value : especes;
+    especes -= x;
+    final (top, cat, nature) = e.key;
+    bilan.sorties -= x;
+    bilan.parCategorie[top.id] = (bilan.parCategorie[top.id] ?? 0) - x;
+    if (cat.id != top.id) bilan.parSous[cat.id] = (bilan.parSous[cat.id] ?? 0) - x;
+    switch (nature) {
+      case Nature.essentiel:
+        bilan.essentiel -= x;
+      case Nature.plaisir:
+        bilan.plaisir -= x;
+      case Nature.imprevu:
+        bilan.imprevu -= x;
     }
   }
   return bilan;
