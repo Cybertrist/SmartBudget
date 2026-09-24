@@ -83,7 +83,7 @@ Un budget honnête ne compte pas deux fois le même argent.
 
 <img src="docs/sections/s07.png" alt="07 L'écran déplié" width="100%">
 
-<img src="docs/schemas/volets.svg" alt="L'écran déplié. Deux volets côte à côte à droite du rail. Toucher Logement pousse tout vers la gauche et ouvre Logement à droite, puis Loyer, puis l'opération Foncia Loyer. La ligne ouverte reste surlignée à gauche. Un geste retour depuis le bord droit referme les volets un à un. À droite, la pile des pages ouvertes s'allonge puis se vide." width="100%">
+<img src="docs/schemas/volets.svg" alt="L'écran déplié. Deux volets côte à côte à droite du rail. Toucher Logement pousse tout vers la gauche et ouvre Logement à droite, puis Loyer, puis l'opération Foncia Loyer. La ligne ouverte reste surlignée à gauche. Le geste retour d'Android, un doigt qui glisse depuis le bord droit et sa bulle fléchée, referme les volets un à un. À droite, la pile des pages ouvertes s'allonge puis se vide, et un cadre vert entoure toujours les deux dernières, celles qui sont à l'écran." width="100%">
 
 Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur le Fold ouvert, les pages forment une seule grande page dont on voit les deux derniers volets : on descend de l'analyse à l'opération sans jamais perdre d'où l'on vient, et le geste retour de Samsung referme le dernier volet. Chaque colonne se resserre au besoin pour tout montrer d'un coup, sans défiler. Les saisies s'ouvrent dans une carte au-dessus du clavier, jamais dans une feuille qui monte du bas.
 

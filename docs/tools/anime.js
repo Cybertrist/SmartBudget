@@ -413,24 +413,57 @@ const P = {
   // Le doigt : un toucher, puis le geste retour.
   const doigt = (x, y, de) => `<circle cx="${x}" cy="${y}" r="16" fill="${NEON}" opacity="0">${fondu('opacity', C, [[0, 0], [de, 0], [de + 0.015, 0.5], [de + 0.05, 0], [1, 0]])}${fondu('r', C, [[0, 10], [de, 10], [de + 0.05, 26], [1, 26]])}</circle>`;
   corps += doigt(X0 + V + 60, Y0 + 116, 0.1) + doigt(X0 + V + 60, Y0 + 116, 0.26) + doigt(X0 + V + 60, Y0 + 116, 0.42);
-  // Le geste retour, depuis le bord droit.
-  corps += `<g opacity="0">${fondu('opacity', C, [[0, 0], [0.62, 0], [0.64, 1], [0.86, 1], [0.88, 0], [1, 0]])}
-    <path d="M${X0 + 2 * V - 10} ${Y0 + HT / 2} h-70" stroke="${NEON}" stroke-width="4" stroke-linecap="round" filter="url(#halo)"/>
-    <path d="M${X0 + 2 * V - 70} ${Y0 + HT / 2 - 12} l-12 12 l12 12" fill="none" stroke="${NEON}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    ${t(X0 + 2 * V - 40, Y0 + HT / 2 + 34, 'geste retour', { taille: 12, couleur: NEON, ancre: 'middle', police: MONO })}
-  </g>`;
-  // La pile, à droite : ce qui est ouvert.
-  const px = 1040;
+  // Le geste retour d'Android, trois fois : le doigt part du bord droit et
+  // glisse vers la gauche, et la bulle du système sort du bord avec sa
+  // flèche, s'étire, puis se retire quand le volet se referme.
+  const bord = X0 + 2 * V + GAP, milieu = Y0 + HT / 2;
+  const retour = (de) => {
+    const a = de + 0.05; // le doigt lâche, le volet se referme
+    const e = (v0, v1, v2) => [[0, v0], [de, v0], [de + 0.035, v1], [a, v2], [Math.min(a + 0.01, 1), v0], [1, v0]];
+    return `<g opacity="0">${fondu('opacity', C, [[0, 0], [de - 0.005, 0], [de, 1], [a, 1], [a + 0.01, 0], [1, 0]])}
+      <rect y="${milieu - 34}" height="68" rx="34" fill="#1B2330" fill-opacity="0.94" stroke="#FFFFFF" stroke-opacity="0.12">
+        ${fondu('x', C, e(bord, bord - 46, bord - 58))}${fondu('width', C, e(0, 80, 92))}</rect>
+      <path d="M0 -10 L-9 0 L0 10" fill="none" stroke="${TITRE}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+        <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
+          keyTimes="${e(0, 0, 0).map((x) => x[0]).join(';')}" values="${e(bord + 12, bord - 20, bord - 28).map((x) => `${x[1]} ${milieu}`).join(';')}"/></path>
+      <g>
+        <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
+          keyTimes="${e(0, 0, 0).map((x) => x[0]).join(';')}" values="${e(bord - 6, bord - 70, bord - 120).map((x) => `${x[1]} ${milieu + 70}`).join(';')}"/>
+        <circle r="22" fill="#FFFFFF" fill-opacity="0.10"/>
+        <circle r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="1.5"/>
+      </g>
+    </g>`;
+  };
+  corps += `<g clip-path="url(#fenetre)">${retour(0.55) + retour(0.67) + retour(0.79)}</g>`;
+  // La pile, à droite. Chaque page ouverte s'y empile ; les deux dernières
+  // sont celles de l'écran, dans le cadre vert, qui descend et remonte avec
+  // elles. Les pages plus anciennes restent derrière, en retrait.
+  const px = 968, pl = 196, ph = 38, pas_ = 48, py = Y0 + 34;
+  const nombres = [2, 2, 3, 3, 4, 4, 5, 5, 4, 4, 3, 3, 2, 2];
   corps += t(px, Y0 + 12, 'LA PILE', { taille: 11, couleur: DISCRET, police: MONO, extra: 'letter-spacing="2"' });
-  const hauteurs = [[0, 2], [0.16, 3], [0.32, 4], [0.48, 5], [0.66, 4], [0.78, 3], [0.9, 2]];
+  // Le fil qui relie les pages, de la plus ancienne à la plus récente.
+  corps += `<line x1="${px + 14}" y1="${py + ph / 2}" x2="${px + 14}" y2="${py + ph / 2}" stroke="${FIL}" stroke-width="2">
+    ${fondu('y2', C, instants.map((ins, i) => [ins, py + ph / 2 + (nombres[i] - 1) * pas_]))}</line>`;
   pages.forEach((p, k) => {
-    const y = Y0 + 30 + k * 50;
-    const etapes = [[0, k < 2 ? 1 : 0.15]];
-    for (const [ins, n] of hauteurs.slice(1)) etapes.push([ins, k < n ? 1 : 0.15]);
-    etapes.push([1, k < 2 ? 1 : 0.15]);
-    corps += `<g>${paliers('opacity', C, etapes)}<rect x="${px}" y="${y}" width="180" height="40" rx="10" fill="${CARTE}" stroke="${k < 2 ? VERT : BORD}"/>${t(px + 16, y + 25, p[1], { taille: 13, couleur: TITRE })}</g>`;
+    const y = py + k * pas_;
+    // Absente, derrière l'écran, ou à l'écran.
+    const op = nombres.map((n) => (k >= n ? 0 : k >= n - 2 ? 1 : 0.42));
+    corps += `<g>${fondu('opacity', C, instants.map((ins, i) => [ins, op[i]]))}
+      <circle cx="${px + 14}" cy="${y + ph / 2}" r="5" fill="${FOND}" stroke="${couleurs[k]}" stroke-width="2"/>
+      <rect x="${px + 30}" y="${y}" width="${pl - 30}" height="${ph}" rx="9" fill="${CARTE}" stroke="${BORD}"/>
+      ${t(px + 44, y + 24, p[1], { taille: 13, couleur: TITRE })}
+    </g>`;
   });
+  // Le cadre de l'écran : il entoure toujours les deux dernières pages.
+  const yCadre = (n) => py + (n - 2) * pas_ - 7;
+  corps += `<g>
+    <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
+      keyTimes="${instants.join(';')}" values="${nombres.map((n) => `0 ${yCadre(n) - yCadre(2)}`).join(';')}"
+      calcMode="spline" keySplines="${instants.slice(1).map(() => '0.4 0 0.2 1').join(';')}"/>
+    <rect x="${px + 22}" y="${yCadre(2)}" width="${pl - 14}" height="${pas_ + ph + 14}" rx="13" fill="${VERT}" fill-opacity="0.06" stroke="${VERT}" stroke-opacity="0.8" stroke-width="1.5" filter="url(#halo)"/>
+    ${t(px + pl + 16, yCadre(2) + (pas_ + ph + 14) / 2 + 4, 'à l’écran', { taille: 11.5, couleur: VERT, police: MONO })}
+  </g>`;
   corps += t(640, 440, 'Les deux derniers volets de la pile se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('volets.svg', 1280, 462, corps,
-    'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Un geste retour depuis le bord droit referme les volets un à un, jusqu’à l’analyse. À droite, la pile des pages ouvertes s’allonge puis se vide.');
+    'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour d’Android, un doigt qui glisse depuis le bord droit et sa bulle fléchée, referme les volets un à un, jusqu’à l’analyse. À droite, la pile des pages ouvertes s’allonge puis se vide ; un cadre vert entoure toujours les deux dernières, celles de l’écran.');
 }
