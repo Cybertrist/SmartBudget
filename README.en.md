@@ -72,6 +72,8 @@ Access expires after 180 days, by law: the bank card warns fifteen days ahead, a
 
 **The overdrawn alert** is the app's only notification. Every six hours, even with the app closed, it reads the current account's balance again, and nothing else: four reads a day at most, the limit PSD2 grants to access made without you. If it drops below zero, a notification gives the amount; the next one waits until the account has gone back up and down again.
 
+<img src="docs/en/schemas/alerte.svg" alt="The balance watch. Every six hours, the current account balance is read again: 320, 180 and 60 euros, then -42.10 euros at midnight, and the locked phone gets the notification Current account overdrawn, with the amount. At the next two reads, -85 and -20 euros, no new alert: already told. At 150 euros, the alert re-arms. Four reads a day at most, the PSD2 limit." width="100%">
+
 <img src="docs/en/sections/s05.png" alt="05 How a transaction is read" width="100%">
 
 <img src="docs/en/schemas/classement.svg" alt="How a transaction is read. The label PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 loses its noise, leaving the merchant key. Four questions follow one another: internal transfer, no; learned rule, no; dictionary, yes. Result: Groceries, Supermarket, essential." width="100%">
@@ -142,4 +144,4 @@ Designed and written by **Tristan Joncour**, a cyber-defence engineering student
 
 <br>
 
-<sub>The images on this page come out of no drawing software: they are HTML pages captured by Chrome, and five animated SVGs written by hand by <code>anime.js</code>, in French and then in English through <code>anglais.json</code>. The screenshots come from an emulator filled with demo data, cropped by <code>rogner.js</code>. It is all in <a href="docs/tools/">docs/tools</a>.</sub>
+<sub>The images on this page come out of no drawing software: they are HTML pages captured by Chrome, and six animated SVGs written by hand by <code>anime.js</code>, in French and then in English through <code>anglais.json</code>. The screenshots come from an emulator filled with demo data, cropped by <code>rogner.js</code>. It is all in <a href="docs/tools/">docs/tools</a>.</sub>

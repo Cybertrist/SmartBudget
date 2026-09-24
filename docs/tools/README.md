@@ -9,7 +9,7 @@ par un script. Changer un texte, c'est changer une ligne.
 
     bash docs/tools/figures.sh     # bannière, bandeaux, grilles, couches, modèle, bouton
     bash docs/tools/captures.sh    # les deux planches de captures
-    node docs/tools/anime.js       # les cinq schémas animés
+    node docs/tools/anime.js       # les six schémas animés
     bash docs/tools/pastilles.sh   # les pastilles FRANÇAIS et ENGLISH, dans docs/langues
     bash docs/tools/social.sh      # l'aperçu social (JPEG), à déposer dans Settings > Social preview
 
@@ -36,8 +36,8 @@ Chaque commande fait la version française, puis l'anglaise dans `docs/en/`.
   quand `LANGUE=en`.
 - `jpeg.js` : convertit l'aperçu social en JPEG, sous le mégaoctet de GitHub.
 - `anime.js` : les SVG animés, la connexion à la banque, la lecture d'une
-  opération, les virements, remboursements et espèces, le chiffrement et
-  l'écran déplié. Les animations sont en SMIL, que GitHub joue dans une
+  opération, les virements, remboursements et espèces, le chiffrement,
+  l'écran déplié et la veille du solde. Les animations sont en SMIL, que GitHub joue dans une
   balise `<img>`. Pas de police externe : un SVG en `<img>` n'a pas le droit
   d'aller la chercher.
 

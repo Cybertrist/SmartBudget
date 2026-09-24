@@ -1,4 +1,4 @@
-// Les schémas animés du README.
+// Les six schémas animés du README.
 //
 // Des SVG plutôt que des GIF : quelques kilo-octets, nets à toute taille,
 // et le texte reste du texte. Les animations sont en SMIL, que les
@@ -529,6 +529,115 @@ const P = {
   corps += t(640, 440, 'Les deux dernières pages ouvertes se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('volets.svg', 1280, 462, corps,
     'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes s’allonge puis se vide.');
+}
+
+// ------------------------------------------------------------------------
+// 6. La veille du solde : une lecture toutes les six heures, une seule
+// alerte par passage en négatif.
+{
+  const C = 16;
+  let corps = '';
+  corps += t(60, 52, 'LA VEILLE DU SOLDE', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
+  corps += t(262, 52, 'Toutes les six heures, même application fermée. Une seule alerte par passage en négatif.', { taille: 14 });
+
+  // Huit lectures, sur deux jours : le solde passe sous zéro à la
+  // quatrième, y reste deux lectures, puis remonte.
+  const lectures = [
+    ['lun. 6 h', 32000, '06:02'],
+    ['12 h', 18000, '12:05'],
+    ['18 h', 6000, '18:01'],
+    ['mar. 0 h', -4210, '00:04'],
+    ['6 h', -8500, '06:03'],
+    ['12 h', -2000, '12:02'],
+    ['18 h', 15000, '18:04'],
+    ['mer. 0 h', 9000, '00:01'],
+  ];
+  const etats = ['lu', 'lu', 'lu', 'alerte', 'déjà prévenu', 'déjà prévenu', 'réarmée', 'lu'];
+  const couleurEtat = { lu: DISCRET, alerte: ROUGE, 'déjà prévenu': DISCRET, réarmée: VERT };
+  const instant = (i) => 0.06 + i * 0.105;
+  const fin = 0.95;
+  const X = (i) => 130 + i * 94;
+  const ZERO = 298;
+  const Y = (c) => ZERO - c * 0.0043;
+  // « 320 € », « -42,10 € » : les centimes seulement quand il y en a.
+  const montant = (c) => {
+    const e = Math.trunc(Math.abs(c) / 100), ct = Math.abs(c) % 100;
+    return `${c < 0 ? '-' : ''}${e}${ct ? ',' + String(ct).padStart(2, '0') : ''} €`;
+  };
+
+  // Le cadre du graphique.
+  corps += `<rect x="60" y="80" width="800" height="352" rx="16" fill="${CARTE}" stroke="${BORD}"/>`;
+  corps += t(84, 110, 'Solde du compte courant', { taille: 12, couleur: DISCRET, police: MONO, extra: 'letter-spacing="1.5"' });
+  corps += `<line x1="100" y1="${ZERO}" x2="830" y2="${ZERO}" stroke="${FIL}" stroke-width="1.5" stroke-dasharray="5 6"/>`;
+  corps += t(826, ZERO - 8, '0 €', { taille: 11.5, couleur: DISCRET, police: MONO, ancre: 'end' });
+
+  // La courbe se trace lecture après lecture : verte au-dessus de zéro,
+  // rouge en dessous, par deux découpes de la même ligne.
+  const pts = lectures.map(([, c], i) => [X(i), Y(c)]);
+  const d = 'M' + pts.map((p) => p.join(' ')).join(' L');
+  const longueurs = [0];
+  for (let i = 1; i < pts.length; i++) {
+    longueurs.push(longueurs[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  }
+  const L = Math.ceil(longueurs.at(-1));
+  const trace = [[0, L], ...lectures.map((_, i) => [instant(i), L - longueurs[i]]), [fin, 0], [0.98, L], [1, L]];
+  corps += `<clipPath id="dessus"><rect x="60" y="80" width="800" height="${ZERO - 80}"/></clipPath>`;
+  corps += `<clipPath id="dessous"><rect x="60" y="${ZERO}" width="800" height="${432 - ZERO}"/></clipPath>`;
+  for (const [clip, couleur] of [['dessus', VERT], ['dessous', ROUGE]]) {
+    corps += `<path d="${d}" fill="none" stroke="${couleur}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"
+      clip-path="url(#${clip})" stroke-dasharray="${L}" stroke-dashoffset="${L}">${fondu('stroke-dashoffset', C, trace)}</path>`;
+  }
+
+  // Chaque lecture : une onde au point, le montant, l'heure, et ce qu'en
+  // fait la veille.
+  lectures.forEach(([heure, c], i) => {
+    const [x, y] = pts[i];
+    const s = instant(i);
+    const coul = c < 0 ? ROUGE : VERT;
+    corps += t(x, 386, heure, { taille: 11.5, couleur: DISCRET, police: MONO, ancre: 'middle' });
+    corps += `<circle cx="${x}" cy="${y}" r="6" fill="${coul}" opacity="0">${fondu('opacity', C, [[0, 0], [s, 0], [s + 0.012, 0.6], [s + 0.045, 0], [1, 0]])}${fondu('r', C, [[0, 6], [s, 6], [s + 0.045, 24], [1, 24]])}</circle>`;
+    corps += `<g opacity="0">${visible(C, s, fin)}
+      <circle cx="${x}" cy="${y}" r="5" fill="${FOND}" stroke="${coul}" stroke-width="2.5"/>
+      ${t(x, c < 0 ? y + 24 : y - 14, montant(c), { taille: 12, couleur: TITRE, police: MONO, poids: 700, ancre: 'middle' })}
+      ${t(x, 412, etats[i], { taille: 11.5, couleur: couleurEtat[etats[i]], police: MONO, poids: etats[i] === 'lu' ? 400 : 700, ancre: 'middle' })}
+    </g>`;
+  });
+
+  // Le téléphone verrouillé : l'heure de la dernière lecture, et la
+  // notification qui descend à la première lecture en négatif.
+  const px = 900, pw = 320;
+  corps += `<rect x="${px}" y="80" width="${pw}" height="352" rx="34" fill="#0A0E14" stroke="#2F3A47" stroke-width="1.5"/>`;
+  corps += `<rect x="${px + 10}" y="90" width="${pw - 20}" height="332" rx="26" fill="#0E141C"/>`;
+  corps += `<rect x="${px + pw / 2 - 30}" y="98" width="60" height="7" rx="3.5" fill="#1B232E"/>`;
+  lectures.forEach(([, , heure], i) => {
+    const de = i === 0 ? 0 : instant(i);
+    const a = i === lectures.length - 1 ? 1 : instant(i + 1);
+    corps += `<g opacity="${i === 0 ? 1 : 0}">${paliers('opacity', C, [[0, i === 0 ? 1 : 0], ...(i === 0 ? [] : [[de, 1]]), ...(a < 1 ? [[a, 0]] : [])])}
+      ${t(px + pw / 2, 172, heure, { taille: 44, couleur: TITRE, poids: 300, ancre: 'middle' })}</g>`;
+  });
+  corps += t(px + pw / 2, 198, 'Écran verrouillé', { taille: 12, couleur: DISCRET, ancre: 'middle' });
+  const s = instant(3);
+  corps += `<g opacity="0">
+    ${fondu('opacity', C, [[0, 0], [s, 0], [s + 0.02, 1], [fin, 1], [0.98, 0], [1, 0]])}
+    <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
+      keyTimes="0;${s};${s + 0.03};1" values="0 -30;0 -30;0 0;0 0" calcMode="spline" keySplines="0 0 1 1;0.3 0 0.2 1;0 0 1 1"/>
+    <rect x="${px + 20}" y="222" width="${pw - 40}" height="78" rx="18" fill="#1A2230" stroke="${ROUGE}" stroke-opacity="0.45"/>
+    <circle cx="${px + 46}" cy="248" r="13" fill="${ROUGE}" fill-opacity="0.18" stroke="${ROUGE}"/>
+    <path d="M${px + 40} 254 v-4 M${px + 46} 254 v-9 M${px + 52} 254 v-13" stroke="${ROUGE}" stroke-width="3" stroke-linecap="round"/>
+    ${t(px + 68, 244, 'Smart Budget · maintenant', { taille: 10.5, couleur: DISCRET })}
+    ${t(px + 68, 262, 'Compte courant en négatif', { taille: 13, couleur: TITRE, poids: 700 })}
+    ${t(px + 68, 282, `Ton compte courant est à ${montant(-4210)}.`, { taille: 12, couleur: TEXTE })}
+  </g>`;
+  // Au retour au-dessus de zéro, l'alerte se réarme.
+  const r = instant(6);
+  corps += `<g opacity="0">${visible(C, r, fin)}
+    <rect x="${px + 60}" y="330" width="${pw - 120}" height="30" rx="15" fill="${VERT}" fill-opacity="0.12" stroke="${VERT}" stroke-opacity="0.6"/>
+    ${t(px + pw / 2, 350, 'alerte réarmée', { taille: 12, couleur: VERT, police: MONO, poids: 700, ancre: 'middle' })}
+  </g>`;
+
+  corps += t(640, 458, 'Quatre lectures par jour au plus : la limite que la DSP2 accorde aux accès faits sans toi.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  svg('alerte.svg', 1280, 480, corps,
+    'La veille du solde. Toutes les six heures, même application fermée, le solde du compte courant est relu. Sur deux jours, huit lectures : 320, 180 et 60 euros, puis -42,10 euros à minuit, et le téléphone verrouillé reçoit la notification Compte courant en négatif, Ton compte courant est à -42,10 euros. Aux deux lectures suivantes, -85 et -20 euros, pas de nouvelle alerte : déjà prévenu. À 150 euros, l’alerte se réarme. Quatre lectures par jour au plus, la limite de la DSP2 pour les accès faits sans l’utilisateur.');
 }
 
 if (EN && manque.size) {

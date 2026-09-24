@@ -70,6 +70,8 @@ L'accès expire au bout de 180 jours, par la loi : la carte de la banque prévie
 
 **L'alerte de compte en négatif** est la seule notification de l'application. Toutes les six heures, même application fermée, elle relit le solde du compte courant, et lui seul : quatre lectures par jour au plus, la limite que la DSP2 accorde aux accès faits sans toi. S'il passe sous zéro, une notification donne le montant ; la suivante attend que le compte soit remonté puis redescendu.
 
+<img src="docs/schemas/alerte.svg" alt="La veille du solde. Toutes les six heures, le solde du compte courant est relu : 320, 180 et 60 euros, puis -42,10 euros à minuit, et le téléphone verrouillé reçoit la notification Compte courant en négatif, avec le montant. Aux deux lectures suivantes, -85 et -20 euros, pas de nouvelle alerte : déjà prévenu. À 150 euros, l'alerte se réarme. Quatre lectures par jour au plus, la limite de la DSP2." width="100%">
+
 <img src="docs/sections/s05.png" alt="05 Comment une opération est lue" width="100%">
 
 <img src="docs/schemas/classement.svg" alt="Comment une opération est lue. Le libellé PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 perd son bruit, il reste la clé du marchand. Quatre questions s'enchaînent : virement interne, non ; règle apprise, non ; dictionnaire, oui. Résultat : Courses, Supermarché, essentiel." width="100%">
@@ -140,4 +142,4 @@ Conçu et écrit par **Tristan Joncour**, élève ingénieur en cyberdéfense à
 
 <br>
 
-<sub>Les images de cette page ne sortent d'aucun logiciel de dessin : ce sont des pages HTML que Chrome capture, et cinq SVG animés écrits à la main par <code>anime.js</code>. Les captures viennent d'un émulateur rempli par le jeu d'essai, rognées par <code>rogner.js</code>. Tout est dans <a href="docs/tools/">docs/tools</a>.</sub>
+<sub>Les images de cette page ne sortent d'aucun logiciel de dessin : ce sont des pages HTML que Chrome capture, et six SVG animés écrits à la main par <code>anime.js</code>. Les captures viennent d'un émulateur rempli par le jeu d'essai, rognées par <code>rogner.js</code>. Tout est dans <a href="docs/tools/">docs/tools</a>.</sub>
