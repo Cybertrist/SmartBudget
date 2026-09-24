@@ -12,6 +12,8 @@ par un script. Changer un texte, c'est changer une ligne.
     node docs/tools/anime.js       # les cinq schémas animés
     bash docs/tools/social.sh      # l'aperçu social (JPEG), à déposer dans Settings > Social preview
 
+Chaque commande fait la version française, puis l'anglaise dans `docs/en/`.
+
 ## Ce que fait chaque fichier
 
 - `rendu.sh` : le moteur commun. La page écrit sa hauteur réelle dans son
@@ -26,6 +28,12 @@ par un script. Changer un texte, c'est changer une ligne.
   barre d'état et la barre de navigation d'après un `barres.txt` posé à
   côté, réduit et écrit en JPEG, par un canvas de Chrome. Repris de
   BodyCount.
+- `anglais.json` : la traduction de chaque texte des figures et des schémas.
+  Un texte absent du dictionnaire arrête le rendu anglais et s'affiche :
+  aucune figure anglaise ne garde une phrase française par oubli.
+- `traduire.js` : applique `anglais.json` à une page, appelé par `rendu.sh`
+  quand `LANGUE=en`.
+- `jpeg.js` : convertit l'aperçu social en JPEG, sous le mégaoctet de GitHub.
 - `anime.js` : les SVG animés, la connexion à la banque, la lecture d'une
   opération, les virements, remboursements et espèces, le chiffrement et
   l'écran déplié. Les animations sont en SMIL, que GitHub joue dans une

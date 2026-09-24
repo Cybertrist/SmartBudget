@@ -50,12 +50,17 @@ bandeau () {
 <style>
 .w{height:118px;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:0 60px}
 .l{display:flex;align-items:center;gap:20px;height:40px}
-.ix{width:52px;height:40px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
+.ix{width:52px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
   font-size:15px;color:#1ED760;border:1.5px solid #1ED7604D;background:#1ED7601C;border-radius:6px}
 h2{font-family:Syne,sans-serif;font-weight:800;font-size:29px;letter-spacing:5px;text-transform:uppercase;white-space:nowrap}
 .r{height:2px;display:flex}.r .a{width:52px;background:#1ED760}.r .b{flex:1;background:linear-gradient(90deg,#3A4450,#222A34 42%,transparent)}
 </style></head><body>
 <div class="w"><div class="l"><div class="ix">$1</div><h2>$2</h2></div><div class="r"><i class="a"></i><i class="b"></i></div></div>
+<script>
+// Un titre trop long se resserre jusqu'à tenir dans la marge de droite.
+document.fonts.ready.then(()=>{const h=document.querySelector('h2');let s=29;
+  while(h.getBoundingClientRect().right>1220&&s>16){s--;h.style.fontSize=s+'px';h.style.letterSpacing=(s/29*5).toFixed(2)+'px';}});
+</script>
 HTML
 pied; } > "$D/html/s$1.html"
 rendre "s$1.html" "$DOCS/sections/s$1.png"
@@ -262,3 +267,6 @@ html,body{width:720px;height:132px;overflow:hidden;background:transparent}
 HTML
 pied; } > "$D/html/telecharger.html"
 rendre telecharger.html "$DOCS/telecharger.png" 720
+
+# Puis la même chose en anglais, dans docs/en/.
+[ -z "$LANGUE" ] && LANGUE=en bash "${BASH_SOURCE[0]}"

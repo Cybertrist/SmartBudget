@@ -8,10 +8,18 @@
 // du système.
 //
 //   node docs/tools/anime.js
+//
+// Il se relance ensuite avec LANGUE=en : chaque texte passe alors par
+// anglais.json, et les schémas vont dans docs/en/schemas.
 const fs = require('fs');
 const path = require('path');
 
-const SORTIE = path.join(__dirname, '..', 'schemas');
+const EN = process.env.LANGUE === 'en';
+const SORTIE = path.join(__dirname, '..', ...(EN ? ['en'] : []), 'schemas');
+const { traduire } = require('./traduire.js');
+const manque = new Set();
+/// Un texte dans la langue du rendu.
+const tr = (s) => (EN ? traduire(s, manque) : s);
 fs.mkdirSync(SORTIE, { recursive: true });
 
 const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
@@ -35,6 +43,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 /// Le cadre commun : fond, grille estompée, filtre de halo.
 function svg(nom, largeur, hauteur, corps, titre) {
+  titre = tr(titre);
   const contenu = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largeur} ${hauteur}" width="${largeur}" height="${hauteur}" role="img" aria-label="${esc(titre)}">
 <title>${esc(titre)}</title>
 <defs>
@@ -63,7 +72,7 @@ ${corps}
 
 /// Un texte.
 const t = (x, y, s, { taille = 14, couleur = TEXTE, police = SANS, poids = 400, ancre = 'start', extra = '' } = {}) =>
-  `<text x="${x}" y="${y}" font-family="${police}" font-size="${taille}" font-weight="${poids}" fill="${couleur}" text-anchor="${ancre}" ${extra}>${esc(s)}</text>`;
+  `<text x="${x}" y="${y}" font-family="${police}" font-size="${taille}" font-weight="${poids}" fill="${couleur}" text-anchor="${ancre}" ${extra}>${esc(tr(s))}</text>`;
 
 /// Une valeur qui change par paliers au fil d'un cycle : [instant 0..1, valeur].
 function paliers(attribut, cycle, etapes, extra = '') {
@@ -195,7 +204,7 @@ const P = {
     const xa = acteurs[de][0], xb = acteurs[vers][0];
     if (de === vers) {
       // Une pastille accrochée à sa colonne, qui s'ouvre vers la droite.
-      const l = libelle.length * 6.9 + 36, x0 = xa - 14;
+      const l = tr(libelle).length * 6.9 + 36, x0 = xa - 14;
       corps += `<g opacity="0">${visible(C, s, fin)}
         <rect x="${x0}" y="${y - 14}" width="${l}" height="28" rx="14" fill="${FOND}"/>
         <rect x="${x0}" y="${y - 14}" width="${l}" height="28" rx="14" fill="${c}" fill-opacity="0.14" stroke="${c}" stroke-opacity="0.8"/>
@@ -337,8 +346,8 @@ const P = {
     const L = 326, w0 = L, w1 = Math.round((reste / total) * L);
     return `${t(b + 22, y, nom, { taille: 13, couleur: TITRE })}
       ${t(b + 348, y, '', {})}
-      <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${TITRE}" text-anchor="end">-${total} €${paliers('opacity', C, [[0, 1], [debut + 0.12, 0], [0.95, 1]])}</text>
-      <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${ROSE}" text-anchor="end" opacity="0">reste ${reste} €${paliers('opacity', C, [[0, 0], [debut + 0.12, 1], [0.95, 0]])}</text>
+      <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${TITRE}" text-anchor="end">${tr(`-${total} €`)}${paliers('opacity', C, [[0, 1], [debut + 0.12, 0], [0.95, 1]])}</text>
+      <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${ROSE}" text-anchor="end" opacity="0">${tr(`reste ${reste} €`)}${paliers('opacity', C, [[0, 0], [debut + 0.12, 1], [0.95, 0]])}</text>
       <rect x="${b + 22}" y="${y + 10}" width="${L}" height="9" rx="4.5" fill="#1D2530"/>
       <rect x="${b + 22}" y="${y + 10}" width="${w0}" height="9" rx="4.5" fill="${ROSE}">${fondu('width', C, [[0, w0], [debut, w0], [debut + 0.12, w1], [0.95, w1], [0.99, w0], [1, w0]])}</rect>
       <g opacity="0">${visible(C, debut + 0.02, 0.95)}${t(b + 22, y + 38, `${part} € du chèque`, { taille: 11.5, couleur: ROSE })}</g>`;
@@ -520,4 +529,13 @@ const P = {
   corps += t(640, 440, 'Les deux dernières pages ouvertes se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('volets.svg', 1280, 462, corps,
     'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes s’allonge puis se vide.');
+}
+
+if (EN && manque.size) {
+  console.error('  Absent de anglais.json :');
+  for (const s of manque) console.error('    ' + s);
+  process.exit(1);
+}
+if (!EN) {
+  require('child_process').execFileSync(process.execPath, [__filename], { env: { ...process.env, LANGUE: 'en' }, stdio: 'inherit' });
 }

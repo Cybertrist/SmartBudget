@@ -2,11 +2,13 @@
 
 <img src="docs/banniere.png" alt="Smart Budget : votre argent, vos projets, votre avenir. Gardez le contrôle, profitez de l'essentiel. Flutter, Enable Banking, SQLCipher, AES-GCM, Fold." width="100%">
 
+<b>Français</b> · <a href="README.en.md">English</a>
+
 </div>
 
 <br>
 
-Une application Android de budget, faite pour une seule personne et un seul compte : le sien. Elle lit le compte courant au Crédit Mutuel de Bretagne par la DSP2, range chaque opération dans sa catégorie, met de côté ce qui n'est ni une dépense ni un revenu, et montre où part l'argent, mois après mois. Tout reste sur le téléphone, chiffré.
+Une application Android de budget, faite pour une seule personne et un seul compte : le sien. Elle lit le compte courant par la DSP2, range chaque opération dans sa catégorie, met de côté ce qui n'est ni une dépense ni un revenu, et montre où part l'argent, mois après mois. Tout reste sur le téléphone, chiffré.
 
 Elle est née d'une envie simple : arrêter de dépenser sans regarder, et de piocher dans l'épargne. Le modèle, c'est Bankin ; le style, celui de Spotify, sobre et sombre, avec un seul vert.
 

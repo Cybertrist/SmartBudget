@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 630" width="1280" height="630" role="img" aria-label="Linking the bank, an exchange between four parties: Smart Budget, Enable Banking, your bank and GitHub Pages. Smart Budget sends Enable Banking a JWT signed with RS256 and a random state; Enable Banking opens the bank’s page; you approve with Safetrans; the bank comes back to GitHub Pages with a code and the state; the page hands back to the app through smartbudget://banque; the app checks the state matches the one it sent, trades the code for a 180-day session and the accounts, then imports twelve months and syncs at every launch.">
+<title>Linking the bank, an exchange between four parties: Smart Budget, Enable Banking, your bank and GitHub Pages. Smart Budget sends Enable Banking a JWT signed with RS256 and a random state; Enable Banking opens the bank’s page; you approve with Safetrans; the bank comes back to GitHub Pages with a code and the state; the page hands back to the app through smartbudget://banque; the app checks the state matches the one it sent, trades the code for a 180-day session and the accounts, then imports twelve months and syncs at every launch.</title>
+<defs>
+  <filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <pattern id="grille" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#1ED760" stroke-opacity="0.05"/>
+  </pattern>
+  <pattern id="hachures" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#161D27"/><line x1="0" y1="0" x2="0" y2="10" stroke="#2A3542" stroke-width="4"/>
+  </pattern>
+  <radialGradient id="lueur" cx="50%" cy="0%" r="80%">
+    <stop offset="0" stop-color="#1ED760" stop-opacity="0.10"/><stop offset="1" stop-color="#1ED760" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="1280" height="630" rx="16" fill="#0D1117"/>
+<rect width="1280" height="630" rx="16" fill="url(#grille)"/>
+<rect width="1280" height="630" rx="16" fill="url(#lueur)"/>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">LINKING THE BANK</text><text x="270" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >One round trip, once every 180 days. The private key never leaves the phone.</text><line x1="160" y1="150" x2="160" y2="570" stroke="#1ED760" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="3 6"/><line x1="480" y1="150" x2="480" y2="570" stroke="#3CE0FF" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="3 6"/><line x1="800" y1="150" x2="800" y2="570" stroke="#FFC857" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="3 6"/><line x1="1120" y1="150" x2="1120" y2="570" stroke="#FF8FD1" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="3 6"/><rect x="42" y="86" width="236" height="64" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="42" y="98" width="3" height="40" rx="1.5" fill="#1ED760"/>
+      <g transform="translate(60,104)"><rect x="4" y="0" width="20" height="28" rx="4" fill="none" stroke="#1ED760" stroke-width="2"/><circle cx="14" cy="23" r="1.6" fill="#1ED760"/></g>
+      <text x="100" y="115" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Smart Budget</text>
+      <text x="100" y="134" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >the phone</text><rect x="42" y="86" width="236" height="64" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.452;0.47200000000000003;0.542;0.562;1" values="0;0;1;1;0;0"/></rect><rect x="42" y="86" width="236" height="64" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.55;0.5700000000000001;0.6400000000000001;0.6600000000000001;1" values="0;0;1;1;0;0"/></rect><rect x="42" y="86" width="236" height="64" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.7460000000000001;0.7660000000000001;0.8360000000000001;0.8560000000000001;1" values="0;0;1;1;0;0"/></rect><rect x="42" y="86" width="236" height="64" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.8440000000000001;0.8640000000000001;0.9340000000000002;0.9540000000000002;1" values="0;0;1;1;0;0"/></rect><rect x="362" y="86" width="236" height="64" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="362" y="98" width="3" height="40" rx="1.5" fill="#3CE0FF"/>
+      <g transform="translate(380,104)"><path d="M8 22 H22 A5 5 0 0 0 21 12 A7 7 0 0 0 8 13 A4.5 4.5 0 0 0 8 22 Z" fill="none" stroke="#3CE0FF" stroke-width="2"/></g>
+      <text x="420" y="115" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Enable Banking</text>
+      <text x="420" y="134" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >PSD2 access</text><rect x="362" y="86" width="236" height="64" rx="13" fill="none" stroke="#3CE0FF" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.06;0.08;0.15000000000000002;0.17;1" values="0;0;1;1;0;0"/></rect><rect x="362" y="86" width="236" height="64" rx="13" fill="none" stroke="#3CE0FF" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.6480000000000001;0.6680000000000001;0.7380000000000002;0.7580000000000002;1" values="0;0;1;1;0;0"/></rect><rect x="682" y="86" width="236" height="64" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="682" y="98" width="3" height="40" rx="1.5" fill="#FFC857"/>
+      <g transform="translate(700,104)"><path d="M2 11 L14 3 L26 11 Z M5 13 H23 M7 14 V23 M12 14 V23 M16 14 V23 M21 14 V23 M3 25 H25" fill="none" stroke="#FFC857" stroke-width="2" stroke-linejoin="round"/></g>
+      <text x="740" y="115" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Your bank</text>
+      <text x="740" y="134" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >you approve</text><rect x="682" y="86" width="236" height="64" rx="13" fill="none" stroke="#FFC857" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.158;0.178;0.248;0.268;1" values="0;0;1;1;0;0"/></rect><rect x="682" y="86" width="236" height="64" rx="13" fill="none" stroke="#FFC857" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.256;0.276;0.34600000000000003;0.36600000000000005;1" values="0;0;1;1;0;0"/></rect><rect x="1002" y="86" width="236" height="64" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="1002" y="98" width="3" height="40" rx="1.5" fill="#FF8FD1"/>
+      <g transform="translate(1020,104)"><rect x="4" y="2" width="20" height="24" rx="3" fill="none" stroke="#FF8FD1" stroke-width="2"/><path d="M9 10 H19 M9 15 H19 M9 20 H15" stroke="#FF8FD1" stroke-width="2"/></g>
+      <text x="1060" y="115" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >GitHub Pages</text>
+      <text x="1060" y="134" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >the return page</text><rect x="1002" y="86" width="236" height="64" rx="13" fill="none" stroke="#FF8FD1" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.35400000000000004;0.37400000000000005;0.44400000000000006;0.4640000000000001;1" values="0;0;1;1;0;0"/></rect><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.009999999999999998;0.03;0.95;0.97;1" values="0;0;1;1;0;0"/>
+      <line x1="168" y1="196" x2="470" y2="196" stroke="#1ED760" stroke-width="2" stroke-dasharray="302" stroke-dashoffset="302">
+        <animate attributeName="stroke-dashoffset" dur="18s" repeatCount="indefinite" keyTimes="0;0.03;0.08;1" values="302;302;0;0"/></line>
+      <path d="M463 190 L471 196 L463 202" fill="none" stroke="#1ED760" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.06;0.08;0.95;0.97;1" values="0;0;1;1;0;0"/></path>
+      <circle cx="160" cy="196" r="4" fill="#1ED760"/>
+      <text x="320" y="186" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="middle" >POST /auth: a JWT signed with RS256, and a random state</text>
+    </g><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.03;0.034;0.08;0.08600000000000001;1" values="0;0;1;1;0;0"/>
+      <circle cy="196" r="6" fill="#1ED760"><animate attributeName="cx" dur="18s" repeatCount="indefinite" keyTimes="0;0.03;0.08;1" values="168;168;470;470" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.108;0.128;0.95;0.97;1" values="0;0;1;1;0;0"/>
+      <line x1="488" y1="240" x2="790" y2="240" stroke="#3CE0FF" stroke-width="2" stroke-dasharray="302" stroke-dashoffset="302">
+        <animate attributeName="stroke-dashoffset" dur="18s" repeatCount="indefinite" keyTimes="0;0.128;0.178;1" values="302;302;0;0"/></line>
+      <path d="M783 234 L791 240 L783 246" fill="none" stroke="#3CE0FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.158;0.178;0.95;0.97;1" values="0;0;1;1;0;0"/></path>
+      <circle cx="480" cy="240" r="4" fill="#3CE0FF"/>
+      <text x="640" y="230" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="middle" >opens the bank’s page</text>
+    </g><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.128;0.132;0.178;0.184;1" values="0;0;1;1;0;0"/>
+      <circle cy="240" r="6" fill="#3CE0FF"><animate attributeName="cx" dur="18s" repeatCount="indefinite" keyTimes="0;0.128;0.178;1" values="488;488;790;790" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.20600000000000002;0.226;0.95;0.97;1" values="0;0;1;1;0;0"/>
+        <rect x="786" y="270" width="215.4" height="28" rx="14" fill="#0D1117"/>
+        <rect x="786" y="270" width="215.4" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.8"/>
+        <circle cx="800" cy="284" r="4" fill="#FFC857"/>
+        <text x="812" y="288.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >you approve with Safetrans</text>
+      </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.30400000000000005;0.32400000000000007;0.95;0.97;1" values="0;0;1;1;0;0"/>
+      <line x1="808" y1="328" x2="1110" y2="328" stroke="#FFC857" stroke-width="2" stroke-dasharray="302" stroke-dashoffset="302">
+        <animate attributeName="stroke-dashoffset" dur="18s" repeatCount="indefinite" keyTimes="0;0.32400000000000007;0.37400000000000005;1" values="302;302;0;0"/></line>
+      <path d="M1103 322 L1111 328 L1103 334" fill="none" stroke="#FFC857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.35400000000000004;0.37400000000000005;0.95;0.97;1" values="0;0;1;1;0;0"/></path>
+      <circle cx="800" cy="328" r="4" fill="#FFC857"/>
+      <text x="960" y="318" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="middle" >comes back with ?code=…&amp;state=…</text>
+    </g><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.32400000000000007;0.32800000000000007;0.37400000000000005;0.38000000000000006;1" values="0;0;1;1;0;0"/>
+      <circle cy="328" r="6" fill="#FFC857"><animate attributeName="cx" dur="18s" repeatCount="indefinite" keyTimes="0;0.32400000000000007;0.37400000000000005;1" values="808;808;1110;1110" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.402;0.42200000000000004;0.95;0.97;1" values="0;0;1;1;0;0"/>
+      <line x1="1112" y1="372" x2="170" y2="372" stroke="#FF8FD1" stroke-width="2" stroke-dasharray="942" stroke-dashoffset="942">
+        <animate attributeName="stroke-dashoffset" dur="18s" repeatCount="indefinite" keyTimes="0;0.42200000000000004;0.47200000000000003;1" values="942;942;0;0"/></line>
+      <path d="M177 366 L169 372 L177 378" fill="none" stroke="#FF8FD1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.452;0.47200000000000003;0.95;0.97;1" values="0;0;1;1;0;0"/></path>
+      <circle cx="1120" cy="372" r="4" fill="#FF8FD1"/>
+      <text x="640" y="362" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="middle" >hands back: smartbudget://banque</text>
+    </g><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.42200000000000004;0.42600000000000005;0.47200000000000003;0.47800000000000004;1" values="0;0;1;1;0;0"/>
+      <circle cy="372" r="6" fill="#FF8FD1"><animate attributeName="cx" dur="18s" repeatCount="indefinite" keyTimes="0;0.42200000000000004;0.47200000000000003;1" values="1112;1112;170;170" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.5;0.52;0.95;0.97;1" values="0;0;1;1;0;0"/>
+        <rect x="146" y="402" width="256.8" height="28" rx="14" fill="#0D1117"/>
+        <rect x="146" y="402" width="256.8" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.8"/>
+        <circle cx="160" cy="416" r="4" fill="#1ED760"/>
+        <text x="172" y="420.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >the state matches the one sent ✓</text>
+      </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.5980000000000001;0.6180000000000001;0.95;0.97;1" values="0;0;1;1;0;0"/>
+      <line x1="168" y1="460" x2="470" y2="460" stroke="#1ED760" stroke-width="2" stroke-dasharray="302" stroke-dashoffset="302">
+        <animate attributeName="stroke-dashoffset" dur="18s" repeatCount="indefinite" keyTimes="0;0.6180000000000001;0.6680000000000001;1" values="302;302;0;0"/></line>
+      <path d="M463 454 L471 460 L463 466" fill="none" stroke="#1ED760" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.6480000000000001;0.6680000000000001;0.95;0.97;1" values="0;0;1;1;0;0"/></path>
+      <circle cx="160" cy="460" r="4" fill="#1ED760"/>
+      <text x="320" y="450" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="middle" >POST /sessions: trades the code</text>
+    </g><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.6180000000000001;0.6220000000000001;0.6680000000000001;0.6740000000000002;1" values="0;0;1;1;0;0"/>
+      <circle cy="460" r="6" fill="#1ED760"><animate attributeName="cx" dur="18s" repeatCount="indefinite" keyTimes="0;0.6180000000000001;0.6680000000000001;1" values="168;168;470;470" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.6960000000000001;0.7160000000000001;0.95;0.97;1" values="0;0;1;1;0;0"/>
+      <line x1="472" y1="504" x2="170" y2="504" stroke="#3CE0FF" stroke-width="2" stroke-dasharray="302" stroke-dashoffset="302">
+        <animate attributeName="stroke-dashoffset" dur="18s" repeatCount="indefinite" keyTimes="0;0.7160000000000001;0.7660000000000001;1" values="302;302;0;0"/></line>
+      <path d="M177 498 L169 504 L177 510" fill="none" stroke="#3CE0FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.7460000000000001;0.7660000000000001;0.95;0.97;1" values="0;0;1;1;0;0"/></path>
+      <circle cx="480" cy="504" r="4" fill="#3CE0FF"/>
+      <text x="320" y="494" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="middle" >a 180-day session, and the accounts</text>
+    </g><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.7160000000000001;0.7200000000000001;0.7660000000000001;0.7720000000000001;1" values="0;0;1;1;0;0"/>
+      <circle cy="504" r="6" fill="#3CE0FF"><animate attributeName="cx" dur="18s" repeatCount="indefinite" keyTimes="0;0.7160000000000001;0.7660000000000001;1" values="472;472;170;170" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g><g opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" keyTimes="0;0.794;0.8140000000000001;0.95;0.97;1" values="0;0;1;1;0;0"/>
+        <rect x="146" y="534" width="312" height="28" rx="14" fill="#0D1117"/>
+        <rect x="146" y="534" width="312" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.8"/>
+        <circle cx="160" cy="548" r="4" fill="#1ED760"/>
+        <text x="172" y="552.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >12 months imported, then at every launch</text>
+      </g><text x="640" y="604" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >The state token, random on the way out and checked on the way back, stops a link forged elsewhere from linking another account.</text>
+</svg>

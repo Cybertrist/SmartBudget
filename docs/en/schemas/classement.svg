@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 464" width="1280" height="464" role="img" aria-label="How a transaction is read. The label PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 loses its noise: the prefix, the masked card and the date are struck out, leaving the merchant key CARREFOUR MARKET VANNES. Four questions follow one another: internal transfer, no; learned rule, no; dictionary, yes; uncategorised is not reached. Result: Groceries, Supermarket, essential. Correcting a category writes a rule, followed by the next transactions from the same merchant.">
+<title>How a transaction is read. The label PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 loses its noise: the prefix, the masked card and the date are struck out, leaving the merchant key CARREFOUR MARKET VANNES. Four questions follow one another: internal transfer, no; learned rule, no; dictionary, yes; uncategorised is not reached. Result: Groceries, Supermarket, essential. Correcting a category writes a rule, followed by the next transactions from the same merchant.</title>
+<defs>
+  <filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <pattern id="grille" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#1ED760" stroke-opacity="0.05"/>
+  </pattern>
+  <pattern id="hachures" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#161D27"/><line x1="0" y1="0" x2="0" y2="10" stroke="#2A3542" stroke-width="4"/>
+  </pattern>
+  <radialGradient id="lueur" cx="50%" cy="0%" r="80%">
+    <stop offset="0" stop-color="#1ED760" stop-opacity="0.10"/><stop offset="1" stop-color="#1ED760" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="1280" height="464" rx="16" fill="#0D1117"/>
+<rect width="1280" height="464" rx="16" fill="url(#grille)"/>
+<rect width="1280" height="464" rx="16" fill="url(#lueur)"/>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">HOW A TRANSACTION IS READ</text><text x="60" y="92" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="start" >The label, as the bank writes it</text><g>
+      <rect x="60" y="106" width="212" height="42" rx="9" fill="#131A24" stroke="#1F2833">
+        
+      </rect>
+      <text x="166" y="133" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16" font-weight="600" fill="#F0F4F8" text-anchor="middle" >PAIEMENT PAR CARTE</text>
+      <line x1="70" y1="127" x2="262" y2="127" stroke="#FF6B7A" stroke-width="2" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.08;0.1;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/></line>
+      <rect x="60" y="106" width="212" height="42" rx="9" fill="#0D1117" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.12;0.2;0.92;1" values="0;0;0.65;0.65;0"/></rect>
+    </g><g>
+      <rect x="284" y="106" width="78" height="42" rx="9" fill="#131A24" stroke="#1F2833">
+        
+      </rect>
+      <text x="323" y="133" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16" font-weight="600" fill="#F0F4F8" text-anchor="middle" >X4057</text>
+      <line x1="294" y1="127" x2="352" y2="127" stroke="#FF6B7A" stroke-width="2" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.08;0.1;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/></line>
+      <rect x="284" y="106" width="78" height="42" rx="9" fill="#0D1117" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.12;0.2;0.92;1" values="0;0;0.65;0.65;0"/></rect>
+    </g><g>
+      <rect x="374" y="106" width="266" height="42" rx="9" fill="#131A24" stroke="#1F2833">
+        <animate attributeName="stroke" dur="12s" repeatCount="indefinite" keyTimes="0;0.14;0.2;0.92;1" values="#1F2833;#1F2833;#1ED760;#1ED760;#1F2833"/>
+      </rect>
+      <text x="507" y="133" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16" font-weight="600" fill="#F0F4F8" text-anchor="middle" >CARREFOUR MARKET VANNES</text>
+      
+      
+    </g><g>
+      <rect x="652" y="106" width="72" height="42" rx="9" fill="#131A24" stroke="#1F2833">
+        
+      </rect>
+      <text x="688" y="133" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16" font-weight="600" fill="#F0F4F8" text-anchor="middle" >12/09</text>
+      <line x1="662" y1="127" x2="714" y2="127" stroke="#FF6B7A" stroke-width="2" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.08;0.1;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/></line>
+      <rect x="652" y="106" width="72" height="42" rx="9" fill="#0D1117" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.12;0.2;0.92;1" values="0;0;0.65;0.65;0"/></rect>
+    </g><g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.18000000000000002;0.2;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/><text x="744" y="133" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" font-weight="400" fill="#1ED760" text-anchor="start" >merchant key: CARREFOUR MARKET VANNES</text></g><g>
+      <rect x="60" y="206" width="268" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="60" y="206" width="268" height="86" rx="13" fill="none" stroke="#FF6B7A" stroke-width="1.5" opacity="0" ><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.27999999999999997;0.3;0.4;0.42000000000000004;1" values="0;0;1;1;0;0"/></rect>
+      <text x="80" y="242" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Internal transfer?</text>
+      <text x="80" y="266" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >VIR VERS … DE …</text>
+      <g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.30999999999999994;0.32999999999999996;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/>
+        <circle cx="298" cy="236" r="13" fill="#FF6B7A" fill-opacity="0.15" stroke="#FF6B7A"/>
+        <text x="298" y="241" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#FF6B7A" text-anchor="middle" >✕</text>
+      </g>
+    </g><path d="M332 249 h14" stroke="#2F3A47" stroke-width="2" marker-end=""/><path d="M342 244 l5 5 l-5 5" fill="none" stroke="#2F3A47" stroke-width="2"/><g>
+      <rect x="350" y="206" width="268" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="350" y="206" width="268" height="86" rx="13" fill="none" stroke="#FF6B7A" stroke-width="1.5" opacity="0" ><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.39999999999999997;0.42;0.52;0.54;1" values="0;0;1;1;0;0"/></rect>
+      <text x="370" y="242" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Learned rule?</text>
+      <text x="370" y="266" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >a past correction</text>
+      <g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.42999999999999994;0.44999999999999996;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/>
+        <circle cx="588" cy="236" r="13" fill="#FF6B7A" fill-opacity="0.15" stroke="#FF6B7A"/>
+        <text x="588" y="241" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#FF6B7A" text-anchor="middle" >✕</text>
+      </g>
+    </g><path d="M622 249 h14" stroke="#2F3A47" stroke-width="2" marker-end=""/><path d="M632 244 l5 5 l-5 5" fill="none" stroke="#2F3A47" stroke-width="2"/><g>
+      <rect x="640" y="206" width="268" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <rect x="640" y="206" width="268" height="86" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.52;0.54;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/></rect>
+      <text x="660" y="242" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Dictionary</text>
+      <text x="660" y="266" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >250 known merchants</text>
+      <g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.55;0.5700000000000001;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/>
+        <circle cx="878" cy="236" r="13" fill="#1ED760" fill-opacity="0.15" stroke="#1ED760"/>
+        <text x="878" y="241" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#1ED760" text-anchor="middle" >✓</text>
+      </g>
+    </g><path d="M912 249 h14" stroke="#2F3A47" stroke-width="2" marker-end=""/><path d="M922 244 l5 5 l-5 5" fill="none" stroke="#2F3A47" stroke-width="2"/><g>
+      <rect x="930" y="206" width="268" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+      <text x="950" y="242" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Uncategorised</text>
+      <text x="950" y="266" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >if nothing answers</text>
+      <rect x="930" y="206" width="268" height="86" rx="13" fill="#0D1117" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.66;0.7000000000000001;0.92;1" values="0;0;0.6;0.6;0"/></rect>
+      <g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.67;0.6900000000000001;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/><text x="1178" y="241" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#5C6A7A" text-anchor="end" >not reached</text></g>
+    </g><g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.6;0.62;0.92;0.9400000000000001;1" values="0;0;1;1;0;0"/>
+    <path d="M774 296 V342" stroke="#1ED760" stroke-width="2" stroke-dasharray="4 5"/>
+    <rect x="380" y="344" width="520" height="62" rx="14" fill="#10251A" stroke="#1ED760" filter="url(#halo)"/>
+    <rect x="398" y="358" width="34" height="34" rx="9" fill="#1ED760" fill-opacity="0.18" stroke="#1ED760"/>
+    <path d="M405 368 h4 l3 12 h12 l2 -8 h-15" fill="none" stroke="#1ED760" stroke-width="2" stroke-linejoin="round"/><circle cx="413" cy="385" r="1.8" fill="#1ED760"/><circle cx="422" cy="385" r="1.8" fill="#1ED760"/>
+    <text x="446" y="372" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16" font-weight="700" fill="#F0F4F8" text-anchor="start" >Groceries › Supermarket</text>
+    <text x="446" y="393" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Carrefour Market Vannes · essential · source: dictionary</text>
+  </g><text x="640" y="440" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >Correcting a category writes a rule: the next transactions from the same merchant follow it, ahead of the dictionary.</text>
+</svg>

@@ -9,6 +9,9 @@
 #
 #   source docs/tools/rendu.sh
 #   rendre <fichier.html> <sortie.png> [largeur]
+#
+# Avec LANGUE=en, la page passe d'abord par traduire.js, et l'image va
+# dans docs/en/ au lieu de docs/.
 D="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CH="${CHROME:-/c/Program Files/Google/Chrome/Application/chrome.exe}"
 B="$(cd "$D" && pwd -W 2>/dev/null || pwd)"
@@ -41,6 +44,12 @@ HTML
 
 rendre () {
   local page="$1" sortie="$2" largeur="${3:-1280}" H
+  if [ "$LANGUE" = en ]; then
+    node "$B/traduire.js" "$D/html/$(basename "$page")" "$D/html/en-$(basename "$page")" || return 1
+    page="en-$(basename "$page")"
+    sortie="$DOCS/en/${sortie#"$DOCS"/}"
+    mkdir -p "$(dirname "$sortie")"
+  fi
   local url="file:///$B/html/$(basename "$page")"
   H="$("$CH" --headless=new --disable-gpu --virtual-time-budget=12000 --dump-dom "$url" 2>/dev/null \
       | grep -o '<title>H[0-9]*' | grep -o '[0-9]*' | head -1)"

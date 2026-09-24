@@ -60,3 +60,6 @@ $(ecran deplie 06-epargne 'L’épargne' 'Les livrets à gauche, les mouvements 
 HTML
 pied; } > "$D/html/captures-deplie.html"
 rendre captures-deplie.html "$DOCS/schemas/captures-deplie.png"
+
+# Puis la même chose en anglais, dans docs/en/.
+[ -z "$LANGUE" ] && LANGUE=en bash "${BASH_SOURCE[0]}"
