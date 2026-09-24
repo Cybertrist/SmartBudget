@@ -26,6 +26,7 @@ html,body{width:1280px;height:640px;overflow:hidden;background:#07100B}
 h1{margin-top:36px;white-space:nowrap;font-family:Syne,sans-serif;font-weight:800;font-size:58px;line-height:1;letter-spacing:-1px;color:#F0F4F8}
 h1 em{font-style:normal;color:#50F48D}
 p{margin-top:22px;font-family:'Space Grotesk',sans-serif;font-size:25px;line-height:1.45;color:#A7B0BD}
+p b{font-weight:500;color:#E6EDF3}p em{font-style:normal;color:#50F48D}
 .c{margin-top:30px;display:flex;gap:12px}
 .c span{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px;letter-spacing:1.5px;
   color:#50F48D;padding:10px 16px;border-radius:9px;border:1.5px solid #1E4A30;background:#0C1C13}
@@ -38,7 +39,7 @@ p{margin-top:22px;font-family:'Space Grotesk',sans-serif;font-size:25px;line-hei
   <div class="g">
     <img class="logo" src="file:///$DOCS/logo.png">
     <h1>Smart <em>Budget</em></h1>
-    <p>Votre argent. Vos projets. Votre avenir.<br>Le compte, lu, classé et chiffré sur le téléphone.</p>
+    <p><b>Votre argent. Vos projets. Votre avenir.</b><br>Gardez le <em>contrôle</em>, profitez de l’<em>essentiel</em>.</p>
     <div class="c"><span>FLUTTER</span><span>DSP2</span><span>CHIFFRÉ</span></div>
   </div>
   <div class="e e1"><img src="$SRC/01-accueil.jpg"></div>

@@ -27,6 +27,7 @@ ICONES='<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Ro
 h1{font-family:Syne,sans-serif;font-weight:800;font-size:58px;line-height:1;letter-spacing:-1.5px}
 h1 em{font-style:normal;color:var(--neon)}
 p{font-family:'Space Grotesk',sans-serif;font-size:19px;line-height:1.5;color:#94A3B0;max-width:800px;margin-top:14px}
+.sl{font-size:23px;line-height:1.55;margin-top:18px}.sl b{font-weight:500;color:#E6EDF3}.sl em{font-style:normal;color:var(--neon)}
 .pl{display:flex;gap:8px;margin-top:18px}
 .pl span{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.6px;
   color:#1ED760D0;border:1px solid #1ED7603A;background:#1ED7600E;border-radius:6px;padding:6px 11px}
@@ -36,7 +37,7 @@ p{font-family:'Space Grotesk',sans-serif;font-size:19px;line-height:1.5;color:#9
 <div class="cat"><b>ANDROID</b><b>FINANCES</b><b>OPEN SOURCE</b></div>
 <div class="in"><img class="logo" src="$LOGO">
 <div><h1>Smart <em>Budget</em></h1>
-<p>Votre argent. Vos projets. Votre avenir.<br>Le compte du Crédit Mutuel de Bretagne, lu par la DSP2, classé, analysé et chiffré sur le téléphone.</p>
+<p class="sl"><b>Votre argent. Vos projets. Votre avenir.</b><br>Gardez le <em>contrôle</em>, profitez de l’<em>essentiel</em>.</p>
 <div class="pl"><span>Flutter</span><span>Enable Banking</span><span>SQLCipher</span><span>AES-GCM</span><span>Fold</span></div></div></div>
 <div class="ln"></div></div>
 HTML

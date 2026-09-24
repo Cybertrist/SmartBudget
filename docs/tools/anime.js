@@ -401,9 +401,13 @@ const P = {
   // Le cadre de la tablette et son rail.
   corps += `<rect x="${X0 - 104}" y="${Y0 - 14}" width="${2 * V + GAP + 118}" height="${HT + 28}" rx="24" fill="#0A0E14" stroke="#2F3A47"/>`;
   corps += `<rect x="${X0 - 90}" y="${Y0}" width="88" height="${HT}" rx="0" fill="#0F141B"/>`;
-  ['Mois', 'Analyse', 'Épargne', 'Réglages'].forEach((n, k) => {
-    const y = Y0 + 70 + k * 56;
-    corps += `<rect x="${X0 - 76}" y="${y - 20}" width="60" height="30" rx="15" fill="${k === 1 ? '#FFFFFF1A' : 'none'}"/>${t(X0 - 46, y + 26, n, { taille: 10.5, couleur: k === 1 ? TITRE : DISCRET, ancre: 'middle' })}<circle cx="${X0 - 46}" cy="${y - 5}" r="7" fill="none" stroke="${k === 1 ? TITRE : DISCRET}" stroke-width="1.6"/>`;
+  // Les mêmes symboles que l'application, pleins pour l'onglet actif.
+  const S = require('./symboles.json');
+  [['home', 'Mois'], ['pie_chart', 'Analyse'], ['savings', 'Épargne'], ['settings', 'Réglages']].forEach(([s, n], k) => {
+    const y = Y0 + 70 + k * 56, actif = k === 1;
+    const d = S[actif ? s + '-fill' : s];
+    corps += `<rect x="${X0 - 76}" y="${y - 20}" width="60" height="30" rx="15" fill="${actif ? '#FFFFFF1A' : 'none'}"/>${t(X0 - 46, y + 26, n, { taille: 10.5, couleur: actif ? TITRE : DISCRET, ancre: 'middle' })}
+      <path transform="translate(${X0 - 57},${y - 16}) scale(${22 / 960}) translate(0,960)" d="${d}" fill="${actif ? TITRE : DISCRET}"/>`;
   });
   corps += `<clipPath id="fenetre"><rect x="${X0}" y="${Y0}" width="${2 * V + GAP}" height="${HT}"/></clipPath>`;
   corps += `<g clip-path="url(#fenetre)"><g transform="translate(${X0},0)">
@@ -413,57 +417,46 @@ const P = {
   // Le doigt : un toucher, puis le geste retour.
   const doigt = (x, y, de) => `<circle cx="${x}" cy="${y}" r="16" fill="${NEON}" opacity="0">${fondu('opacity', C, [[0, 0], [de, 0], [de + 0.015, 0.5], [de + 0.05, 0], [1, 0]])}${fondu('r', C, [[0, 10], [de, 10], [de + 0.05, 26], [1, 26]])}</circle>`;
   corps += doigt(X0 + V + 60, Y0 + 116, 0.1) + doigt(X0 + V + 60, Y0 + 116, 0.26) + doigt(X0 + V + 60, Y0 + 116, 0.42);
-  // Le geste retour d'Android, trois fois : le doigt part du bord droit et
-  // glisse vers la gauche, et la bulle du système sort du bord avec sa
-  // flèche, s'étire, puis se retire quand le volet se referme.
-  const bord = X0 + 2 * V + GAP, milieu = Y0 + HT / 2;
+  // Le geste retour, trois fois : le même toucher vert que pour ouvrir,
+  // posé au bord droit, qui file vers la gauche en laissant une traînée,
+  // puis s'éteint en onde quand le doigt lâche et que le volet se referme.
+  const bord = X0 + 2 * V + GAP, milieu = Y0 + HT / 2, course = 210;
+  corps += `<linearGradient id="trainee" x1="0" x2="1"><stop offset="0" stop-color="${NEON}" stop-opacity="0.75"/><stop offset="1" stop-color="${NEON}" stop-opacity="0"/></linearGradient>`;
   const retour = (de) => {
-    const a = de + 0.05; // le doigt lâche, le volet se referme
-    const e = (v0, v1, v2) => [[0, v0], [de, v0], [de + 0.035, v1], [a, v2], [Math.min(a + 0.01, 1), v0], [1, v0]];
-    return `<g opacity="0">${fondu('opacity', C, [[0, 0], [de - 0.005, 0], [de, 1], [a, 1], [a + 0.01, 0], [1, 0]])}
-      <rect y="${milieu - 34}" height="68" rx="34" fill="#1B2330" fill-opacity="0.94" stroke="#FFFFFF" stroke-opacity="0.12">
-        ${fondu('x', C, e(bord, bord - 46, bord - 58))}${fondu('width', C, e(0, 80, 92))}</rect>
-      <path d="M0 -10 L-9 0 L0 10" fill="none" stroke="${TITRE}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-        <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
-          keyTimes="${e(0, 0, 0).map((x) => x[0]).join(';')}" values="${e(bord + 12, bord - 20, bord - 28).map((x) => `${x[1]} ${milieu}`).join(';')}"/></path>
-      <g>
-        <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
-          keyTimes="${e(0, 0, 0).map((x) => x[0]).join(';')}" values="${e(bord - 6, bord - 70, bord - 120).map((x) => `${x[1]} ${milieu + 70}`).join(';')}"/>
-        <circle r="22" fill="#FFFFFF" fill-opacity="0.10"/>
-        <circle r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="1.5"/>
+    const a = de + 0.04; // le doigt lâche, le volet se referme
+    const x0 = bord - 14, x1 = x0 - course;
+    const glisse = (v0, v1) => `keyTimes="0;${de};${a};1" values="${v0};${v0};${v1};${v1}" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.2 1;0 0 1 1"`;
+    const vie = [[0, 0], [de - 0.004, 0], [de, 1], [a, 1], [a + 0.012, 0], [1, 0]];
+    return `<g>
+      <circle cx="${x0}" cy="${milieu}" r="10" fill="${NEON}" opacity="0">${fondu('opacity', C, [[0, 0], [de, 0], [de + 0.012, 0.5], [de + 0.04, 0], [1, 0]])}${fondu('r', C, [[0, 10], [de, 10], [de + 0.04, 28], [1, 28]])}</circle>
+      <rect y="${milieu - 5}" height="10" rx="5" fill="url(#trainee)" opacity="0">${fondu('opacity', C, vie)}
+        <animate attributeName="x" dur="${C}s" repeatCount="indefinite" ${glisse(x0, x1)}/>
+        <animate attributeName="width" dur="${C}s" repeatCount="indefinite" ${glisse(0, course)}/></rect>
+      <g filter="url(#halo)" opacity="0">${fondu('opacity', C, vie)}
+        <circle cy="${milieu}" r="13" fill="${NEON}"><animate attributeName="cx" dur="${C}s" repeatCount="indefinite" ${glisse(x0, x1)}/></circle>
       </g>
+      <circle cx="${x1}" cy="${milieu}" r="13" fill="none" stroke="${NEON}" stroke-width="2" opacity="0">${fondu('opacity', C, [[0, 0], [a, 0], [a + 0.003, 0.8], [a + 0.035, 0], [1, 0]])}${fondu('r', C, [[0, 13], [a, 13], [a + 0.035, 34], [1, 34]])}</circle>
     </g>`;
   };
   corps += `<g clip-path="url(#fenetre)">${retour(0.55) + retour(0.67) + retour(0.79)}</g>`;
-  // La pile, à droite. Chaque page ouverte s'y empile ; les deux dernières
-  // sont celles de l'écran, dans le cadre vert, qui descend et remonte avec
-  // elles. Les pages plus anciennes restent derrière, en retrait.
+  // La pile, à droite : chaque page ouverte s'y ajoute, chaque retour
+  // retire la dernière.
   const px = 968, pl = 196, ph = 38, pas_ = 48, py = Y0 + 34;
   const nombres = [2, 2, 3, 3, 4, 4, 5, 5, 4, 4, 3, 3, 2, 2];
-  corps += t(px, Y0 + 12, 'LA PILE', { taille: 11, couleur: DISCRET, police: MONO, extra: 'letter-spacing="2"' });
+  corps += t(px, Y0 + 12, 'PAGES OUVERTES', { taille: 11, couleur: DISCRET, police: MONO, extra: 'letter-spacing="2"' });
   // Le fil qui relie les pages, de la plus ancienne à la plus récente.
   corps += `<line x1="${px + 14}" y1="${py + ph / 2}" x2="${px + 14}" y2="${py + ph / 2}" stroke="${FIL}" stroke-width="2">
     ${fondu('y2', C, instants.map((ins, i) => [ins, py + ph / 2 + (nombres[i] - 1) * pas_]))}</line>`;
   pages.forEach((p, k) => {
     const y = py + k * pas_;
-    // Absente, derrière l'écran, ou à l'écran.
-    const op = nombres.map((n) => (k >= n ? 0 : k >= n - 2 ? 1 : 0.42));
+    const op = nombres.map((n) => (k < n ? 1 : 0));
     corps += `<g>${fondu('opacity', C, instants.map((ins, i) => [ins, op[i]]))}
       <circle cx="${px + 14}" cy="${y + ph / 2}" r="5" fill="${FOND}" stroke="${couleurs[k]}" stroke-width="2"/>
       <rect x="${px + 30}" y="${y}" width="${pl - 30}" height="${ph}" rx="9" fill="${CARTE}" stroke="${BORD}"/>
       ${t(px + 44, y + 24, p[1], { taille: 13, couleur: TITRE })}
     </g>`;
   });
-  // Le cadre de l'écran : il entoure toujours les deux dernières pages.
-  const yCadre = (n) => py + (n - 2) * pas_ - 7;
-  corps += `<g>
-    <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite"
-      keyTimes="${instants.join(';')}" values="${nombres.map((n) => `0 ${yCadre(n) - yCadre(2)}`).join(';')}"
-      calcMode="spline" keySplines="${instants.slice(1).map(() => '0.4 0 0.2 1').join(';')}"/>
-    <rect x="${px + 22}" y="${yCadre(2)}" width="${pl - 14}" height="${pas_ + ph + 14}" rx="13" fill="${VERT}" fill-opacity="0.06" stroke="${VERT}" stroke-opacity="0.8" stroke-width="1.5" filter="url(#halo)"/>
-    ${t(px + pl + 16, yCadre(2) + (pas_ + ph + 14) / 2 + 4, 'à l’écran', { taille: 11.5, couleur: VERT, police: MONO })}
-  </g>`;
-  corps += t(640, 440, 'Les deux derniers volets de la pile se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  corps += t(640, 440, 'Les deux dernières pages ouvertes se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('volets.svg', 1280, 462, corps,
-    'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour d’Android, un doigt qui glisse depuis le bord droit et sa bulle fléchée, referme les volets un à un, jusqu’à l’analyse. À droite, la pile des pages ouvertes s’allonge puis se vide ; un cadre vert entoure toujours les deux dernières, celles de l’écran.');
+    'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes s’allonge puis se vide.');
 }
