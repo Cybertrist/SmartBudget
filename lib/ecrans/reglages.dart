@@ -206,9 +206,8 @@ class EcranReglages extends ConsumerWidget {
 
   Future<void> _choisirDelai(BuildContext context, WidgetRef ref, Duration actuel) async {
     const choix = [Duration(seconds: 30), Duration(minutes: 1), Duration(minutes: 2), Duration(minutes: 5), Duration(minutes: 15)];
-    final d = await showModalBottomSheet<Duration>(
-      context: context,
-      showDragHandle: true,
+    final d = await carteChoix<Duration>(
+      context,
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -227,9 +226,8 @@ class EcranReglages extends ConsumerWidget {
   }
 
   Future<void> _choisirDebut(BuildContext context, WidgetRef ref, int actuel) async {
-    final choix = await showModalBottomSheet<int>(
-      context: context,
-      showDragHandle: true,
+    final choix = await carteChoix<int>(
+      context,
       builder: (ctx) => SafeArea(
         child: GridView.count(
           crossAxisCount: 7,

@@ -11,7 +11,10 @@
 // - mipmap-*/ic_launcher.png : le logo entier, pour les anciens Android ;
 // - mipmap-*/ic_launcher_foreground.png : la plaque et les barres ;
 // - values/couleurs.xml : le vert du liseré, fond de l'icône adaptative ;
-// - drawable-nodpi/logo_demarrage.png : l'icône de l'écran de démarrage.
+// - drawable-nodpi/logo_demarrage.png : l'écran de démarrage, le même logo
+//   que l'icône, assez petit pour tenir dans le cercle qu'Android découpe ;
+// - assets/logo_icone.png : ce même logo, pour l'application (ouverture,
+//   animation de lancement).
 //
 //   node tool/icone.mjs
 import fs from 'node:fs';
@@ -38,7 +41,8 @@ for (const [d, t] of Object.entries(tailles)) {
   cibles.push({ fichier: `mipmap-${d}/ic_launcher.png`, taille: t, sorte: 'entier' });
   cibles.push({ fichier: `mipmap-${d}/ic_launcher_foreground.png`, taille: Math.round(t * 108 / 48), sorte: 'plaque' });
 }
-cibles.push({ fichier: 'drawable-nodpi/logo_demarrage.png', taille: 288, sorte: 'barres' });
+cibles.push({ fichier: 'drawable-nodpi/logo_demarrage.png', taille: 288, sorte: 'demarrage' });
+cibles.push({ fichier: 'assets/logo_icone.png', taille: 512, sorte: 'complet' });
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'icone-'));
 const page = path.join(temp, 'page.html');
@@ -102,8 +106,22 @@ img.onload = () => {
       g.restore();
       barres(g, m, m, v * ${BARRES});
     } else {
-      g.fillStyle = sortie.fond; g.fillRect(0, 0, c.taille, c.taille);
-      barres(g, m, m, c.taille * 0.36);
+      // Le logo tel que le lanceur l'affiche. Au démarrage, Android découpe
+      // un cercle d'un tiers du côté de rayon : le logo, à 0,55 du côté,
+      // y tient coins compris, sur le fond de l'application.
+      const cote = c.taille * (c.sorte === 'complet' ? 1 : 0.55);
+      forme(g, m, m, cote);
+      g.fillStyle = '#3FD97F'; g.fill();
+      const plaque = cote * (1 - 2 * ${LISERE});
+      g.save();
+      forme(g, m, m, plaque);
+      g.fillStyle = sortie.fond; g.fill();
+      g.clip();
+      g.shadowColor = 'rgba(80,244,141,0.5)'; g.shadowBlur = cote * 0.05;
+      g.lineWidth = cote * 0.02; g.strokeStyle = 'rgba(80,244,141,0.3)';
+      forme(g, m, m, plaque + cote * 0.02); g.stroke();
+      g.restore();
+      barres(g, m, m, cote * ${BARRES});
     }
     sortie[c.fichier] = k.toDataURL('image/png');
   }
@@ -114,7 +132,7 @@ img.src = 'data:image/png;base64,${logo}';
 const dom = execFileSync(chrome, ['--headless=new', '--disable-gpu', '--virtual-time-budget=15000', '--dump-dom', 'file:///' + page.replace(/\\/g, '/')], { maxBuffer: 256 * 1024 * 1024 }).toString();
 const json = JSON.parse(dom.slice(dom.indexOf('{'), dom.lastIndexOf('}') + 1).replace(/&amp;/g, '&'));
 for (const c of cibles) {
-  const f = path.join(res, c.fichier);
+  const f = c.fichier.startsWith('assets/') ? path.join(racine, c.fichier) : path.join(res, c.fichier);
   fs.mkdirSync(path.dirname(f), { recursive: true });
   fs.writeFileSync(f, Buffer.from(json[c.fichier].split(',')[1], 'base64'));
 }

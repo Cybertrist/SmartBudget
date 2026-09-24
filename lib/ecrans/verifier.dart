@@ -10,6 +10,7 @@ import '../donnees/depots.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import 'categorie.dart';
+import 'dialogues.dart';
 
 /// Les opérations que rien n'a su reconnaître. Pour chacune, on dit ce
 /// qu'elle est : une catégorie, un virement entre ses comptes, ou, pour
@@ -85,10 +86,8 @@ class _LigneAVerifier extends ConsumerWidget {
     }
 
     Future<void> interne() async {
-      final sens = await showModalBottomSheet<SensInterne>(
-        context: context,
-        showDragHandle: true,
-        constraints: const BoxConstraints(maxWidth: 560),
+      final sens = await carteChoix<SensInterne>(
+        context,
         builder: (ctx) => SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,

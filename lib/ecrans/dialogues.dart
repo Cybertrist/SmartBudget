@@ -172,3 +172,42 @@ Future<String?> demanderTexte(BuildContext context, {required String titre, Stri
     ),
   );
 }
+
+/// Une liste de choix dans une carte au centre de l'écran, qui s'agrandit
+/// comme la carte de saisie. Elle remplace les feuilles qui montaient du
+/// bas. Toucher à côté la referme sans rien choisir.
+Future<T?> carteChoix<T>(BuildContext context, {required WidgetBuilder builder}) {
+  return showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: 'Fermer',
+    barrierColor: Colors.black.withValues(alpha: 0.7),
+    transitionDuration: const Duration(milliseconds: 280),
+    transitionBuilder: (_, animation, _, enfant) => FadeTransition(
+      opacity: animation,
+      child: ScaleTransition(
+        scale: Tween(begin: 0.85, end: 1.0).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutBack, reverseCurve: Curves.easeInCubic)),
+        child: enfant,
+      ),
+    ),
+    pageBuilder: (ctx, _, _) => SafeArea(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 560, maxHeight: MediaQuery.sizeOf(ctx).height * 0.8),
+            child: Material(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              clipBehavior: Clip.antiAlias,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Builder(builder: builder),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}

@@ -45,6 +45,7 @@ flutter:
 
   assets:
     - assets/logo.png
+    - assets/logo_icone.png
     - assets/categories.json
 
   # Figtree, embarquée : l'application ne va jamais sur le réseau, même

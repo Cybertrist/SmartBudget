@@ -11,6 +11,7 @@ import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import '../widgets/graphiques.dart';
 import '../widgets/volets.dart';
+import 'dialogues.dart';
 
 /// Une barre de titre avec son bouton retour.
 class BarreRetour extends StatelessWidget {
@@ -830,16 +831,12 @@ Future<int?> choisirCategorie(BuildContext context, WidgetRef ref, {Genre? genre
   final toutes = (await ref.read(categoriesProvider.future)).values.toList()..sort((a, b) => a.ordre.compareTo(b.ordre));
   if (!context.mounted) return null;
   final racines = toutes.where((c) => c.parentId == null && (genre == null || c.genre == genre || c.genre == Genre.interne)).toList();
-  return showModalBottomSheet<int>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    builder: (ctx) => DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.8,
-      builder: (_, controle) => ListView(
-        controller: controle,
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+  return carteChoix<int>(
+    context,
+    builder: (ctx) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           for (final r in racines)
             ExpansionTile(

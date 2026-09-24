@@ -96,8 +96,9 @@ class _EtatLancement extends State<AnimationLancement> with TickerProviderStateM
                             children: [
                               const LogoNeon(taille: 144),
                               Positioned.fill(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
+                                // Le reflet ne dépasse pas la forme du logo.
+                                child: ClipPath(
+                                  clipper: const _FormeLogo(),
                                   child: FractionalTranslation(
                                     translation: Offset(-1.2 + 2.4 * _phase(0.45, 0.95, Curves.easeInOut), 0),
                                     child: const DecoratedBox(
@@ -156,3 +157,13 @@ class NomApp extends StatelessWidget {
   }
 }
 
+
+class _FormeLogo extends CustomClipper<Path> {
+  const _FormeLogo();
+
+  @override
+  Path getClip(Size size) => formeLogo(size);
+
+  @override
+  bool shouldReclip(_FormeLogo old) => false;
+}

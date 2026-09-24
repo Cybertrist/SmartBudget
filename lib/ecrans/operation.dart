@@ -55,11 +55,8 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     // Dépense, revenu, ou virement entre tes comptes : la détection peut
     // se tromper dans les deux sens, alors cela se corrige ici.
     Future<void> choisirMouvement() async {
-      final choix = await showModalBottomSheet<(SensInterne?,)>(
-        context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        constraints: const BoxConstraints(maxWidth: 560),
+      final choix = await carteChoix<(SensInterne?,)>(
+        context,
         builder: (ctx) => SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -229,9 +226,8 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                               valeur: nature.libelle,
                               couleur: couleurNature(nature),
                               onTap: () async {
-                                final choix = await showModalBottomSheet<Nature>(
-                                  context: context,
-                                  showDragHandle: true,
+                                final choix = await carteChoix<Nature>(
+                                  context,
                                   builder: (ctx) => SafeArea(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
@@ -255,9 +251,8 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                             libelle: 'Compte en',
                             valeur: nomMoisSeul(moisCompte),
                             onTap: () async {
-                              final choix = await showModalBottomSheet<Mois>(
-                                context: context,
-                                showDragHandle: true,
+                              final choix = await carteChoix<Mois>(
+                                context,
                                 builder: (ctx) => SafeArea(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
@@ -300,11 +295,8 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                             couleur: repetition == null ? null : AppColors.vert,
                             onTap: () async {
                               // Un enregistrement, pour distinguer « aucune » d'une feuille refermée.
-                              final choix = await showModalBottomSheet<(Frequence?,)>(
-                                context: context,
-                                showDragHandle: true,
-                                isScrollControlled: true,
-                                constraints: const BoxConstraints(maxWidth: 560),
+                              final choix = await carteChoix<(Frequence?,)>(
+                                context,
                                 builder: (ctx) => SafeArea(
                                   child: SingleChildScrollView(
                                     child: Column(
