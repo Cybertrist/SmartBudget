@@ -13,7 +13,7 @@ import '../donnees/sauvegarde.dart';
 import '../providers/auth_provider.dart';
 import '../providers/donnees.dart';
 import '../providers/securite.dart';
-import '../security/key_vault.dart';
+import '../main.dart' show generation;
 import '../utils/fichiers.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
@@ -368,8 +368,11 @@ class EcranReglages extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-    await Base.instance.effacer();
-    await KeyVault.instance.destroy();
+    // Verrouiller d'abord, détruire ensuite, comme BodyCount : le verrou
+    // ramène à l'écran d'ouverture, et plus rien ne lit une base qu'on est
+    // en train d'effacer. Puis l'état en mémoire repart de zéro.
     await ref.read(authServiceProvider).lock();
+    await Base.instance.toutDetruire();
+    generation.value++;
   }
 }

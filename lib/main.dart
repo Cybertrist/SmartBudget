@@ -8,5 +8,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Les noms des mois et des jours en français, pour les en-têtes.
   await initializeDateFormatting('fr_FR');
-  runApp(const ProviderScope(child: SmartBudgetApp()));
+  runApp(
+    ValueListenableBuilder(
+      valueListenable: generation,
+      builder: (_, n, _) => ProviderScope(key: ValueKey(n), child: const SmartBudgetApp()),
+    ),
+  );
 }
+
+/// Monte après un effacement total : l'état en mémoire (les chiffres déjà
+/// chargés, le mois choisi, les volets ouverts) repart de zéro. Sans cela,
+/// les écrans réaffichaient l'ancien historique après l'effacement.
+final generation = ValueNotifier(0);

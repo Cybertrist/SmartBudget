@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import '../security/key_vault.dart';
@@ -117,8 +118,26 @@ class Base {
   /// Supprime le fichier. Avec [KeyVault.destroy], c'est l'effacement total.
   Future<void> effacer() async {
     await fermer();
-    final fichier = File(join(await getDatabasesPath(), _fichier));
-    if (await fichier.exists()) await fichier.delete();
+    final dossier = await getDatabasesPath();
+    // La base, et ce que SQLite laisse à côté d'elle.
+    for (final suffixe in const ['', '-journal', '-wal', '-shm']) {
+      final fichier = File(join(dossier, '$_fichier$suffixe'));
+      if (await fichier.exists()) await fichier.delete();
+    }
+  }
+
+  /// Effacement total, comme BodyCount : la base, les copies de
+  /// sauvegarde restées dans le cache, puis la clé. La clé part en dernier :
+  /// si l'effacement s'interrompt, les fichiers restants se nettoient
+  /// encore.
+  Future<void> toutDetruire() async {
+    await effacer();
+    final cache = await getTemporaryDirectory();
+    for (final nom in const ['smartbudget.sbx', 'restauration.sbx']) {
+      final fichier = File(join(cache.path, nom));
+      if (await fichier.exists()) await fichier.delete();
+    }
+    await KeyVault.instance.destroy();
   }
 
   // ---------------------------------------------------------------- schéma
