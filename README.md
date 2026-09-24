@@ -34,14 +34,23 @@ Sur l'écran déplié du Fold, un rail à gauche, et les pages deviennent des vo
 <img src="docs/sections/s03.png" alt="03 Installer" width="100%">
 
 <p align="center">
-<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/telecharger.png" alt="Télécharger Smart Budget, version 1.0.3, Android 8 ou plus, arm64" width="480"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/telecharger.png" alt="Télécharger Smart Budget, la version complète, Android 8 ou plus" width="400"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget-demo.apk"><img src="docs/telecharger-demo.png" alt="Essayer la démo de Smart Budget, sans banque, Android 8 ou plus" width="400"></a>
 </p>
 
-L'APK n'est pas sur le Play Store : Android demande d'autoriser l'installation depuis le navigateur, une fois. Chaque version est signée par la même clé, ce qui permet de l'installer par-dessus la précédente sans rien perdre. Pour vérifier le fichier téléchargé :
+Deux applications, qui s'installent côte à côte sans se gêner.
+
+- **SmartBudget**, la version complète : elle se relie à ta banque et ne contient que tes vraies opérations.
+- **SmartBudget démo** : quatre mois d'opérations inventées, déjà chargées à l'ouverture, sans banque, sans empreinte, et les captures d'écran permises. Pour voir chaque écran avant de relier quoi que ce soit.
+
+Les APK ne sont pas sur le Play Store : Android demande d'autoriser l'installation depuis le navigateur, une fois. Chaque version est signée par la même clé, ce qui permet de l'installer par-dessus la précédente sans rien perdre. Pour vérifier le fichier téléchargé :
 
 ```
-# SHA-256 de SmartBudget.apk, version 1.0.3
-4b7b52dca908edf9da1aea9dfb0fef60d35ee50719af0c3b16f94a22e8dfd9e5
+# SHA-256 de SmartBudget.apk, version 1.1.0
+8ba46b6c6ddd59e2ca070cc10bb91a97952e8c8b4e038a531fa0c017fb501955
+
+# SHA-256 de SmartBudget-demo.apk, version 1.1.0
+fe4cf85184ed59b62302309c7b00a106e4fdee90e00a51cfa3b9c15d7d63874a
 
 # SHA-256 du certificat de signature, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -51,8 +60,8 @@ Pour la construire soi-même :
 
 ```
 flutter build apk --release --split-per-abi
-# avec le jeu d'essai de quatre mois, pour essayer sans banque :
-flutter build apk --release --split-per-abi --dart-define=ESSAIS=true
+# la démo, avec son propre identifiant et le jeu d'essai déjà chargé :
+flutter build apk --release --split-per-abi --dart-define=DEMO=true
 ```
 
 <img src="docs/sections/s04.png" alt="04 Relier la banque" width="100%">

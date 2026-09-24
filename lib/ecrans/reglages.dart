@@ -90,7 +90,7 @@ class EcranReglages extends ConsumerWidget {
         titreDroite: 'Sécurité',
         surtitreDroite: 'Tes données',
         gauche: [
-          const CarteBanque(),
+          if (modeDemo) const _CarteDemo() else const CarteBanque(),
           const SizedBox(height: 14),
           bloc('Budget', [
             ligne('target', 'Budget mensuel', budget == 0 ? 'Non fixé' : euros(budget, centimesSiRond: false),
@@ -185,7 +185,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.0.3';
+  static const _version = '1.1.0';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 
@@ -364,5 +364,40 @@ class EcranReglages extends ConsumerWidget {
     await Base.instance.toutDetruire();
     await auth.lock();
     generation.value++;
+  }
+}
+
+/// À la place de la banque, dans la démo : ce qu'on regarde, et où trouver
+/// la vraie application.
+class _CarteDemo extends StatelessWidget {
+  const _CarteDemo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Carte(
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Surtitre('Démo'),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(iconeDe('auto_awesome'), color: AppColors.vert, size: 22),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text('Quatre mois inventés', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Les opérations, les marchands et les montants sont faux. Aucune banque n’est reliée : tout reste sur ce téléphone. '
+            'La version complète, SmartBudget, s’installe à côté et se relie au Crédit Mutuel de Bretagne.',
+            style: TextStyle(color: AppColors.texteDiscret, height: 1.45),
+          ),
+        ],
+      ),
+    );
   }
 }

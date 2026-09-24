@@ -1,4 +1,5 @@
 
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -16,10 +17,25 @@ val proprietesCle = Properties().apply {
 }
 val clePresente = proprietesCle.containsKey("storeFile")
 
+// La démo est une application à part : autre identifiant, autre nom, autre
+// adresse de retour de la banque, pour qu'elle s'installe à côté de la
+// vraie sans la remplacer. Flutter passe les --dart-define à Gradle,
+// encodés en base64 et séparés par des virgules.
+val definitions = (project.findProperty("dart-defines") as String?)
+    ?.split(",")
+    ?.map { String(Base64.getDecoder().decode(it)) }
+    ?: emptyList()
+val demo = "DEMO=true" in definitions
+
 android {
     namespace = "com.cybertrist.smartbudget"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
+    // Pour le nom de l'application, qui change avec la démo.
+    buildFeatures {
+        resValues = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -41,6 +57,9 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        if (demo) applicationIdSuffix = ".demo"
+        resValue("string", "app_name", if (demo) "SmartBudget démo" else "SmartBudget")
+        manifestPlaceholders["schemaBanque"] = if (demo) "smartbudgetdemo" else "smartbudget"
     }
 
     signingConfigs {

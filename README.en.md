@@ -36,14 +36,23 @@ On the Fold's unfolded screen, a rail on the left, and pages become panes side b
 <img src="docs/en/sections/s03.png" alt="03 Install" width="100%">
 
 <p align="center">
-<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/en/telecharger.png" alt="Download Smart Budget, version 1.0.3, Android 8 or later, arm64" width="480"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/en/telecharger.png" alt="Download Smart Budget, the full version, Android 8 or later" width="400"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget-demo.apk"><img src="docs/en/telecharger-demo.png" alt="Try the Smart Budget demo, no bank, Android 8 or later" width="400"></a>
 </p>
 
-The APK is not on the Play Store: Android asks, once, to allow installs from the browser. Every version is signed with the same key, so it installs over the previous one without losing anything. To check the downloaded file:
+Two apps, which install side by side without getting in each other's way.
+
+- **SmartBudget**, the full version: it links to your bank and holds only your real transactions.
+- **SmartBudget démo**: four months of made-up transactions, already loaded when it opens, no bank, no fingerprint, and screenshots allowed. To see every screen before linking anything.
+
+The APKs are not on the Play Store: Android asks, once, to allow installs from the browser. Every version is signed with the same key, so it installs over the previous one without losing anything. To check the downloaded file:
 
 ```
-# SHA-256 of SmartBudget.apk, version 1.0.3
-4b7b52dca908edf9da1aea9dfb0fef60d35ee50719af0c3b16f94a22e8dfd9e5
+# SHA-256 of SmartBudget.apk, version 1.1.0
+8ba46b6c6ddd59e2ca070cc10bb91a97952e8c8b4e038a531fa0c017fb501955
+
+# SHA-256 of SmartBudget-demo.apk, version 1.1.0
+fe4cf85184ed59b62302309c7b00a106e4fdee90e00a51cfa3b9c15d7d63874a
 
 # SHA-256 of the signing certificate, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -53,8 +62,8 @@ To build it yourself:
 
 ```
 flutter build apk --release --split-per-abi
-# with four months of demo data, to try it without a bank:
-flutter build apk --release --split-per-abi --dart-define=ESSAIS=true
+# the demo, with its own identifier and the demo data already loaded:
+flutter build apk --release --split-per-abi --dart-define=DEMO=true
 ```
 
 <img src="docs/en/sections/s04.png" alt="04 Linking the bank" width="100%">

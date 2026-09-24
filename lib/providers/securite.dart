@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../config/essais.dart';
+
 import '../security/screen_guard.dart';
 
 /// Les réglages de sécurité, comme sur BodyCount.
@@ -8,7 +10,9 @@ import '../security/screen_guard.dart';
 /// Ils vivent dans le stockage sécurisé et non dans la base : il faut les
 /// lire avant l'empreinte, pour savoir s'il faut la demander.
 class Securite {
-  const Securite({this.verrou = true, this.delai = const Duration(minutes: 2), this.masquer = true});
+  // Dans la démo, les données sont inventées : ni empreinte ni écran
+  // masqué par défaut, pour l'essayer et la montrer librement.
+  const Securite({this.verrou = !modeDemo, this.delai = const Duration(minutes: 2), this.masquer = !modeDemo});
 
   /// L'empreinte à l'ouverture.
   final bool verrou;
@@ -36,9 +40,9 @@ class SecuriteNotifier extends StateNotifier<Securite> {
     final d = int.tryParse(await _stock.read(key: 'securite_delai') ?? '');
     final m = await _stock.read(key: 'securite_masquer');
     return Securite(
-      verrou: v != 'non',
+      verrou: v == null ? !modeDemo : v != 'non',
       delai: Duration(seconds: d ?? 120),
-      masquer: m != 'non',
+      masquer: m == null ? !modeDemo : m != 'non',
     );
   }
 

@@ -2,7 +2,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../config/essais.dart';
 import '../donnees/base.dart';
+import '../donnees/demonstration.dart';
+import '../donnees/depots.dart';
 import '../security/key_vault.dart';
 import '../security/lock_state.dart';
 
@@ -41,6 +44,7 @@ class AuthService {
 
     // La clé n'entre en mémoire qu'ici, une fois l'identité prouvée.
     await KeyVault.instance.unlock();
+    await _remplirDemo();
     EtatVerrou.instance.setUnlocked(true);
     return const ResultatOuverture.succes();
   }
@@ -66,7 +70,19 @@ class AuthService {
   /// chiffrement reste : la clé est simplement chargée sans preuve.
   Future<void> ouvrirSansVerrou() async {
     await KeyVault.instance.unlock();
+    await _remplirDemo();
     EtatVerrou.instance.setUnlocked(true);
+  }
+
+  /// La démo arrive déjà remplie : quatre mois d'opérations inventées, posés
+  /// une seule fois, dès que la base chiffrée est lisible et avant que le
+  /// premier écran ne la lise.
+  Future<void> _remplirDemo() async {
+    if (!modeDemo) return;
+    const reglages = DepotReglages();
+    if (await reglages.lire('demo_remplie') != null) return;
+    await const Demonstration().remplir();
+    await reglages.ecrire('demo_remplie', '1');
   }
 
   /// Referme tout : la connexion à la base, puis les clés.

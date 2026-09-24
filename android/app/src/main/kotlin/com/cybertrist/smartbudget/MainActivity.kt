@@ -112,7 +112,9 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val debogable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
-        if (!debogable) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        // La démo, aux données inventées, laisse faire les captures.
+        val demo = packageName.endsWith(".demo")
+        if (!debogable && !demo) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         super.onCreate(savedInstanceState)
         retenirLien(intent)
     }
