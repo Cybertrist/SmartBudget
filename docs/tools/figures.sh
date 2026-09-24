@@ -93,9 +93,9 @@ rendre "$nom.html" "$DOCS/schemas/$nom.png"
 }
 
 grille fonctionnalites 3 \
-  "account_balance|Le compte, tout seul|Le Crédit Mutuel de Bretagne lu par la DSP2 via Enable Banking : douze mois d'historique, puis une synchronisation à chaque ouverture." \
+  "account_balance|Le compte, tout seul|Ton compte courant, lu par la DSP2 via Enable Banking : douze mois d'historique, puis une synchronisation à chaque ouverture." \
   "category|Classé sans rien faire|23 catégories, 180 sous-catégories, 250 marchands reconnus. Une correction est apprise et suivie par les prochaines opérations." \
-  "donut_large|L'anneau des dépenses|Le mois, trois mois ou un an : où part l'argent, catégorie par catégorie, jusqu'à l'opération." \
+  "pie_chart|L'anneau des dépenses|Le mois, trois mois ou un an : où part l'argent, catégorie par catégorie, jusqu'à l'opération." \
   "sync_alt|Les virements internes à part|Vers le livret, depuis le livret : ni dépense ni revenu, hachurés, hors budget. Mis de côté et pioché, suivis." \
   "link|Les remboursements liés|Un chèque de 500 € réparti sur deux dépenses : elles ne comptent plus que pour leur reste à charge." \
   "autorenew|Les récurrences|Loyer, forfait, abonnements : repérés seuls, réglables à la main, en retard, à venir ou payés." \
@@ -126,7 +126,7 @@ grille tests 3 \
   "account_balance_wallet|Portefeuille|50 € comptés, un retrait de 20 €, 12 € au marché : il en reste 58." \
   "backup|Sauvegarde|Tout revient avec la bonne phrase ; une phrase fausse ne touche à rien." \
   "draw|Signature|Le JWT signé par le natif est, octet pour octet, celui d'OpenSSL." \
-  "phone_android|Sur appareil|Les 22 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là."
+  "android|Sur appareil|Les 22 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là."
 
 # --------------------------------------------------------------- couches
 { entete 1280; echo "$ICONES"; cat <<'HTML'
@@ -141,7 +141,7 @@ p{font-family:'Space Grotesk',sans-serif;font-size:14px;line-height:1.5;color:va
 code{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#C3CCD7}
 .f{text-align:center;font-family:'Material Symbols Rounded';color:#2F3A47;font-size:20px;line-height:1;margin:-4px 0}
 </style></head><body><div class="w">
-<div class="c" style="--a:#50F48D"><div class="n"><span>smartphone</span>ecrans/</div><p>Ne lisent que des providers et n'écrivent que par des dépôts. Aucune ligne de SQL. Sur l'écran déplié, les pages deviennent des volets.</p></div>
+<div class="c" style="--a:#50F48D"><div class="n"><span>dashboard</span>ecrans/</div><p>Lisent des providers, écrivent par des dépôts, jamais de SQL. Sur l'écran déplié, les pages deviennent des volets.</p></div>
 <div class="f">south</div>
 <div class="c" style="--a:#3CE0FF"><div class="n"><span>account_tree</span>providers/</div><p>Riverpod. Une écriture monte un numéro de version : tout ce qui lit la base se relit, d'un seul appel.</p></div>
 <div class="f">south</div>
@@ -149,7 +149,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#C3CCD7}
 <div class="f">south</div>
 <div class="c" style="--a:#FF8FD1"><div class="n"><span>storage</span>donnees/</div><p>Le seul endroit où s'écrit du SQL : les dépôts, le schéma et ses migrations, la sauvegarde, le jeu d'essai.</p></div>
 <div class="f">south</div>
-<div class="c" style="--a:#1ED760"><div class="n"><span>account_balance</span>banque/</div><p>Enable Banking : le JWT signé, l'autorisation, la session, les opérations et le solde. La clé privée n'est déchiffrée que le temps d'un appel.</p></div>
+<div class="c" style="--a:#1ED760"><div class="n"><span>account_balance</span>banque/</div><p>Enable Banking : JWT signé, session, opérations, solde. La clé privée n'est déchiffrée que le temps d'un appel.</p></div>
 <div class="f">south</div>
 <div class="c" style="--a:#B08CFF"><div class="n"><span>shield_lock</span>security/</div><p>Le trousseau : clé maîtresse dans le Keystore, dérivations HKDF, verrou. Rien ne lit un fichier en passant outre.</p></div>
 </div>

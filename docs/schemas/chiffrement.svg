@@ -18,7 +18,35 @@
 <rect width="1280" height="530" rx="16" fill="#0D1117"/>
 <rect width="1280" height="530" rx="16" fill="url(#grille)"/>
 <rect width="1280" height="530" rx="16" fill="url(#lueur)"/>
-<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">LE CHIFFREMENT</text><text x="240" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >L’empreinte ne déverrouille pas un écran : elle charge la clé.</text><g>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">LE CHIFFREMENT</text><text x="240" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >L’empreinte ne déverrouille pas un écran : elle charge la clé.</text><g filter="url(#halo)">
+  <circle r="10" fill="#1ED760" opacity="0.22">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M185 210 H485" keyPoints="0;0;1;1" keyTimes="0;0.03;0.18;1" calcMode="linear"/>
+  </circle>
+  <circle r="5" fill="#1ED760">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M185 210 H485" keyPoints="0;0;1;1" keyTimes="0;0.03;0.18;1" calcMode="linear"/>
+  </circle>
+</g><g filter="url(#halo)">
+  <circle r="10" fill="#3CE0FF" opacity="0.22">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M485 210 H610 C635 210 635 128 660 128 H1090" keyPoints="0;0;1;1" keyTimes="0;0.18;0.5;1" calcMode="linear"/>
+  </circle>
+  <circle r="5" fill="#3CE0FF">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M485 210 H610 C635 210 635 128 660 128 H1090" keyPoints="0;0;1;1" keyTimes="0;0.18;0.5;1" calcMode="linear"/>
+  </circle>
+</g><g filter="url(#halo)">
+  <circle r="10" fill="#FF8FD1" opacity="0.22">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M485 210 H610 C635 210 635 292 660 292 H1090" keyPoints="0;0;1;1" keyTimes="0;0.18;0.5;1" calcMode="linear"/>
+  </circle>
+  <circle r="5" fill="#FF8FD1">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M485 210 H610 C635 210 635 292 660 292 H1090" keyPoints="0;0;1;1" keyTimes="0;0.18;0.5;1" calcMode="linear"/>
+  </circle>
+</g><g filter="url(#halo)">
+  <circle r="10" fill="#FFC857" opacity="0.22">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M185 430 H940" keyPoints="0;0;1;1" keyTimes="0;0.5;0.8;1" calcMode="linear"/>
+  </circle>
+  <circle r="5" fill="#FFC857">
+    <animateMotion dur="10s" repeatCount="indefinite" path="M185 430 H940" keyPoints="0;0;1;1" keyTimes="0;0.5;0.8;1" calcMode="linear"/>
+  </circle>
+</g><g>
   <rect x="60" y="172" width="250" height="76" rx="13" fill="#131A24" stroke="#1F2833"/>
   <rect x="60" y="172" width="250" height="76" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" keyTimes="0;0;0.2;0.22;1" values="0;1;1;0;0"/></rect>
   <rect x="60" y="186" width="3" height="48" rx="1.5" fill="#1ED760"/>
@@ -63,21 +91,7 @@
 </g><path d="M310 210 H360" fill="none" stroke="#2F3A47" stroke-width="2" stroke-dasharray="6 7">
   <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><path d="M610 210 C635 210 635 128 660 128 M910 128 H960" fill="none" stroke="#2F3A47" stroke-width="2" stroke-dasharray="6 7">
   <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><path d="M610 210 C635 210 635 292 660 292 M910 292 H960" fill="none" stroke="#2F3A47" stroke-width="2" stroke-dasharray="6 7">
-  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><g filter="url(#halo)">
-  <circle r="10" fill="#3CE0FF" opacity="0.22">
-    <animateMotion dur="10s" repeatCount="indefinite" path="M310 210 H360 H610 C635 210 635 128 660 128 H910 H960" keyPoints="0;0;1;1" keyTimes="0;0.1;0.55;1" calcMode="linear"/>
-  </circle>
-  <circle r="5" fill="#3CE0FF">
-    <animateMotion dur="10s" repeatCount="indefinite" path="M310 210 H360 H610 C635 210 635 128 660 128 H910 H960" keyPoints="0;0;1;1" keyTimes="0;0.1;0.55;1" calcMode="linear"/>
-  </circle>
-</g><g filter="url(#halo)">
-  <circle r="10" fill="#FF8FD1" opacity="0.22">
-    <animateMotion dur="10s" repeatCount="indefinite" path="M310 210 H360 H610 C635 210 635 292 660 292 H910 H960" keyPoints="0;0;1;1" keyTimes="0;0.1;0.55;1" calcMode="linear"/>
-  </circle>
-  <circle r="5" fill="#FF8FD1">
-    <animateMotion dur="10s" repeatCount="indefinite" path="M310 210 H360 H610 C635 210 635 292 660 292 H910 H960" keyPoints="0;0;1;1" keyTimes="0;0.1;0.55;1" calcMode="linear"/>
-  </circle>
-</g><rect x="60" y="364" width="1160" height="1" fill="#1F2833"/><g>
+  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><rect x="60" y="364" width="1160" height="1" fill="#1F2833"/><g>
   <rect x="60" y="392" width="250" height="76" rx="13" fill="#131A24" stroke="#1F2833"/>
   <rect x="60" y="392" width="250" height="76" rx="13" fill="none" stroke="#FFC857" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" keyTimes="0;0.48;0.5;0.75;0.77;1" values="0;0;1;1;0;0"/></rect>
   <rect x="60" y="406" width="3" height="48" rx="1.5" fill="#FFC857"/>
@@ -99,12 +113,5 @@
   <text x="718" y="427" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >smartbudget-2026-09-24.sbx</text>
   <text x="718" y="447" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >AES-GCM : SBEX1 · sel 16 · nonce 12 · chiffré · MAC 16, relisible ailleurs</text>
 </g><path d="M310 430 H360 M610 430 H660" fill="none" stroke="#2F3A47" stroke-width="2" stroke-dasharray="6 7">
-  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><g filter="url(#halo)">
-  <circle r="10" fill="#FFC857" opacity="0.22">
-    <animateMotion dur="10s" repeatCount="indefinite" path="M310 430 H660" keyPoints="0;0;1;1" keyTimes="0;0.5;0.8;1" calcMode="linear"/>
-  </circle>
-  <circle r="5" fill="#FFC857">
-    <animateMotion dur="10s" repeatCount="indefinite" path="M310 430 H660" keyPoints="0;0;1;1" keyTimes="0;0.5;0.8;1" calcMode="linear"/>
-  </circle>
-</g><text x="640" y="508" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >Sans l’empreinte, la clé n’est pas en mémoire : contourner l’écran d’ouverture ne donnerait accès à rien.</text>
+  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><text x="640" y="508" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >Sans l’empreinte, la clé n’est pas en mémoire : contourner l’écran d’ouverture ne donnerait accès à rien.</text>
 </svg>

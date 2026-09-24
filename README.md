@@ -12,7 +12,7 @@ Elle est née d'une envie simple : arrêter de dépenser sans regarder, et de pi
 
 <img src="docs/sections/s01.png" alt="01 Fonctionnalités" width="100%">
 
-<img src="docs/schemas/fonctionnalites.png" alt="Douze fonctionnalités. Le compte, tout seul : le Crédit Mutuel de Bretagne lu par la DSP2 via Enable Banking, douze mois d'historique puis une synchronisation à chaque ouverture. Classé sans rien faire : 23 catégories, 180 sous-catégories, 250 marchands reconnus, et une correction apprise. L'anneau des dépenses, sur un mois, trois mois ou un an. Les virements internes à part, hors budget. Les remboursements liés à leurs dépenses. Les récurrences repérées seules. À vérifier et pointer. Espèces et portefeuille. Livrets et épargne tenus par les virements. La recherche dans toutes les opérations. Chiffré sur le téléphone. La sauvegarde chiffrée." width="100%">
+<img src="docs/schemas/fonctionnalites.png" alt="Douze fonctionnalités. Le compte, tout seul : le compte courant lu par la DSP2 via Enable Banking, douze mois d'historique puis une synchronisation à chaque ouverture. Classé sans rien faire : 23 catégories, 180 sous-catégories, 250 marchands reconnus, et une correction apprise. L'anneau des dépenses, sur un mois, trois mois ou un an. Les virements internes à part, hors budget. Les remboursements liés à leurs dépenses. Les récurrences repérées seules. À vérifier et pointer. Espèces et portefeuille. Livrets et épargne tenus par les virements. La recherche dans toutes les opérations. Chiffré sur le téléphone. La sauvegarde chiffrée." width="100%">
 
 <img src="docs/sections/s02.png" alt="02 Les écrans" width="100%">
 
@@ -52,7 +52,7 @@ flutter build apk --release --split-per-abi --dart-define=ESSAIS=true
 
 <img src="docs/sections/s04.png" alt="04 Relier la banque" width="100%">
 
-<img src="docs/schemas/banque.svg" alt="Relier la banque, en six étapes : Smart Budget signe un JWT en RS256 ; Enable Banking ouvre une demande avec un état tiré au hasard ; tu valides au Crédit Mutuel de Bretagne par Safetrans ; la banque revient sur GitHub Pages ; la page rend la main à l'application par smartbudget://banque, qui vérifie l'état et ouvre la session ; la session dure 180 jours, douze mois sont importés, puis une synchronisation à chaque ouverture." width="100%">
+<img src="docs/schemas/banque.svg" alt="Relier la banque, un échange entre quatre acteurs : Smart Budget, Enable Banking, ta banque et GitHub Pages. Smart Budget envoie un JWT signé en RS256 et un état tiré au hasard ; Enable Banking ouvre la page de la banque ; tu valides par Safetrans ; la banque revient sur GitHub Pages avec un code et l'état ; la page rend la main par smartbudget://banque ; l'application vérifie l'état, échange le code contre une session de 180 jours et les comptes, importe douze mois, puis se synchronise à chaque ouverture." width="100%">
 
 La banque ne parle pas aux particuliers : il faut un agrégateur agréé DSP2. [Enable Banking](https://enablebanking.com) en propose un, gratuit en mode restreint, c'est-à-dire limité aux comptes qu'on a soi-même reliés sur son portail. Bridge, l'API de Bankin, est réservé aux entreprises, et GoCardless a fermé ses inscriptions.
 
@@ -73,7 +73,7 @@ Ce que rien ne reconnaît tombe dans « À classer » et attend dans **À vérif
 
 <img src="docs/sections/s06.png" alt="06 Virements, remboursements, espèces" width="100%">
 
-<img src="docs/schemas/mouvements.svg" alt="Trois pièges d'un relevé. Un virement vers le livret, lu dans VIR VERS LIVRET CMB DE CARTE BANCAIRE, est hors budget et compte 200 euros mis de côté. Un chèque de 500 euros rembourse 300 euros d'un billet de train de 380 et 200 euros d'un restaurant de 260 : il reste 80 et 60 euros, et le chèque n'est pas un revenu. Un retrait de 50 euros puis 12 euros au marché en espèces : les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38, et les sorties du mois restent 50 euros." width="100%">
+<img src="docs/schemas/mouvements.svg" alt="Trois pièges d'un relevé. Un virement vers le livret, lu dans VIR VERS LIVRET A DE COMPTE COURANT, est hors budget et compte 200 euros mis de côté. Un chèque de 500 euros rembourse 300 euros d'un billet de train de 380 et 200 euros d'un restaurant de 260 : il reste 80 et 60 euros, et le chèque n'est pas un revenu. Un retrait de 50 euros puis 12 euros au marché en espèces : les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38, et les sorties du mois restent 50 euros." width="100%">
 
 Un budget honnête ne compte pas deux fois le même argent.
 

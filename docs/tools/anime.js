@@ -85,6 +85,7 @@ function visible(cycle, de, a, douceur = 0.02) {
   if (de > douceur) e.push([de - douceur, 0]);
   e.push([de, 1], [Math.min(a, 1), 1]);
   if (a + douceur < 1) e.push([a + douceur, 0], [1, 0]);
+  else if (a < 1) e.push([1, 1]);
   return fondu('opacity', cycle, e);
 }
 
@@ -138,45 +139,88 @@ const P = {
 
 // ------------------------------------------------------------------------
 // 1. Relier la banque : l'aller-retour qui ouvre l'accès au compte.
+//
+// Un diagramme d'échanges : quatre acteurs en colonnes, et chaque message
+// file de l'un à l'autre, sa flèche se trace et son libellé reste. La
+// colonne qui reçoit s'allume.
 {
-  const C = 14;
-  const L = 330, H = 78;
-  const xs = [60, 475, 890], hauts = 96, bas = 290;
-  const etapes = [
-    [xs[0], hauts, 'Smart Budget', 'JWT signé en RS256', P.telephone, VERT],
-    [xs[1], hauts, 'Enable Banking', 'POST /auth, état au hasard', P.nuage, BLEU],
-    [xs[2], hauts, 'Crédit Mutuel', 'tu valides par Safetrans', P.banque, OR],
-    [xs[2], bas, 'GitHub Pages', 'cybertrist.github.io/SmartBudget', P.page, ROSE],
-    [xs[1], bas, 'smartbudget://banque', 'état vérifié, POST /sessions', P.lien, NEON],
-    [xs[0], bas, 'Session de 180 jours', '12 mois importés, puis à l’ouverture', P.horloge, VERT],
+  const C = 18;
+  const acteurs = [
+    [160, 'Smart Budget', 'le téléphone', P.telephone, VERT],
+    [480, 'Enable Banking', 'l’accès DSP2', P.nuage, BLEU],
+    [800, 'Ta banque', 'tu valides', P.banque, OR],
+    [1120, 'GitHub Pages', 'la page de retour', P.page, ROSE],
   ];
-  // Le chemin passe par le centre de chaque carte.
-  const cx = (i) => etapes[i][0] + L / 2, cy = (i) => etapes[i][1] + H / 2;
-  const chemin = `M${cx(0)} ${cy(0)} H${cx(1)} H${cx(2)} V${cy(3)} H${cx(4)} H${cx(5)} V${cy(0)}`;
-  // Longueurs relatives : 415, 415, 194, 415, 415, 194 sur 2048.
-  const seg = [0, 415, 830, 1024, 1439, 1854, 2048].map((v) => (v / 2048).toFixed(4));
-  const pts = [], tps = [];
-  for (let i = 0; i < 6; i++) {
-    const a = i / 6, b = a + 0.1;
-    pts.push(seg[i], seg[i]); tps.push(a.toFixed(3), b.toFixed(3));
-  }
-  pts.push(seg[6]); tps.push('1');
+  // [de, vers, libellé] ; de === vers : une étape sur place.
+  const messages = [
+    [0, 1, 'POST /auth : un JWT signé en RS256, et un état tiré au hasard'],
+    [1, 2, 'ouvre la page de la banque'],
+    [2, 2, 'tu valides par Safetrans'],
+    [2, 3, 'revient avec ?code=…&state=…'],
+    [3, 0, 'rend la main : smartbudget://banque'],
+    [0, 0, 'l’état est le même qu’au départ ✓'],
+    [0, 1, 'POST /sessions : échange le code'],
+    [1, 0, 'une session de 180 jours, et les comptes'],
+    [0, 0, '12 mois importés, puis à chaque ouverture'],
+  ];
+  const Y = 196, PAS = 44, trajet = 0.05;
+  const debut = (i) => 0.03 + i * 0.098;
+  const fin = 0.95;
+  const hL = 64, hY = 86;
   let corps = '';
   corps += t(60, 52, 'RELIER LA BANQUE', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
   corps += t(270, 52, 'Un aller-retour, une fois tous les 180 jours. La clé privée ne quitte jamais le téléphone.', { taille: 14 });
-  corps += fil(`M${cx(0) + L / 2} ${cy(0)} H${xs[1]} M${cx(1) + L / 2} ${cy(1)} H${xs[2]} M${cx(2)} ${hauts + H} V${bas} M${xs[2]} ${cy(3)} H${cx(4) + L / 2} M${xs[1]} ${cy(4)} H${cx(5) + L / 2}`);
-  etapes.forEach((e, i) => {
-    corps += carte(e[0], e[1], L, H, e[2], e[3], e[5], { icone: e[4], allume: [i / 6, i / 6 + 0.16], cycle: C });
+  // Les lignes de vie, puis les en-têtes.
+  const basVie = Y + (messages.length - 1) * PAS + 22;
+  for (const [x, , , , c] of acteurs) {
+    corps += `<line x1="${x}" y1="${hY + hL}" x2="${x}" y2="${basVie}" stroke="${c}" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="3 6"/>`;
+  }
+  acteurs.forEach(([x, titre, sous, icone, c], k) => {
+    const l = 236, x0 = x - l / 2;
+    corps += `<rect x="${x0}" y="${hY}" width="${l}" height="${hL}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
+      <rect x="${x0}" y="${hY + 12}" width="3" height="${hL - 24}" rx="1.5" fill="${c}"/>
+      <g transform="translate(${x0 + 18},${hY + hL / 2 - 14})">${icone(c)}</g>
+      ${t(x0 + 58, hY + 29, titre, { taille: 14.5, couleur: TITRE, police: MONO, poids: 700 })}
+      ${t(x0 + 58, hY + 48, sous, { taille: 12.5 })}`;
+    // Elle s'allume à chaque message qu'elle reçoit.
+    messages.forEach(([, vers], i) => {
+      if (vers !== k) return;
+      const a = debut(i) + trajet;
+      corps += `<rect x="${x0}" y="${hY}" width="${l}" height="${hL}" rx="13" fill="none" stroke="${c}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, a, a + 0.07)}</rect>`;
+    });
   });
-  // Les numéros d'étape.
-  etapes.forEach((e, i) => {
-    corps += `<circle cx="${e[0] + L - 22}" cy="${e[1] + 20}" r="11" fill="${FOND}" stroke="${e[5]}" stroke-opacity="0.5"/>` +
-      t(e[0] + L - 22, e[1] + 24.5, String(i + 1), { taille: 12, couleur: e[5], police: MONO, poids: 700, ancre: 'middle' });
+  // Les messages.
+  messages.forEach(([de, vers, libelle], i) => {
+    const y = Y + i * PAS, s = debut(i), c = acteurs[de][4];
+    const xa = acteurs[de][0], xb = acteurs[vers][0];
+    if (de === vers) {
+      // Une pastille accrochée à sa colonne, qui s'ouvre vers la droite.
+      const l = libelle.length * 6.9 + 36, x0 = xa - 14;
+      corps += `<g opacity="0">${visible(C, s, fin)}
+        <rect x="${x0}" y="${y - 14}" width="${l}" height="28" rx="14" fill="${FOND}"/>
+        <rect x="${x0}" y="${y - 14}" width="${l}" height="28" rx="14" fill="${c}" fill-opacity="0.14" stroke="${c}" stroke-opacity="0.8"/>
+        <circle cx="${xa}" cy="${y}" r="4" fill="${c}"/>
+        ${t(x0 + 26, y + 4.5, libelle, { taille: 12.5, couleur: TITRE })}
+      </g>`;
+      return;
+    }
+    const sens = xb > xa ? 1 : -1;
+    const x1 = xa + sens * 8, x2 = xb - sens * 10, long = Math.abs(x2 - x1);
+    corps += `<g opacity="0">${visible(C, s, fin)}
+      <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${c}" stroke-width="2" stroke-dasharray="${long}" stroke-dashoffset="${long}">
+        ${fondu('stroke-dashoffset', C, [[0, long], [s, long], [s + trajet, 0], [1, 0]])}</line>
+      <path d="M${x2 - sens * 7} ${y - 6} L${x2 + sens * 1} ${y} L${x2 - sens * 7} ${y + 6}" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0">${visible(C, s + trajet, fin)}</path>
+      <circle cx="${xa}" cy="${y}" r="4" fill="${c}"/>
+      ${t((xa + xb) / 2, y - 10, libelle, { taille: 12.5, couleur: TITRE, ancre: 'middle' })}
+    </g>`;
+    // Le paquet qui file le long de la flèche.
+    corps += `<g filter="url(#halo)" opacity="0">${fondu('opacity', C, [[0, 0], [s, 0], [s + 0.004, 1], [s + trajet, 1], [s + trajet + 0.006, 0], [1, 0]])}
+      <circle cy="${y}" r="6" fill="${c}"><animate attributeName="cx" dur="${C}s" repeatCount="indefinite" keyTimes="0;${s};${s + trajet};1" values="${x1};${x1};${x2};${x2}" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.25 1;0 0 1 1"/></circle>
+    </g>`;
   });
-  corps += bille(chemin, C, pts.join(';'), tps.join(';'));
-  corps += t(640, 418, 'Le jeton d’état tiré au hasard empêche un lien fabriqué ailleurs de relier un autre compte.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
-  svg('banque.svg', 1280, 440, corps,
-    'Relier la banque, en six étapes qui s’allument tour à tour : Smart Budget signe un JWT en RS256 ; Enable Banking ouvre une demande avec un état tiré au hasard ; tu valides au Crédit Mutuel de Bretagne par Safetrans ; la banque revient sur GitHub Pages ; la page rend la main à l’application par smartbudget://banque, qui vérifie l’état et ouvre la session ; la session dure 180 jours, douze mois sont importés, puis une synchronisation à chaque ouverture.');
+  corps += t(640, 604, 'Le jeton d’état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  svg('banque.svg', 1280, 630, corps,
+    'Relier la banque, un échange entre quatre acteurs : Smart Budget, Enable Banking, ta banque et GitHub Pages. Smart Budget envoie à Enable Banking un JWT signé en RS256 et un état tiré au hasard ; Enable Banking ouvre la page de la banque ; tu valides par Safetrans ; la banque revient sur GitHub Pages avec un code et l’état ; la page rend la main à l’application par smartbudget://banque ; l’application vérifie que l’état est le même qu’au départ, échange le code contre une session de 180 jours et les comptes, puis importe douze mois et se synchronise à chaque ouverture.');
 }
 
 // ------------------------------------------------------------------------
@@ -218,7 +262,18 @@ const P = {
   const l = 268, y = 206, h = 86;
   qs.forEach(([titre, sous, rep, instant], i) => {
     const xq = 60 + i * (l + 22);
-    const couleur = rep === 'oui' ? VERT : rep === 'non' ? ROUGE : DISCRET;
+    const couleur = rep === 'oui' ? VERT : ROUGE;
+    // La dernière question n'est pas posée : la carte s'éteint.
+    if (rep === 'saut') {
+      corps += `<g>
+      <rect x="${xq}" y="${y}" width="${l}" height="${h}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
+      ${t(xq + 20, y + 36, titre, { taille: 15, couleur: TITRE, police: MONO, poids: 700 })}
+      ${t(xq + 20, y + 60, sous, { taille: 12.5 })}
+      <rect x="${xq}" y="${y}" width="${l}" height="${h}" rx="13" fill="${FOND}" opacity="0">${fondu('opacity', C, [[0, 0], [instant, 0], [instant + 0.04, 0.6], [0.92, 0.6], [1, 0]])}</rect>
+      <g opacity="0">${visible(C, instant + 0.03, 0.92)}${t(xq + l - 20, y + 35, 'pas atteint', { taille: 12, couleur: DISCRET, police: MONO, ancre: 'end' })}</g>
+    </g>`;
+      return;
+    }
     corps += `<g>
       <rect x="${xq}" y="${y}" width="${l}" height="${h}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
       <rect x="${xq}" y="${y}" width="${l}" height="${h}" rx="13" fill="none" stroke="${couleur}" stroke-width="1.5" opacity="0" ${rep === 'oui' ? 'filter="url(#halo)"' : ''}>${visible(C, instant, rep === 'oui' ? 0.92 : instant + 0.1)}</rect>
@@ -226,7 +281,7 @@ const P = {
       ${t(xq + 20, y + 60, sous, { taille: 12.5 })}
       <g opacity="0">${visible(C, instant + 0.03, 0.92)}
         <circle cx="${xq + l - 30}" cy="${y + 30}" r="13" fill="${couleur}" fill-opacity="0.15" stroke="${couleur}"/>
-        ${t(xq + l - 30, y + 35, rep === 'oui' ? '✓' : rep === 'non' ? '✕' : '·', { taille: 15, couleur, ancre: 'middle', poids: 700 })}
+        ${t(xq + l - 30, y + 35, rep === 'oui' ? '✓' : '✕', { taille: 15, couleur, ancre: 'middle', poids: 700 })}
       </g>
     </g>`;
     if (i < 3) corps += `<path d="M${xq + l + 4} ${y + h / 2} h14" stroke="${FIL}" stroke-width="2" marker-end=""/><path d="M${xq + l + 14} ${y + h / 2 - 5} l5 5 l-5 5" fill="none" stroke="${FIL}" stroke-width="2"/>`;
@@ -263,10 +318,10 @@ const P = {
   // a. Virement interne.
   const a = 60;
   corps += col(a, 'Un virement vers le livret', INTERNE);
-  corps += t(a + 22, 158, 'VIR VERS LIVRET CMB', { taille: 12.5, couleur: TITRE, police: MONO });
-  corps += t(a + 22, 176, 'DE CARTE BANCAIRE', { taille: 12.5, couleur: TITRE, police: MONO });
+  corps += t(a + 22, 158, 'VIR VERS LIVRET A', { taille: 12.5, couleur: TITRE, police: MONO });
+  corps += t(a + 22, 176, 'DE COMPTE COURANT', { taille: 12.5, couleur: TITRE, police: MONO });
   corps += `<rect x="${a + 22}" y="198" width="120" height="58" rx="11" fill="#0F151D" stroke="${BORD}"/>${t(a + 82, 222, 'Compte', { taille: 12, ancre: 'middle' })}${t(a + 82, 240, 'courant', { taille: 12, ancre: 'middle' })}`;
-  corps += `<rect x="${a + 228}" y="198" width="120" height="58" rx="11" fill="#0F151D" stroke="${BLEU}" stroke-opacity="0.5"/>${t(a + 288, 222, 'Livret', { taille: 12, couleur: BLEU, ancre: 'middle' })}${t(a + 288, 240, 'CMB', { taille: 12, couleur: BLEU, ancre: 'middle' })}`;
+  corps += `<rect x="${a + 228}" y="198" width="120" height="58" rx="11" fill="#0F151D" stroke="${BLEU}" stroke-opacity="0.5"/>${t(a + 288, 231, 'Livret A', { taille: 12.5, couleur: BLEU, ancre: 'middle' })}`;
   corps += fil(`M${a + 144} 227 H${a + 226}`);
   corps += `<g>${bille(`M${a + 144} 227 H${a + 226}`, 3, '0;1', '0;1', BLEU, 5)}</g>`;
   corps += `<rect x="${a + 22}" y="276" width="326" height="36" rx="9" fill="url(#hachures)" stroke="#2A3542"/>${t(a + 185, 299, 'hors budget : ni dépense, ni revenu', { taille: 12.5, couleur: INTERNE, ancre: 'middle' })}`;
@@ -285,12 +340,14 @@ const P = {
       <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${TITRE}" text-anchor="end">-${total} €${paliers('opacity', C, [[0, 1], [debut + 0.12, 0], [0.95, 1]])}</text>
       <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${ROSE}" text-anchor="end" opacity="0">reste ${reste} €${paliers('opacity', C, [[0, 0], [debut + 0.12, 1], [0.95, 0]])}</text>
       <rect x="${b + 22}" y="${y + 10}" width="${L}" height="9" rx="4.5" fill="#1D2530"/>
-      <rect x="${b + 22}" y="${y + 10}" width="${w0}" height="9" rx="4.5" fill="${ROSE}">${fondu('width', C, [[0, w0], [debut, w0], [debut + 0.12, w1], [0.92, w1], [1, w0]])}</rect>
-      ${t(b + 22, y + 38, `${part} € du chèque`, { taille: 11.5, couleur: DISCRET })}`;
+      <rect x="${b + 22}" y="${y + 10}" width="${w0}" height="9" rx="4.5" fill="${ROSE}">${fondu('width', C, [[0, w0], [debut, w0], [debut + 0.12, w1], [0.95, w1], [0.99, w0], [1, w0]])}</rect>
+      <g opacity="0">${visible(C, debut + 0.02, 0.95)}${t(b + 22, y + 38, `${part} € du chèque`, { taille: 11.5, couleur: ROSE })}</g>`;
   };
   corps += barre(222, 'Billet de train', 380, 80, 300, 0.12);
   corps += barre(286, 'Restaurant', 260, 60, 200, 0.3);
-  corps += fil(`M${b + 185} 190 V212`);
+  // Le chèque se partage : un fil rose vers chaque dépense qu'il rembourse.
+  const branche = (y, de) => `<path d="M${b + 22} 168 H${b + 11} V${y} H${b + 20}" fill="none" stroke="${ROSE}" stroke-opacity="0.6" stroke-width="1.5" stroke-linejoin="round" opacity="0">${visible(C, de, 0.95)}</path>`;
+  corps += branche(236, 0.12) + branche(300, 0.3);
   corps += t(b + 22, 370, 'Revenu compté', { taille: 13 }) + `<g>${t(b + 348, 370, '0 €', { taille: 13, couleur: TITRE, police: MONO, ancre: 'end' })}</g>`;
   corps += t(b + 22, 396, 'Les dépenses ne pèsent que leur reste.', { taille: 12, couleur: DISCRET });
 
@@ -305,11 +362,11 @@ const P = {
   corps += `<rect x="${c + 22}" y="306" width="326" height="36" rx="9" fill="${OR}" fill-opacity="0.08" stroke="${OR}" stroke-opacity="0.35"/>`;
   corps += `<g>${t(c + 185, 329, 'Portefeuille : 50 €', { taille: 13, couleur: OR, police: MONO, poids: 700, ancre: 'middle' })}${paliers('opacity', C, [[0, 1], [0.32, 0], [0.95, 1]])}</g>`;
   corps += `<g opacity="0">${t(c + 185, 329, 'Portefeuille : 38 €', { taille: 13, couleur: OR, police: MONO, poids: 700, ancre: 'middle' })}${paliers('opacity', C, [[0, 0], [0.32, 1], [0.95, 0]])}</g>`;
-  corps += t(c + 22, 370, 'Sorties du mois', { taille: 13 }) + t(c + 348, 370, '50 €, pas 62', { taille: 13, couleur: TITRE, police: MONO, ancre: 'end' });
+  corps += t(c + 22, 370, 'Sorties du mois', { taille: 13 }) + `<g>${t(c + 348, 370, '50 €', { taille: 13, couleur: TITRE, police: MONO, ancre: 'end' })}${paliers('opacity', C, [[0, 1], [0.5, 0], [0.95, 1]])}</g><g opacity="0">${t(c + 348, 370, '50 €, pas 62', { taille: 13, couleur: TITRE, police: MONO, ancre: 'end' })}${paliers('opacity', C, [[0, 0], [0.5, 1], [0.95, 0]])}</g>`;
   corps += t(c + 22, 396, 'Le même billet ne compte qu’une fois.', { taille: 12, couleur: DISCRET });
 
   svg('mouvements.svg', 1280, 440, corps,
-    'Trois pièges d’un relevé, et comment l’application les défait. Un virement vers le livret CMB, lu dans VIR VERS LIVRET CMB DE CARTE BANCAIRE : l’argent passe du compte courant au livret, il est hors budget, compté 200 euros mis de côté, et le budget reste inchangé. Un chèque de 500 euros qui rembourse : 300 euros vont au billet de train de 380 euros, dont il reste 80, et 200 au restaurant de 260 euros, dont il reste 60 ; le chèque ne compte pas comme un revenu. Des espèces : un retrait de 50 euros, puis 12 euros au marché ; les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38 euros, et les sorties du mois restent 50 euros, pas 62.');
+    'Trois pièges d’un relevé, et comment l’application les défait. Un virement vers le livret A, lu dans VIR VERS LIVRET A DE COMPTE COURANT : l’argent passe du compte courant au livret, il est hors budget, compté 200 euros mis de côté, et le budget reste inchangé. Un chèque de 500 euros qui rembourse : 300 euros vont au billet de train de 380 euros, dont il reste 80, et 200 au restaurant de 260 euros, dont il reste 60 ; le chèque ne compte pas comme un revenu. Des espèces : un retrait de 50 euros, puis 12 euros au marché ; les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38 euros, et les sorties du mois restent 50 euros, pas 62.');
 }
 
 // ------------------------------------------------------------------------
@@ -320,6 +377,13 @@ const P = {
   corps += t(60, 52, 'LE CHIFFREMENT', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
   corps += t(240, 52, 'L’empreinte ne déverrouille pas un écran : elle charge la clé.', { taille: 14 });
   const L = 250, H = 76;
+  // Les billes passent sous les cartes : elles ne se voient que sur les fils.
+  // Verte de l'empreinte au Keystore, puis bleue et rose une fois la clé
+  // dérivée ; la dorée attend son tour, cachée dans la carte de la phrase.
+  corps += bille('M185 210 H485', C, '0;0;1;1', '0;0.03;0.18;1', VERT, 5);
+  corps += bille('M485 210 H610 C635 210 635 128 660 128 H1090', C, '0;0;1;1', '0;0.18;0.5;1', BLEU, 5);
+  corps += bille('M485 210 H610 C635 210 635 292 660 292 H1090', C, '0;0;1;1', '0;0.18;0.5;1', ROSE, 5);
+  corps += bille('M185 430 H940', C, '0;0;1;1', '0;0.5;0.8;1', OR, 5);
   corps += carte(60, 172, L, H, 'Empreinte', 'local_auth', VERT, { icone: P.empreinte, allume: [0, 0.2], cycle: C });
   corps += carte(360, 172, L, H, 'Keystore', 'clé maîtresse, 32 octets', NEON, { icone: P.cle, allume: [0.12, 0.35], cycle: C });
   corps += carte(660, 90, L, H, 'HKDF-SHA256', 'smartbudget/db/v1', BLEU, { icone: P.cadenas, allume: [0.3, 0.6], cycle: C });
@@ -328,15 +392,12 @@ const P = {
   corps += carte(960, 254, 260, H, 'AES-GCM', 'la clé d’Enable Banking', ROSE, { icone: P.cle, allume: [0.45, 0.8], cycle: C });
   const p1 = 'M310 210 H360', p2 = 'M610 210 C635 210 635 128 660 128 M910 128 H960', p3 = 'M610 210 C635 210 635 292 660 292 M910 292 H960';
   corps += fil(p1) + fil(p2) + fil(p3);
-  corps += bille('M310 210 H360 H610 C635 210 635 128 660 128 H910 H960', C, '0;0;1;1', '0;0.1;0.55;1', BLEU, 5);
-  corps += bille('M310 210 H360 H610 C635 210 635 292 660 292 H910 H960', C, '0;0;1;1', '0;0.1;0.55;1', ROSE, 5);
   // La sauvegarde, qui ne dépend pas du téléphone.
   corps += `<rect x="60" y="364" width="1160" height="1" fill="${BORD}"/>`;
   corps += carte(60, 392, L, H, 'Ta phrase', 'choisie à l’export', OR, { icone: P.phrase, allume: [0.5, 0.75], cycle: C });
   corps += carte(360, 392, L, H, 'PBKDF2', '210 000 tours, sel', OR, { icone: P.cadenas, allume: [0.6, 0.85], cycle: C });
   corps += carte(660, 392, 560, H, 'smartbudget-2026-09-24.sbx', 'AES-GCM : SBEX1 · sel 16 · nonce 12 · chiffré · MAC 16, relisible ailleurs', OR, { icone: P.fichier, allume: [0.7, 0.95], cycle: C });
   corps += fil('M310 430 H360 M610 430 H660');
-  corps += bille('M310 430 H660', C, '0;0;1;1', '0;0.5;0.8;1', OR, 5);
   corps += t(640, 508, 'Sans l’empreinte, la clé n’est pas en mémoire : contourner l’écran d’ouverture ne donnerait accès à rien.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('chiffrement.svg', 1280, 530, corps,
     'Le chiffrement. L’empreinte charge la clé maîtresse de 32 octets depuis le Keystore Android. HKDF-SHA256 en dérive deux clés : l’une ouvre la base SQLCipher, l’autre chiffre en AES-GCM la clé privée d’Enable Banking. À part, la sauvegarde : une phrase choisie à l’export passe par PBKDF2 en 210 000 tours, et chiffre en AES-GCM un fichier .sbx relisible sur un autre téléphone. Sans l’empreinte, la clé n’est pas en mémoire, et contourner l’écran d’ouverture ne donne accès à rien.');
