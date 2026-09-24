@@ -8,6 +8,7 @@ import 'config/routes.dart';
 import 'config/theme.dart';
 import 'ecrans/lancement.dart';
 import 'providers/auth_provider.dart';
+import 'providers/donnees.dart';
 import 'providers/securite.dart';
 import 'security/lock_state.dart';
 
@@ -27,19 +28,32 @@ class _SmartBudgetAppState extends ConsumerState<SmartBudgetApp>
 
   Timer? _inactivite;
 
+  /// L'état du verrou vu la dernière fois, pour repérer l'ouverture.
+  bool _etaitOuvert = EtatVerrou.instance.isUnlocked;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    EtatVerrou.instance.addListener(_relancer);
+    EtatVerrou.instance.addListener(_surVerrou);
   }
 
   @override
   void dispose() {
-    EtatVerrou.instance.removeListener(_relancer);
+    EtatVerrou.instance.removeListener(_surVerrou);
     _inactivite?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  /// À chaque ouverture, tous les écrans relisent la base. Une lecture
+  /// tentée pendant le verrou, ou au milieu d'un effacement, échoue ; sans
+  /// cette relecture, l'erreur restait en mémoire et les pages grises.
+  void _surVerrou() {
+    final ouvert = EtatVerrou.instance.isUnlocked;
+    if (ouvert && !_etaitOuvert) ref.read(versionProvider.notifier).state++;
+    _etaitOuvert = ouvert;
+    _relancer();
   }
 
   /// Repart de zéro à chaque contact avec l'écran.

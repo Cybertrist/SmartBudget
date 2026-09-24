@@ -14,6 +14,7 @@ import '../providers/auth_provider.dart';
 import '../providers/donnees.dart';
 import '../providers/securite.dart';
 import '../main.dart' show generation;
+import '../security/key_vault.dart';
 import '../utils/fichiers.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
@@ -366,11 +367,17 @@ class EcranReglages extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-    // Verrouiller d'abord, détruire ensuite, comme BodyCount : le verrou
-    // ramène à l'écran d'ouverture, et plus rien ne lit une base qu'on est
-    // en train d'effacer. Puis l'état en mémoire repart de zéro.
-    await ref.read(authServiceProvider).lock();
+    // La clé d'abord : sans elle, plus rien ne peut rouvrir la base. Verrouiller
+    // d'abord ne suffisait pas quand l'empreinte est coupée : l'écran
+    // d'ouverture rouvrait aussitôt l'application avec l'ancienne clé encore
+    // en mémoire, au milieu de l'effacement, et les pages restaient grises.
+    // Puis la base, le verrou, et enfin l'état en mémoire : repartir de zéro
+    // avant le verrou laissait les nouveaux écrans lire sans clé, et garder
+    // l'erreur.
+    final auth = ref.read(authServiceProvider);
+    await KeyVault.instance.destroy();
     await Base.instance.toutDetruire();
+    await auth.lock();
     generation.value++;
   }
 }
