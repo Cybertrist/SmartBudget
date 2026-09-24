@@ -4,13 +4,14 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 import '../domaine/modeles.dart';
+import 'rs256.dart';
 
 /// Le client d'Enable Banking, l'agrégateur qui lit le compte au Crédit
 /// Mutuel de Bretagne par la DSP2.
 ///
 /// Chaque requête porte un JWT signé en RS256 avec la clé privée de
-/// l'application. La signature se fait en natif, par java.security : le
-/// paquet de chiffrement Dart ne sait pas signer en RSA sur Android.
+/// l'application, par pointycastle : en Dart, pour que la vérification du
+/// solde en arrière-plan puisse signer elle aussi.
 ///
 /// Le mode restreint d'Enable Banking ne donne accès qu'aux comptes reliés
 /// sur son portail : ceux de Tristan, et personne d'autre.
@@ -31,7 +32,7 @@ class EnableBanking {
 
   static String _b64(List<int> octets) => base64Url.encode(octets).replaceAll('=', '');
 
-  Future<String> _jwt() async {
+  String _jwt() {
     final maintenant = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final entete = _b64(utf8.encode(jsonEncode({'typ': 'JWT', 'alg': 'RS256', 'kid': appId})));
     final charge = _b64(utf8.encode(jsonEncode({
@@ -40,15 +41,14 @@ class EnableBanking {
       'iat': maintenant,
       'exp': maintenant + 3600,
     })));
-    final signature = await _canal.invokeMethod<Uint8List>('signer', {'pem': pem, 'donnees': '$entete.$charge'});
-    return '$entete.$charge.${_b64(signature!)}';
+    return '$entete.$charge.${_b64(signerRs256(pem, '$entete.$charge'))}';
   }
 
   Future<dynamic> _requete(String methode, String chemin, {Map<String, String>? parametres, Object? corps}) async {
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 20);
     try {
       final requete = await client.openUrl(methode, Uri.https(_hote, chemin, parametres));
-      requete.headers.set(HttpHeaders.authorizationHeader, 'Bearer ${await _jwt()}');
+      requete.headers.set(HttpHeaders.authorizationHeader, 'Bearer ${_jwt()}');
       requete.headers.set(HttpHeaders.acceptHeader, 'application/json');
       if (corps != null) {
         requete.headers.contentType = ContentType.json;

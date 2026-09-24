@@ -407,9 +407,9 @@ const P = {
   corps += carte(360, 392, L, H, 'PBKDF2', '210 000 tours, sel', OR, { icone: P.cadenas, allume: [0.6, 0.85], cycle: C });
   corps += carte(660, 392, 560, H, 'smartbudget-2026-09-24.sbx', 'AES-GCM : SBEX1 · sel 16 · nonce 12 · chiffré · MAC 16, relisible ailleurs', OR, { icone: P.fichier, allume: [0.7, 0.95], cycle: C });
   corps += fil('M310 430 H360 M610 430 H660');
-  corps += t(640, 508, 'Sans l’empreinte, la clé n’est pas en mémoire : contourner l’écran d’ouverture ne donnerait accès à rien.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  corps += t(640, 508, 'Hors de la veille du solde, toutes les six heures, la clé n’entre en mémoire qu’après l’empreinte.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('chiffrement.svg', 1280, 530, corps,
-    'Le chiffrement. L’empreinte charge la clé maîtresse de 32 octets depuis le Keystore Android. HKDF-SHA256 en dérive deux clés : l’une ouvre la base SQLCipher, l’autre chiffre en AES-GCM la clé privée d’Enable Banking. À part, la sauvegarde : une phrase choisie à l’export passe par PBKDF2 en 210 000 tours, et chiffre en AES-GCM un fichier .sbx relisible sur un autre téléphone. Sans l’empreinte, la clé n’est pas en mémoire, et contourner l’écran d’ouverture ne donne accès à rien.');
+    'Le chiffrement. L’empreinte charge la clé maîtresse de 32 octets depuis le Keystore Android. HKDF-SHA256 en dérive deux clés : l’une ouvre la base SQLCipher, l’autre chiffre en AES-GCM la clé privée d’Enable Banking. À part, la sauvegarde : une phrase choisie à l’export passe par PBKDF2 en 210 000 tours, et chiffre en AES-GCM un fichier .sbx relisible sur un autre téléphone. Hors de la veille du solde, qui la charge toutes les six heures le temps de lire le solde, la clé n’entre en mémoire qu’après l’empreinte.');
 }
 
 // ------------------------------------------------------------------------

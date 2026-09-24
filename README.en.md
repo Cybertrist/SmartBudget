@@ -19,7 +19,7 @@ The app itself is in French; this page is its English description.
 
 <img src="docs/en/sections/s01.png" alt="01 Features" width="100%">
 
-<img src="docs/en/schemas/fonctionnalites.png" alt="Twelve features. The account, on its own: the current account read over PSD2 through Enable Banking, twelve months of history then a sync at every launch. Categorised for you: 23 categories, 180 subcategories, 250 known merchants, and learned corrections. The spending ring, over one month, three months or a year. Internal transfers kept apart, outside the budget. Refunds linked to their expenses. Recurring payments found on their own. Review and tick off. Cash and wallet. Savings accounts kept by transfers. Search across every transaction. Encrypted on the phone. Encrypted backup." width="100%">
+<img src="docs/en/schemas/fonctionnalites.png" alt="Twelve features. The account, on its own: the current account read over PSD2 through Enable Banking, twelve months of history, a sync at every launch, and an alert if the account goes overdrawn. Categorised for you: 23 categories, 180 subcategories, 250 known merchants, and learned corrections. The spending ring, over one month, three months or a year. Internal transfers kept apart, outside the budget. Refunds linked to their expenses. Recurring payments found on their own. Review and tick off. Cash and wallet. Savings accounts kept by transfers. Search across every transaction. Encrypted on the phone. Encrypted backup." width="100%">
 
 <img src="docs/en/sections/s02.png" alt="02 The screens" width="100%">
 
@@ -36,14 +36,14 @@ On the Fold's unfolded screen, a rail on the left, and pages become panes side b
 <img src="docs/en/sections/s03.png" alt="03 Install" width="100%">
 
 <p align="center">
-<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/en/telecharger.png" alt="Download Smart Budget, version 1.0.2, Android 8 or later, arm64" width="480"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/en/telecharger.png" alt="Download Smart Budget, version 1.0.3, Android 8 or later, arm64" width="480"></a>
 </p>
 
 The APK is not on the Play Store: Android asks, once, to allow installs from the browser. Every version is signed with the same key, so it installs over the previous one without losing anything. To check the downloaded file:
 
 ```
-# SHA-256 of SmartBudget.apk, version 1.0.2
-9acac9865290a549c411f3d32979c656520d61fd2527469b70301e729fc780fa
+# SHA-256 of SmartBudget.apk, version 1.0.3
+4b7b52dca908edf9da1aea9dfb0fef60d35ee50719af0c3b16f94a22e8dfd9e5
 
 # SHA-256 of the signing certificate, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -69,6 +69,8 @@ Banks do not talk to individuals: you need a PSD2-licensed aggregator. [Enable B
 4. **Relier le compte** (Link the account): the bank's page opens, you approve with Safetrans, and the app takes over again.
 
 Access expires after 180 days, by law: the bank card warns fifteen days ahead, and one tap renews it. PSD2 only shares the current account, which the bank calls "CARTE BANCAIRE": savings accounts are entered by hand, then follow the transfers the app spots.
+
+**The overdrawn alert** is the app's only notification. Every six hours, even with the app closed, it reads the current account's balance again, and nothing else: four reads a day at most, the limit PSD2 grants to access made without you. If it drops below zero, a notification gives the amount; the next one waits until the account has gone back up and down again.
 
 <img src="docs/en/sections/s05.png" alt="05 How a transaction is read" width="100%">
 
@@ -96,7 +98,7 @@ A phone screen stretched over eight inches no longer looks like anything. On the
 
 <img src="docs/en/sections/s08.png" alt="08 The stack" width="100%">
 
-<img src="docs/en/schemas/stack.png" alt="Flutter 3 for the whole app. sqflite_sqlcipher for encrypted SQLite, schema version 5. flutter_secure_storage for the master key in the Keystore. cryptography for HKDF, AES-GCM and PBKDF2. local_auth for the fingerprint. flutter_riverpod for state. go_router for navigation and the lock guard. java.security for the RS256 signature of bank requests. intl for dates and amounts." width="100%">
+<img src="docs/en/schemas/stack.png" alt="Flutter 3 for the whole app. sqflite_sqlcipher for encrypted SQLite, schema version 5. flutter_secure_storage for the master key in the Keystore. cryptography for HKDF, AES-GCM and PBKDF2. local_auth for the fingerprint. flutter_riverpod for state. go_router for navigation and the lock guard. pointycastle for the RS256 signature of bank requests, in Dart. workmanager for the balance watch. flutter_local_notifications for the overdrawn alert. intl for dates and amounts. material_symbols_icons for the icons." width="100%">
 
 <img src="docs/en/sections/s09.png" alt="09 Architecture" width="100%">
 
@@ -108,19 +110,21 @@ Amounts are integers, in cents: a float never touches money. The domain knows ne
 
 <img src="docs/en/sections/s10.png" alt="10 Encryption" width="100%">
 
-<img src="docs/en/schemas/chiffrement.svg" alt="The fingerprint loads the 32-byte master key from the Keystore. HKDF-SHA256 derives from it the SQLCipher database key and the one that encrypts the Enable Banking private key with AES-GCM. The backup is encrypted with AES-GCM under a key drawn from a passphrase by 210,000 rounds of PBKDF2, readable on another phone." width="100%">
+<img src="docs/en/schemas/chiffrement.svg" alt="The fingerprint loads the 32-byte master key from the Keystore. HKDF-SHA256 derives from it the SQLCipher database key and the one that encrypts the Enable Banking private key with AES-GCM. The backup is encrypted with AES-GCM under a key drawn from a passphrase by 210,000 rounds of PBKDF2, readable on another phone. Apart from the balance watch, every six hours, the key only enters memory after the fingerprint." width="100%">
 
-The master key is drawn at random on first launch and never leaves the Android Keystore. Everything else derives from it: the database, and the Enable Banking private key, the most sensitive data in the app, since it opens read access to the account. That key lives encrypted twice, under its own key and inside a database that is itself encrypted, and is only decrypted for the length of a request. The RS256 signature happens on the native side, through `java.security`.
+The master key is drawn at random on first launch and never leaves the Android Keystore. Everything else derives from it: the database, and the Enable Banking private key, the most sensitive data in the app, since it opens read access to the account. That key lives encrypted twice, under its own key and inside a database that is itself encrypted, and is only decrypted for the length of a request. The RS256 signature happens in Dart, through pointycastle, and matches OpenSSL's byte for byte.
+
+**One exception, owned up to: the balance watch.** Reading the balance with the app closed takes the bank key, and so the master key. Every six hours, it is loaded without the fingerprint, for a single read, then forgotten. Android itself never tied the key to the fingerprint, only the app did; the watch makes that limit visible instead of hiding it.
 
 **Tout effacer** (Erase everything) destroys the key first, then the database and its side files: even if interrupted, nothing readable is left.
 
 <img src="docs/en/sections/s11.png" alt="11 Privacy model" width="100%">
 
-<img src="docs/en/schemas/confidentialite.png" alt="What holds: no server, the app only talks to Enable Banking; the database is encrypted and its key loaded after the fingerprint; the bank key is encrypted twice; PSD2 only grants reading and expires after 180 days; the screen is protected. What does not: Enable Banking sees the transactions go by; an open app shows everything; a backup is only as strong as its passphrase; losing the phone without a backup means losing the data; the fingerprint can be turned off." width="100%">
+<img src="docs/en/schemas/confidentialite.png" alt="What holds: no server, the app only talks to Enable Banking; the database is encrypted and its key loaded after the fingerprint; the bank key is encrypted twice; PSD2 only grants reading and expires after 180 days; the screen is protected. What does not: Enable Banking sees the transactions go by; an open app shows everything; a backup is only as strong as its passphrase; losing the phone without a backup means losing the data; the balance watch runs without the fingerprint and shows the amount on the lock screen; the fingerprint can be turned off." width="100%">
 
 <img src="docs/en/sections/s12.png" alt="12 Tests" width="100%">
 
-<img src="docs/en/schemas/tests.png" alt="The tests: labels, internal transfers, recurrences, categorising and de-duplication, balance with refunds and cash, wallet, encrypted backup, RS256 signature identical to OpenSSL. The 22 tests run on an Android emulator." width="100%">
+<img src="docs/en/schemas/tests.png" alt="The tests: labels, internal transfers, recurrences, categorising and de-duplication, balance with refunds and cash, wallet, encrypted backup, RS256 signature identical to OpenSSL, overdrawn alert. The 24 tests run on an Android emulator." width="100%">
 
 SQLCipher and the Keystore only exist on a device: the tests run on an emulator, never on the phone holding the real accounts, since they erase the database.
 

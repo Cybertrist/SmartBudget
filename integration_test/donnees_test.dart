@@ -6,9 +6,10 @@
 // sur le téléphone qui porte les vrais comptes.
 import 'dart:convert';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:smartbudget/banque/rs256.dart';
+import 'package:smartbudget/banque/veille.dart';
 import 'package:smartbudget/domaine/bilan.dart';
 import 'package:smartbudget/domaine/classement.dart';
 import 'package:smartbudget/domaine/libelle.dart';
@@ -319,7 +320,31 @@ void main() {
     expect(b.parSous[2], 3000);
   });
 
-  test("la signature RS256 du natif est celle d'OpenSSL", () async {
+  group('alerte de compte en négatif', () {
+    setUp(_neuf);
+
+    test('une seule alerte par passage en négatif', () async {
+      const reglages = DepotReglages();
+      await Veille.verifier(-4210);
+      final premiere = await reglages.lire('alerte_negatif');
+      expect(premiere, isNotNull);
+      // Toujours en négatif : pas de nouvelle alerte.
+      await Veille.verifier(-5000);
+      expect(await reglages.lire('alerte_negatif'), premiere);
+      // Remonté : la prochaine descente préviendra de nouveau.
+      await Veille.verifier(1200);
+      expect(await reglages.lire('alerte_negatif'), isNull);
+    });
+
+    test('la veille ne tire jamais de clé neuve', () async {
+      await Base.instance.fermer();
+      await KeyVault.instance.destroy();
+      expect(await KeyVault.instance.unlockExisting(), isFalse);
+      await KeyVault.instance.unlock();
+    });
+  });
+
+  test("la signature RS256 est celle d'OpenSSL", () async {
     // Une clé jetable, générée pour ce test : jamais celle du compte.
     const pem = '''-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDwenZow46TR/ZC
@@ -349,7 +374,7 @@ HJroAylD+2O5BxM4+xpLRjs3bsUosgwsTw7ekd7LG/CjsyK3mjg8ceXhPvCBSH01
 5TT2dffOocSmUsPuHgIkkutcyDh8VAUYH5UJswPU5YM2N9mJKeA7cVPaWeWzBM/G
 1KB6OV8+e2+RskyXZwQ0Wdol
 -----END PRIVATE KEY-----''';
-    final signature = await const MethodChannel('smartbudget/banque').invokeMethod<Uint8List>('signer', {'pem': pem, 'donnees': 'eyJhIjoxfQ.eyJiIjoyfQ'});
-    expect(base64Url.encode(signature!).replaceAll('=', ''), '0sN5uGxXVPOGKQUTXb5kkzOEZOxOcY7Do2ehJATj4ZNB7s7kgwdj0fvg7OGmD2LBSfdii4ktGB0F7wk4sGo1qE0aVIoEclRh05O8CAONu4XBYrZwDA0fDeoJx-PPbJ2mN7GidqjMKLTtu5oPiT_9BkjqQIFXTnaCkYbNjBd-4wC5tRpE0IRtSKVocd04i7v4Y70wS5Gwj8Vedki5QSVLQwcU6on2_YcSUIDaCGFePCYxsTmeYgj71M7w__aceSNAfpfC6ekoTAT9IqRRWWmziZxAIjmIUrbWXBsAXAV19smkQHwdHS6lFaYcOhd6OENSSJ5-JXUV_vK180eFNwyYhQ');
+    final signature = signerRs256(pem, 'eyJhIjoxfQ.eyJiIjoyfQ');
+    expect(base64Url.encode(signature).replaceAll('=', ''), '0sN5uGxXVPOGKQUTXb5kkzOEZOxOcY7Do2ehJATj4ZNB7s7kgwdj0fvg7OGmD2LBSfdii4ktGB0F7wk4sGo1qE0aVIoEclRh05O8CAONu4XBYrZwDA0fDeoJx-PPbJ2mN7GidqjMKLTtu5oPiT_9BkjqQIFXTnaCkYbNjBd-4wC5tRpE0IRtSKVocd04i7v4Y70wS5Gwj8Vedki5QSVLQwcU6on2_YcSUIDaCGFePCYxsTmeYgj71M7w__aceSNAfpfC6ekoTAT9IqRRWWmziZxAIjmIUrbWXBsAXAV19smkQHwdHS6lFaYcOhd6OENSSJ5-JXUV_vK180eFNwyYhQ');
   });
 }

@@ -9,7 +9,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 ///
 /// Une clé maîtresse de 32 octets est tirée au hasard au premier lancement
 /// et rangée dans le Keystore Android. Elle ne quitte jamais l'appareil et
-/// n'entre en mémoire qu'après l'empreinte.
+/// n'entre en mémoire qu'après l'empreinte, sauf pour la veille du solde,
+/// qui la charge toutes les six heures le temps d'une lecture
+/// ([unlockExisting]).
 ///
 /// Tout le reste en dérive par HKDF, une étiquette par usage : la base, et
 /// la clé privée d'Enable Banking, qui ouvre l'accès en lecture au compte.
@@ -50,6 +52,18 @@ class KeyVault {
     final fresh = _randomBytes(32);
     await _storage.write(key: _masterKeyName, value: base64Encode(fresh));
     _master = fresh;
+  }
+
+  /// Charge la clé maîtresse sans jamais la créer : c'est l'ouverture de la
+  /// vérification du solde en arrière-plan. Après un effacement total, il
+  /// n'y a plus de clé, et rien ne doit en tirer une neuve ni recréer une
+  /// base vide dans le dos de l'utilisateur. Rend faux dans ce cas.
+  Future<bool> unlockExisting() async {
+    if (_master != null) return true;
+    final stored = await _storage.read(key: _masterKeyName);
+    if (stored == null) return false;
+    _master = Uint8List.fromList(base64Decode(stored));
+    return true;
   }
 
   /// Oublie les clés, en écrasant les octets de la maîtresse avant de la

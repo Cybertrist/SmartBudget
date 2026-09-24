@@ -98,7 +98,7 @@ rendre "$nom.html" "$DOCS/schemas/$nom.png"
 }
 
 grille fonctionnalites 3 \
-  "account_balance|Le compte, tout seul|Ton compte courant, lu par la DSP2 via Enable Banking : douze mois d'historique, puis une synchronisation à chaque ouverture." \
+  "account_balance|Le compte, tout seul|Ton compte courant, lu par la DSP2 via Enable Banking : douze mois d'historique, une synchronisation à chaque ouverture, et une alerte s'il passe en négatif." \
   "category|Classé sans rien faire|23 catégories, 180 sous-catégories, 250 marchands reconnus. Une correction est apprise et suivie par les prochaines opérations." \
   "pie_chart|L'anneau des dépenses|Le mois, trois mois ou un an : où part l'argent, catégorie par catégorie, jusqu'à l'opération." \
   "sync_alt|Les virements internes à part|Vers le livret, depuis le livret : ni dépense ni revenu, hachurés, hors budget. Mis de côté et pioché, suivis." \
@@ -119,8 +119,11 @@ grille stack 3 \
   "fingerprint|local_auth|L'empreinte, qui charge la clé : sans elle, la base reste illisible." \
   "account_tree|flutter_riverpod|L'état : une écriture fait relire tout ce qui en dépend, d'un seul appel." \
   "route|go_router|La navigation, et la garde du verrou sur chaque page." \
-  "draw|java.security|La signature RS256 des requêtes à la banque, côté natif Kotlin." \
-  "calendar_month|intl|Les dates et les montants à la française."
+  "draw|pointycastle|La signature RS256 des requêtes à la banque, en Dart, octet pour octet celle d'OpenSSL." \
+  "schedule|workmanager|La veille du solde, toutes les six heures, même application fermée." \
+  "notifications|flutter_local_notifications|L'unique notification : le compte courant passé en négatif." \
+  "calendar_month|intl|Les dates et les montants à la française." \
+  "interests|material_symbols_icons|Cinq cents icônes au choix, arrondies comme l'interface."
 
 grille tests 3 \
   "rule|Libellés|Le marchand sort du bruit de la banque, et sa clé ne change pas d'un mois à l'autre." \
@@ -130,8 +133,8 @@ grille tests 3 \
   "calculate|Bilan|Remboursements répartis, remboursement marchand, dépense en espèces retirée des retraits." \
   "account_balance_wallet|Portefeuille|50 € comptés, un retrait de 20 €, 12 € au marché : il en reste 58." \
   "backup|Sauvegarde|Tout revient avec la bonne phrase ; une phrase fausse ne touche à rien." \
-  "draw|Signature|Le JWT signé par le natif est, octet pour octet, celui d'OpenSSL." \
-  "android|Sur appareil|Les 22 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là."
+  "draw|Signature|Le JWT signé en Dart est, octet pour octet, celui d'OpenSSL." \
+  "android|Sur appareil|Les 24 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là."
 
 # --------------------------------------------------------------- couches
 { entete 1280; echo "$ICONES"; cat <<'HTML'
@@ -206,7 +209,7 @@ b{color:#DDE4EC;font-weight:600}
 </style></head><body><div class="w">
 <div class="col" style="--a:#1ED760"><h3><span>verified_user</span>Ce qui est vrai</h3><ul>
 <li><span><b>Aucun serveur à moi.</b> L'application ne parle qu'à Enable Banking, pour lire le compte. Pas de compte, pas d'analytique, pas de publicité.</span></li>
-<li><span><b>La base est chiffrée</b> par SQLCipher ; sa clé vit dans le Keystore et n'est chargée qu'après l'empreinte.</span></li>
+<li><span><b>La base est chiffrée</b> par SQLCipher ; sa clé vit dans le Keystore et n'est chargée qu'après l'empreinte, hors la veille du solde.</span></li>
 <li><span><b>La clé bancaire est chiffrée deux fois</b> : en AES-GCM par une clé dérivée, dans une base elle-même chiffrée.</span></li>
 <li><span><b>La DSP2 ne donne que la lecture.</b> Aucun virement ne peut partir de l'application, et l'accès expire au bout de 180 jours.</span></li>
 <li><span><b>L'écran est protégé</b> : captures bloquées, aperçu du multitâche masqué, sauvegarde Android refusée.</span></li>
@@ -216,6 +219,7 @@ b{color:#DDE4EC;font-weight:600}
 <li><span><b>L'application ouverte montre tout.</b> L'empreinte protège l'accès, pas ton épaule.</span></li>
 <li><span><b>Une sauvegarde voyage</b> et vaut ce que vaut sa phrase. Sans la phrase, elle est perdue, pour tout le monde.</span></li>
 <li><span><b>Perdre le téléphone, c'est perdre les données</b> qui n'ont pas été sauvegardées : la clé ne se recopie nulle part.</span></li>
+<li><span><b>La veille du solde se passe d'empreinte</b> : toutes les six heures, la clé est chargée le temps de lire le solde, et l'alerte montre le montant sur l'écran verrouillé.</span></li>
 <li><span><b>L'empreinte se coupe</b> dans les réglages ; les données restent chiffrées, mais s'ouvrent sans preuve.</span></li>
 </ul></div>
 </div>

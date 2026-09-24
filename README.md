@@ -17,7 +17,7 @@ Elle est née d'une envie simple : arrêter de dépenser sans regarder, et de pi
 
 <img src="docs/sections/s01.png" alt="01 Fonctionnalités" width="100%">
 
-<img src="docs/schemas/fonctionnalites.png" alt="Douze fonctionnalités. Le compte, tout seul : le compte courant lu par la DSP2 via Enable Banking, douze mois d'historique puis une synchronisation à chaque ouverture. Classé sans rien faire : 23 catégories, 180 sous-catégories, 250 marchands reconnus, et une correction apprise. L'anneau des dépenses, sur un mois, trois mois ou un an. Les virements internes à part, hors budget. Les remboursements liés à leurs dépenses. Les récurrences repérées seules. À vérifier et pointer. Espèces et portefeuille. Livrets et épargne tenus par les virements. La recherche dans toutes les opérations. Chiffré sur le téléphone. La sauvegarde chiffrée." width="100%">
+<img src="docs/schemas/fonctionnalites.png" alt="Douze fonctionnalités. Le compte, tout seul : le compte courant lu par la DSP2 via Enable Banking, douze mois d'historique, une synchronisation à chaque ouverture, et une alerte si le compte passe en négatif. Classé sans rien faire : 23 catégories, 180 sous-catégories, 250 marchands reconnus, et une correction apprise. L'anneau des dépenses, sur un mois, trois mois ou un an. Les virements internes à part, hors budget. Les remboursements liés à leurs dépenses. Les récurrences repérées seules. À vérifier et pointer. Espèces et portefeuille. Livrets et épargne tenus par les virements. La recherche dans toutes les opérations. Chiffré sur le téléphone. La sauvegarde chiffrée." width="100%">
 
 <img src="docs/sections/s02.png" alt="02 Les écrans" width="100%">
 
@@ -34,14 +34,14 @@ Sur l'écran déplié du Fold, un rail à gauche, et les pages deviennent des vo
 <img src="docs/sections/s03.png" alt="03 Installer" width="100%">
 
 <p align="center">
-<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/telecharger.png" alt="Télécharger Smart Budget, version 1.0.2, Android 8 ou plus, arm64" width="480"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/telecharger.png" alt="Télécharger Smart Budget, version 1.0.3, Android 8 ou plus, arm64" width="480"></a>
 </p>
 
 L'APK n'est pas sur le Play Store : Android demande d'autoriser l'installation depuis le navigateur, une fois. Chaque version est signée par la même clé, ce qui permet de l'installer par-dessus la précédente sans rien perdre. Pour vérifier le fichier téléchargé :
 
 ```
-# SHA-256 de SmartBudget.apk, version 1.0.2
-9acac9865290a549c411f3d32979c656520d61fd2527469b70301e729fc780fa
+# SHA-256 de SmartBudget.apk, version 1.0.3
+4b7b52dca908edf9da1aea9dfb0fef60d35ee50719af0c3b16f94a22e8dfd9e5
 
 # SHA-256 du certificat de signature, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -67,6 +67,8 @@ La banque ne parle pas aux particuliers : il faut un agrégateur agréé DSP2. [
 4. **Relier le compte** : la page de la banque s'ouvre, on valide par Safetrans, et l'application reprend la main.
 
 L'accès expire au bout de 180 jours, par la loi : la carte de la banque prévient quinze jours avant, et un toucher le renouvelle. La DSP2 ne partage que le compte courant, que la banque appelle « CARTE BANCAIRE » : les livrets se saisissent à la main, puis vivent au fil des virements repérés.
+
+**L'alerte de compte en négatif** est la seule notification de l'application. Toutes les six heures, même application fermée, elle relit le solde du compte courant, et lui seul : quatre lectures par jour au plus, la limite que la DSP2 accorde aux accès faits sans toi. S'il passe sous zéro, une notification donne le montant ; la suivante attend que le compte soit remonté puis redescendu.
 
 <img src="docs/sections/s05.png" alt="05 Comment une opération est lue" width="100%">
 
@@ -94,7 +96,7 @@ Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur 
 
 <img src="docs/sections/s08.png" alt="08 La pile" width="100%">
 
-<img src="docs/schemas/stack.png" alt="Flutter 3 pour toute l'application. sqflite_sqlcipher pour SQLite chiffré, schéma en version 5. flutter_secure_storage pour la clé maîtresse dans le Keystore. cryptography pour HKDF, AES-GCM et PBKDF2. local_auth pour l'empreinte. flutter_riverpod pour l'état. go_router pour la navigation et la garde du verrou. java.security pour la signature RS256 des requêtes à la banque. intl pour les dates et les montants." width="100%">
+<img src="docs/schemas/stack.png" alt="Flutter 3 pour toute l'application. sqflite_sqlcipher pour SQLite chiffré, schéma en version 5. flutter_secure_storage pour la clé maîtresse dans le Keystore. cryptography pour HKDF, AES-GCM et PBKDF2. local_auth pour l'empreinte. flutter_riverpod pour l'état. go_router pour la navigation et la garde du verrou. pointycastle pour la signature RS256 des requêtes à la banque, en Dart. workmanager pour la veille du solde. flutter_local_notifications pour l'alerte de compte en négatif. intl pour les dates et les montants. material_symbols_icons pour les icônes." width="100%">
 
 <img src="docs/sections/s09.png" alt="09 Architecture" width="100%">
 
@@ -106,19 +108,21 @@ Les montants sont des entiers, en centimes : jamais un flottant ne touche à l'a
 
 <img src="docs/sections/s10.png" alt="10 Le chiffrement" width="100%">
 
-<img src="docs/schemas/chiffrement.svg" alt="L'empreinte charge la clé maîtresse de 32 octets depuis le Keystore. HKDF-SHA256 en dérive la clé de la base SQLCipher et celle qui chiffre en AES-GCM la clé privée d'Enable Banking. La sauvegarde, elle, est chiffrée en AES-GCM par une clé tirée d'une phrase par PBKDF2 en 210 000 tours, relisible sur un autre téléphone." width="100%">
+<img src="docs/schemas/chiffrement.svg" alt="L'empreinte charge la clé maîtresse de 32 octets depuis le Keystore. HKDF-SHA256 en dérive la clé de la base SQLCipher et celle qui chiffre en AES-GCM la clé privée d'Enable Banking. La sauvegarde, elle, est chiffrée en AES-GCM par une clé tirée d'une phrase par PBKDF2 en 210 000 tours, relisible sur un autre téléphone. Hors de la veille du solde, toutes les six heures, la clé n'entre en mémoire qu'après l'empreinte." width="100%">
 
-La clé maîtresse est tirée au hasard au premier lancement et ne quitte jamais le Keystore d'Android. Tout le reste en dérive : la base, et la clé privée d'Enable Banking, la donnée la plus sensible de l'application, puisqu'elle ouvre la lecture du compte. Elle vit chiffrée deux fois, par sa propre clé et dans une base elle-même chiffrée, et n'est déchiffrée que le temps d'une requête. La signature RS256 se fait côté natif, par `java.security`.
+La clé maîtresse est tirée au hasard au premier lancement et ne quitte jamais le Keystore d'Android. Tout le reste en dérive : la base, et la clé privée d'Enable Banking, la donnée la plus sensible de l'application, puisqu'elle ouvre la lecture du compte. Elle vit chiffrée deux fois, par sa propre clé et dans une base elle-même chiffrée, et n'est déchiffrée que le temps d'une requête. La signature RS256 se fait en Dart, par pointycastle, et donne octet pour octet celle d'OpenSSL.
+
+**Une exception, assumée : la veille du solde.** Pour lire le solde application fermée, il faut la clé bancaire, donc la clé maîtresse. Toutes les six heures, elle est chargée sans empreinte, le temps d'une seule lecture, puis oubliée. La clé n'a jamais été liée à l'empreinte par Android lui-même, seulement par l'application ; la veille rend cette limite visible au lieu de la taire.
 
 **Tout effacer** détruit la clé d'abord, puis la base et ses fichiers annexes : même interrompu, rien de lisible ne reste.
 
 <img src="docs/sections/s11.png" alt="11 Modèle de confidentialité" width="100%">
 
-<img src="docs/schemas/confidentialite.png" alt="Ce qui est vrai : aucun serveur, l'application ne parle qu'à Enable Banking ; la base est chiffrée et sa clé chargée après l'empreinte ; la clé bancaire est chiffrée deux fois ; la DSP2 ne donne que la lecture et expire en 180 jours ; l'écran est protégé. Ce qui ne l'est pas : Enable Banking voit passer les opérations ; l'application ouverte montre tout ; une sauvegarde vaut ce que vaut sa phrase ; perdre le téléphone sans sauvegarde, c'est perdre les données ; l'empreinte se coupe." width="100%">
+<img src="docs/schemas/confidentialite.png" alt="Ce qui est vrai : aucun serveur, l'application ne parle qu'à Enable Banking ; la base est chiffrée et sa clé chargée après l'empreinte ; la clé bancaire est chiffrée deux fois ; la DSP2 ne donne que la lecture et expire en 180 jours ; l'écran est protégé. Ce qui ne l'est pas : Enable Banking voit passer les opérations ; l'application ouverte montre tout ; une sauvegarde vaut ce que vaut sa phrase ; perdre le téléphone sans sauvegarde, c'est perdre les données ; la veille du solde se passe d'empreinte et montre le montant sur l'écran verrouillé ; l'empreinte se coupe." width="100%">
 
 <img src="docs/sections/s12.png" alt="12 Les tests" width="100%">
 
-<img src="docs/schemas/tests.png" alt="Les tests : libellés, virements internes, récurrences, classement et dédoublonnage, bilan avec remboursements et espèces, portefeuille, sauvegarde chiffrée, signature RS256 identique à OpenSSL. Les 22 tests tournent sur un émulateur Android." width="100%">
+<img src="docs/schemas/tests.png" alt="Les tests : libellés, virements internes, récurrences, classement et dédoublonnage, bilan avec remboursements et espèces, portefeuille, sauvegarde chiffrée, signature RS256 identique à OpenSSL, alerte de compte en négatif. Les 24 tests tournent sur un émulateur Android." width="100%">
 
 SQLCipher et le Keystore n'existent que sur un appareil : les tests tournent sur un émulateur, jamais sur le téléphone qui porte les vrais comptes, car ils effacent la base.
 

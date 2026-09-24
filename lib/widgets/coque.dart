@@ -8,6 +8,7 @@ import '../config/layout.dart';
 import '../config/theme.dart';
 import '../banque/carte_banque.dart';
 import '../banque/connexion.dart';
+import '../banque/veille.dart';
 import 'base.dart';
 import 'volets.dart';
 
@@ -59,6 +60,12 @@ class _EtatCoque extends ConsumerState<Coque> with WidgetsBindingObserver {
     if (!demarrage || !mounted) return;
     final e = await const ConnexionBanque().etat();
     final vieille = e.derniere == null || DateTime.now().difference(e.derniere!) > const Duration(hours: 1);
+    if (e.relie) {
+      // La veille du solde tourne tant que le compte est relié ; la demande
+      // de permission ne s'affiche qu'une fois, Android s'en souvient.
+      await Veille.planifier();
+      await Veille.demanderPermission();
+    }
     if (e.relie && vieille && mounted) await synchroniser(context, ref, silencieux: true);
   }
 

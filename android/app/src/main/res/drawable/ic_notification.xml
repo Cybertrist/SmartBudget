@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La petite icône de la barre d'état : les trois barres du logo, en
+     blanc sur transparent, comme Android les veut. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M5,13.5a2,2 0,0 1,4 0V19a2,2 0,0 1,-4 0Z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M10,9.5a2,2 0,0 1,4 0V19a2,2 0,0 1,-4 0Z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M15,5a2,2 0,0 1,4 0V19a2,2 0,0 1,-4 0Z" />
+</vector>

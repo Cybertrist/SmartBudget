@@ -7,6 +7,7 @@ import '../config/essais.dart';
 import '../config/format.dart';
 import '../config/theme.dart';
 import '../banque/carte_banque.dart';
+import '../banque/veille.dart';
 import '../donnees/base.dart';
 import '../donnees/demonstration.dart';
 import '../donnees/depots.dart';
@@ -184,7 +185,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.0.2';
+  static const _version = '1.0.3';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 
@@ -358,6 +359,7 @@ class EcranReglages extends ConsumerWidget {
     // avant le verrou laissait les nouveaux écrans lire sans clé, et garder
     // l'erreur.
     final auth = ref.read(authServiceProvider);
+    await Veille.arreter();
     await KeyVault.instance.destroy();
     await Base.instance.toutDetruire();
     await auth.lock();

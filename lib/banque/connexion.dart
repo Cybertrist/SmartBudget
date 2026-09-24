@@ -9,6 +9,7 @@ import '../donnees/depots.dart';
 import '../security/key_vault.dart';
 import '../utils/fichiers.dart';
 import 'enable_banking.dart';
+import 'veille.dart';
 
 /// Ce que l'application sait de sa connexion à la banque.
 class EtatBanque {
@@ -48,6 +49,7 @@ class ConnexionBanque {
   static const _jusquau = 'banque_jusquau';
   static const _derniere = 'banque_derniere';
   static const _etat = 'banque_etat';
+  static const _soldeLe = 'banque_solde_le';
   static const _canal = MethodChannel('smartbudget/banque');
 
   Future<EtatBanque> etat() async {
@@ -136,9 +138,10 @@ class ConnexionBanque {
 
   /// Oublie l'accès au compte. La clé reste, pour se reconnecter.
   Future<void> deconnecter() async {
-    for (final c in [_compte, _jusquau, _derniere]) {
+    for (final c in [_compte, _jusquau, _derniere, _soldeLe]) {
       await _reglages.ecrire(c, null);
     }
+    await Veille.arreter();
   }
 
   // -------------------------------------------------------- synchronisation
@@ -156,8 +159,26 @@ class ConnexionBanque {
     final courant = await const DepotComptes().courant();
     final nouvelles = await const DepotOperations().importer(courant.id, operations);
     final solde = await client.solde(e.compte!);
-    if (solde != null) await const DepotComptes().definirSolde(courant.id, solde);
+    if (solde != null) await _retenirSolde(courant.id, solde);
     await _reglages.ecrire(_derniere, DateTime.now().toIso8601String());
     return nouvelles;
+  }
+
+  /// Le solde seul, sans les opérations : ce que lit la veille en
+  /// arrière-plan. Rien si une lecture a eu lieu il y a moins de
+  /// [depuisAuMoins] : la banque limite les accès faits sans l'utilisateur.
+  Future<void> lireSolde({Duration depuisAuMoins = Duration.zero}) async {
+    final e = await etat();
+    if (!e.relie) return;
+    final le = DateTime.tryParse(await _reglages.lire(_soldeLe) ?? '');
+    if (le != null && DateTime.now().difference(le) < depuisAuMoins) return;
+    final solde = await (await _client()).solde(e.compte!);
+    if (solde != null) await _retenirSolde((await const DepotComptes().courant()).id, solde);
+  }
+
+  Future<void> _retenirSolde(int compte, int solde) async {
+    await const DepotComptes().definirSolde(compte, solde);
+    await _reglages.ecrire(_soldeLe, DateTime.now().toIso8601String());
+    await Veille.verifier(solde);
   }
 }

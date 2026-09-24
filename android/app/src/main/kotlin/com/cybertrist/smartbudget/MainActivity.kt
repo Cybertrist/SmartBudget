@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Base64
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,9 +11,6 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
-import java.security.KeyFactory
-import java.security.Signature
-import java.security.spec.PKCS8EncodedKeySpec
 
 /**
  * FlutterFragmentActivity et non FlutterActivity : la demande d'empreinte
@@ -132,24 +128,6 @@ class MainActivity : FlutterFragmentActivity() {
         if (lien.scheme == "smartbudget") lienEnAttente = lien.toString()
     }
 
-    /**
-     * Signe en RS256 avec la clé privée d'Enable Banking, au format PKCS#8
-     * que donne son portail. La clé n'est déchiffrée que pour l'appel, et
-     * ne reste pas ici.
-     */
-    private fun signer(pem: String, donnees: String): ByteArray {
-        val corps = pem
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "")
-            .replace("\\s".toRegex(), "")
-        val cle = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(Base64.decode(corps, Base64.DEFAULT)))
-        return Signature.getInstance("SHA256withRSA").run {
-            initSign(cle)
-            update(donnees.toByteArray(Charsets.UTF_8))
-            sign()
-        }
-    }
-
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -173,19 +151,6 @@ class MainActivity : FlutterFragmentActivity() {
         canalBanqueOuvert = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, canalBanque).apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "signer" -> {
-                        val pem = call.argument<String>("pem")
-                        val donnees = call.argument<String>("donnees")
-                        if (pem == null || donnees == null) {
-                            result.error("arguments", "Clé ou données absentes", null)
-                        } else {
-                            try {
-                                result.success(signer(pem, donnees))
-                            } catch (e: Exception) {
-                                result.error("cle", "Clé privée illisible : ${e.message}", null)
-                            }
-                        }
-                    }
                     "ouvrirLien" -> {
                         val url = call.argument<String>("url")
                         if (url == null) {

@@ -21,7 +21,12 @@ const neutre = (s, html) =>
 function traduire(s, manque, html = false) {
   const t = s.trim();
   if (!t) return s;
-  if (Object.prototype.hasOwnProperty.call(DICO, t)) return s.replace(t, DICO[t]);
+  if (Object.prototype.hasOwnProperty.call(DICO, t)) {
+    // L'espace qui précède « : » ou « ; » en français n'existe pas en
+    // anglais : « chiffrée deux fois</b> : en… » devient « twice</b>: with… ».
+    const en = s.replace(t, DICO[t]);
+    return /^[:;]/.test(DICO[t]) ? en.replace(/^\s+/, '') : en;
+  }
   if (!neutre(t, html)) manque.add(t);
   return s;
 }

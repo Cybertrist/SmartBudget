@@ -43,6 +43,13 @@ class Base {
   /// dépens ce que deux connexions sur deux fichiers peuvent donner.
   Future<Database>? _ouverture;
 
+  /// Faux pour la veille du solde en arrière-plan. Le greffon SQLCipher
+  /// partage une seule connexion par fichier entre tous les moteurs
+  /// Flutter : si la veille tournait pendant que l'application est ouverte,
+  /// sa fermeture fermerait aussi la connexion des écrans. Elle ouvre donc
+  /// la sienne, à part.
+  bool partagee = true;
+
   Future<Database> get db {
     final enCours = _ouverture;
     if (enCours != null) return enCours;
@@ -71,6 +78,7 @@ class Base {
       chemin,
       password: motDePasse,
       version: _version,
+      singleInstance: partagee,
       onConfigure: (base) async {
         // Sans cette ligne, les ON DELETE CASCADE ne s'appliquent pas.
         await base.execute('PRAGMA foreign_keys = ON');

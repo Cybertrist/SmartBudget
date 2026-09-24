@@ -14,7 +14,6 @@
   "SQLCipher": "SQLCipher",
   "AES-GCM": "AES-GCM",
   "Fold": "Fold",
-
   "Le mois, en deux colonnes": "The month, in two columns",
   "Tout tient sur l’écran, sans défiler.": "Everything fits on screen, no scrolling.",
   "L’analyse": "Analysis",
@@ -50,12 +49,10 @@
   "La banque, le budget, la sécurité, la sauvegarde.": "The bank, the budget, security, backup.",
   "Jeu d’essai": "Demo data",
   "Toutes ces captures viennent d’un émulateur rempli par le jeu d’essai de l’application : aucun vrai compte, aucun vrai montant.": "Every screenshot comes from an emulator filled with the app’s demo data: no real account, no real amount. The app itself is in French.",
-
   "Ce qui est vrai": "What holds",
   "Aucun serveur à moi.": "No server of mine.",
   "L'application ne parle qu'à Enable Banking, pour lire le compte. Pas de compte, pas d'analytique, pas de publicité.": "The app only talks to Enable Banking, to read the account. No sign-up, no analytics, no ads.",
   "La base est chiffrée": "The database is encrypted",
-  "par SQLCipher ; sa clé vit dans le Keystore et n'est chargée qu'après l'empreinte.": "by SQLCipher; its key lives in the Keystore and is only loaded after the fingerprint.",
   "La clé bancaire est chiffrée deux fois": "The bank key is encrypted twice",
   ": en AES-GCM par une clé dérivée, dans une base elle-même chiffrée.": ": with AES-GCM under a derived key, inside a database that is itself encrypted.",
   "La DSP2 ne donne que la lecture.": "PSD2 only grants reading.",
@@ -73,7 +70,6 @@
   "qui n'ont pas été sauvegardées : la clé ne se recopie nulle part.": "that was not backed up: the key is copied nowhere.",
   "L'empreinte se coupe": "The fingerprint can be turned off",
   "dans les réglages ; les données restent chiffrées, mais s'ouvrent sans preuve.": "in the settings; the data stays encrypted, but opens without proof.",
-
   "ecrans/": "ecrans/",
   "Lisent des providers, écrivent par des dépôts, jamais de SQL. Sur l'écran déplié, les pages deviennent des volets.": "Screens: read providers, write through repositories, never SQL. On the unfolded screen, pages become panes.",
   "providers/": "providers/",
@@ -86,9 +82,7 @@
   "Enable Banking : JWT signé, session, opérations, solde. La clé privée n'est déchiffrée que le temps d'un appel.": "Bank: Enable Banking, signed JWT, session, transactions, balance. The private key is decrypted only for one call.",
   "security/": "security/",
   "Le trousseau : clé maîtresse dans le Keystore, dérivations HKDF, verrou. Rien ne lit un fichier en passant outre.": "The keychain: master key in the Keystore, HKDF derivations, the lock. Nothing reads a file by going around it.",
-
   "Le compte, tout seul": "The account, on its own",
-  "Ton compte courant, lu par la DSP2 via Enable Banking : douze mois d'historique, puis une synchronisation à chaque ouverture.": "Your current account, read over PSD2 through Enable Banking: twelve months of history, then a sync every time you open the app.",
   "Classé sans rien faire": "Categorised for you",
   "23 catégories, 180 sous-catégories, 250 marchands reconnus. Une correction est apprise et suivie par les prochaines opérations.": "23 categories, 180 subcategories, 250 known merchants. A correction is learned and followed by the next transactions.",
   "L'anneau des dépenses": "The spending ring",
@@ -110,7 +104,6 @@
   "SQLCipher, clé dans le Keystore, déverrouillée par l'empreinte. Captures et aperçu du multitâche bloqués.": "SQLCipher, key in the Keystore, unlocked by the fingerprint. Screenshots and recent-apps preview blocked.",
   "La sauvegarde chiffrée": "Encrypted backup",
   "Un fichier AES-GCM, clé tirée d'une phrase par PBKDF2, qui se relit sur un autre téléphone.": "An AES-GCM file, keyed from a passphrase by PBKDF2, that opens on another phone.",
-
   "tel que la banque l'écrit": "as the bank writes it",
   "un entier, jamais un flottant": "an integer, never a float",
   "vers categories": "to categories",
@@ -141,7 +134,6 @@
   "clé chiffrée, session": "encrypted key, session",
   "repetition · nom": "repetition · nom",
   "choix par marchand": "choice per merchant",
-
   "Vert": "Green",
   "Néon du logo": "Logo neon",
   "Fond": "Background",
@@ -150,7 +142,6 @@
   "Interne": "Internal",
   "Attention": "Warning",
   "Alerte": "Alert",
-
   "Fonctionnalités": "Features",
   "Les écrans": "The screens",
   "Installer": "Install",
@@ -164,7 +155,6 @@
   "Modèle de confidentialité": "Privacy model",
   "Les tests": "Tests",
   "Licence et auteur": "Licence and author",
-
   "Flutter 3": "Flutter 3",
   "L'application entière, en Dart, un seul code pour le téléphone et l'écran déplié.": "The whole app, in Dart, one codebase for the phone and the unfolded screen.",
   "SQLite chiffré par SQLCipher, schéma en version 5, migrations sans perte.": "SQLite encrypted by SQLCipher, schema version 5, lossless migrations.",
@@ -174,10 +164,8 @@
   "L'état : une écriture fait relire tout ce qui en dépend, d'un seul appel.": "State: a write reloads everything that depends on it, in a single call.",
   "La navigation, et la garde du verrou sur chaque page.": "Navigation, and the lock guard on every page.",
   "java.security": "java.security",
-  "La signature RS256 des requêtes à la banque, côté natif Kotlin.": "The RS256 signature of bank requests, on the native Kotlin side.",
   "Les dates et les montants à la française.": "Dates and amounts, French style.",
   "Télécharger Smart Budget": "Download Smart Budget",
-
   "Libellés": "Labels",
   "Le marchand sort du bruit de la banque, et sa clé ne change pas d'un mois à l'autre.": "The merchant comes out of the bank’s noise, and its key does not change from one month to the next.",
   "Virements internes": "Internal transfers",
@@ -193,10 +181,7 @@
   "Sauvegarde": "Backup",
   "Tout revient avec la bonne phrase ; une phrase fausse ne touche à rien.": "Everything comes back with the right passphrase; a wrong one touches nothing.",
   "Signature": "Signature",
-  "Le JWT signé par le natif est, octet pour octet, celui d'OpenSSL.": "The JWT signed natively is, byte for byte, the one OpenSSL makes.",
   "Sur appareil": "On device",
-  "Les 22 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là.": "The 22 tests run on an Android emulator: SQLCipher and the Keystore only exist there.",
-
   "RELIER LA BANQUE": "LINKING THE BANK",
   "Un aller-retour, une fois tous les 180 jours. La clé privée ne quitte jamais le téléphone.": "One round trip, once every 180 days. The private key never leaves the phone.",
   "Smart Budget": "Smart Budget",
@@ -217,7 +202,6 @@
   "12 mois importés, puis à chaque ouverture": "12 months imported, then at every launch",
   "Le jeton d’état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.": "The state token, random on the way out and checked on the way back, stops a link forged elsewhere from linking another account.",
   "Relier la banque, un échange entre quatre acteurs : Smart Budget, Enable Banking, ta banque et GitHub Pages. Smart Budget envoie à Enable Banking un JWT signé en RS256 et un état tiré au hasard ; Enable Banking ouvre la page de la banque ; tu valides par Safetrans ; la banque revient sur GitHub Pages avec un code et l’état ; la page rend la main à l’application par smartbudget://banque ; l’application vérifie que l’état est le même qu’au départ, échange le code contre une session de 180 jours et les comptes, puis importe douze mois et se synchronise à chaque ouverture.": "Linking the bank, an exchange between four parties: Smart Budget, Enable Banking, your bank and GitHub Pages. Smart Budget sends Enable Banking a JWT signed with RS256 and a random state; Enable Banking opens the bank’s page; you approve with Safetrans; the bank comes back to GitHub Pages with a code and the state; the page hands back to the app through smartbudget://banque; the app checks the state matches the one it sent, trades the code for a 180-day session and the accounts, then imports twelve months and syncs at every launch.",
-
   "COMMENT UNE OPÉRATION EST LUE": "HOW A TRANSACTION IS READ",
   "Le libellé, tel que la banque l’écrit": "The label, as the bank writes it",
   "PAIEMENT PAR CARTE": "PAIEMENT PAR CARTE",
@@ -237,7 +221,6 @@
   "Carrefour Market Vannes · essentiel · origine : dictionnaire": "Carrefour Market Vannes · essential · source: dictionary",
   "Corriger une catégorie écrit une règle : les prochaines opérations du même marchand la suivent, et passent avant le dictionnaire.": "Correcting a category writes a rule: the next transactions from the same merchant follow it, ahead of the dictionary.",
   "Comment une opération est lue. Le libellé PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 perd son bruit : le préfixe, la carte masquée et la date sont barrés, il reste la clé du marchand CARREFOUR MARKET VANNES. Quatre questions s’enchaînent : virement interne, non ; règle apprise, non ; dictionnaire, oui ; à classer n’est pas atteint. Résultat : Courses, Supermarché, essentiel. Corriger une catégorie écrit une règle, suivie par les prochaines opérations du même marchand.": "How a transaction is read. The label PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 loses its noise: the prefix, the masked card and the date are struck out, leaving the merchant key CARREFOUR MARKET VANNES. Four questions follow one another: internal transfer, no; learned rule, no; dictionary, yes; uncategorised is not reached. Result: Groceries, Supermarket, essential. Correcting a category writes a rule, followed by the next transactions from the same merchant.",
-
   "CE QUI NE DOIT PAS COMPTER": "WHAT MUST NOT COUNT",
   "Trois pièges d’un relevé bancaire, et comment l’application les défait.": "Three traps in a bank statement, and how the app gets out of them.",
   "Un virement vers le livret": "A transfer to savings",
@@ -283,7 +266,6 @@
   "50 €": "€50",
   "1 349 €": "€1,349",
   "Trois pièges d’un relevé, et comment l’application les défait. Un virement vers le livret A, lu dans VIR VERS LIVRET A DE COMPTE COURANT : l’argent passe du compte courant au livret, il est hors budget, compté 200 euros mis de côté, et le budget reste inchangé. Un chèque de 500 euros qui rembourse : 300 euros vont au billet de train de 380 euros, dont il reste 80, et 200 au restaurant de 260 euros, dont il reste 60 ; le chèque ne compte pas comme un revenu. Des espèces : un retrait de 50 euros, puis 12 euros au marché ; les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38 euros, et les sorties du mois restent 50 euros, pas 62.": "Three traps in a statement, and how the app gets out of them. A transfer to the Livret A savings account, read in VIR VERS LIVRET A DE COMPTE COURANT: the money moves from the current account to savings, it is outside the budget, counted as 200 euros put aside, and the budget is unchanged. A 500 euro cheque that refunds: 300 euros go to the 380 euro train ticket, leaving 80, and 200 to the 260 euro restaurant, leaving 60; the cheque does not count as income. Cash: a 50 euro withdrawal, then 12 euros at the market; withdrawals drop to 38, groceries rise to 12, the wallet goes from 50 to 38 euros, and the month’s spending stays at 50 euros, not 62.",
-
   "LE CHIFFREMENT": "ENCRYPTION",
   "L’empreinte ne déverrouille pas un écran : elle charge la clé.": "The fingerprint does not unlock a screen: it loads the key.",
   "Empreinte": "Fingerprint",
@@ -301,9 +283,6 @@
   "210 000 tours, sel": "210,000 rounds, salt",
   "smartbudget-2026-09-24.sbx": "smartbudget-2026-09-24.sbx",
   "AES-GCM : SBEX1 · sel 16 · nonce 12 · chiffré · MAC 16, relisible ailleurs": "AES-GCM: SBEX1 · salt 16 · nonce 12 · ciphertext · MAC 16, readable elsewhere",
-  "Sans l’empreinte, la clé n’est pas en mémoire : contourner l’écran d’ouverture ne donnerait accès à rien.": "Without the fingerprint, the key is not in memory: getting around the unlock screen would give access to nothing.",
-  "Le chiffrement. L’empreinte charge la clé maîtresse de 32 octets depuis le Keystore Android. HKDF-SHA256 en dérive deux clés : l’une ouvre la base SQLCipher, l’autre chiffre en AES-GCM la clé privée d’Enable Banking. À part, la sauvegarde : une phrase choisie à l’export passe par PBKDF2 en 210 000 tours, et chiffre en AES-GCM un fichier .sbx relisible sur un autre téléphone. Sans l’empreinte, la clé n’est pas en mémoire, et contourner l’écran d’ouverture ne donne accès à rien.": "Encryption. The fingerprint loads the 32-byte master key from the Android Keystore. HKDF-SHA256 derives two keys from it: one opens the SQLCipher database, the other encrypts the Enable Banking private key with AES-GCM. Separately, the backup: a passphrase chosen at export goes through 210,000 rounds of PBKDF2 and encrypts, with AES-GCM, a .sbx file readable on another phone. Without the fingerprint, the key is not in memory, and getting around the unlock screen gives access to nothing.",
-
   "VUE D’ENSEMBLE": "OVERVIEW",
   "Analyse": "Analysis",
   "SEPTEMBRE": "SEPTEMBER",
@@ -327,5 +306,21 @@
   "Réglages": "Settings",
   "PAGES OUVERTES": "OPEN PAGES",
   "Les deux dernières pages ouvertes se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.": "The last two open pages show side by side; the row opened on the right stays highlighted on the left.",
-  "L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes s’allonge puis se vide.": "The unfolded screen. A tablet with its rail on the left shows two panes side by side. Tapping Housing in the spending list pushes everything left and opens Housing on the right; then Rent; then the Foncia Rent transaction. The open row stays highlighted in the left pane. The back gesture, a green touch sliding from the right edge to the left, closes the panes one by one, back to the analysis. On the right, the list of open pages grows then empties."
+  "L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes s’allonge puis se vide.": "The unfolded screen. A tablet with its rail on the left shows two panes side by side. Tapping Housing in the spending list pushes everything left and opens Housing on the right; then Rent; then the Foncia Rent transaction. The open row stays highlighted in the left pane. The back gesture, a green touch sliding from the right edge to the left, closes the panes one by one, back to the analysis. On the right, the list of open pages grows then empties.",
+  "Le chiffrement. L’empreinte charge la clé maîtresse de 32 octets depuis le Keystore Android. HKDF-SHA256 en dérive deux clés : l’une ouvre la base SQLCipher, l’autre chiffre en AES-GCM la clé privée d’Enable Banking. À part, la sauvegarde : une phrase choisie à l’export passe par PBKDF2 en 210 000 tours, et chiffre en AES-GCM un fichier .sbx relisible sur un autre téléphone. Hors de la veille du solde, qui la charge toutes les six heures le temps de lire le solde, la clé n’entre en mémoire qu’après l’empreinte.": "Encryption. The fingerprint loads the 32-byte master key from the Android Keystore. HKDF-SHA256 derives two keys from it: one opens the SQLCipher database, the other encrypts the Enable Banking private key with AES-GCM. Separately, the backup: a passphrase chosen at export goes through 210,000 rounds of PBKDF2 and encrypts, with AES-GCM, a .sbx file readable on another phone. Outside the balance watch, which loads it every six hours just long enough to read the balance, the key only enters memory after the fingerprint.",
+  "Ton compte courant, lu par la DSP2 via Enable Banking : douze mois d'historique, une synchronisation à chaque ouverture, et une alerte s'il passe en négatif.": "Your current account, read over PSD2 through Enable Banking: twelve months of history, a sync every time you open the app, and an alert if it goes overdrawn.",
+  "pointycastle": "pointycastle",
+  "La signature RS256 des requêtes à la banque, en Dart, octet pour octet celle d'OpenSSL.": "The RS256 signature of bank requests, in Dart, byte for byte the one OpenSSL makes.",
+  "workmanager": "workmanager",
+  "La veille du solde, toutes les six heures, même application fermée.": "The balance watch, every six hours, even with the app closed.",
+  "flutter_local_notifications": "flutter_local_notifications",
+  "L'unique notification : le compte courant passé en négatif.": "The one notification: the current account gone overdrawn.",
+  "material_symbols_icons": "material_symbols_icons",
+  "Cinq cents icônes au choix, arrondies comme l'interface.": "Five hundred icons to choose from, rounded like the interface.",
+  "Le JWT signé en Dart est, octet pour octet, celui d'OpenSSL.": "The JWT signed in Dart is, byte for byte, the one OpenSSL makes.",
+  "Les 24 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là.": "The 24 tests run on an Android emulator: SQLCipher and the Keystore only exist there.",
+  "par SQLCipher ; sa clé vit dans le Keystore et n'est chargée qu'après l'empreinte, hors la veille du solde.": "by SQLCipher; its key lives in the Keystore and is only loaded after the fingerprint, apart from the balance watch.",
+  "La veille du solde se passe d'empreinte": "The balance watch runs without the fingerprint",
+  ": toutes les six heures, la clé est chargée le temps de lire le solde, et l'alerte montre le montant sur l'écran verrouillé.": ": every six hours, the key is loaded just long enough to read the balance, and the alert shows the amount on the lock screen.",
+  "Hors de la veille du solde, toutes les six heures, la clé n’entre en mémoire qu’après l’empreinte.": "Apart from the balance watch, every six hours, the key only enters memory after the fingerprint."
 }
