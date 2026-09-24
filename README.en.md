@@ -1,8 +1,11 @@
 <div align="center">
 
-<img src="docs/en/banniere.png" alt="Smart Budget: your money, your plans, your future. Stay in control, enjoy the essentials. Flutter, Enable Banking, SQLCipher, AES-GCM, Fold." width="100%">
+<p>
+  <a href="README.md"><img src="docs/langues/fr-off.png" alt="Lire cette page en français" width="150" /></a>
+  <img src="docs/langues/en-on.png" alt="English, page shown" width="150" />
+</p>
 
-<a href="README.md">Français</a> · <b>English</b>
+<img src="docs/en/banniere.png" alt="Smart Budget: your money, your plans, your future. Stay in control, enjoy the essentials. Flutter, Enable Banking, SQLCipher, AES-GCM, Fold." width="100%">
 
 </div>
 
