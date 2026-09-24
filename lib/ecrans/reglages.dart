@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,10 +9,12 @@ import '../config/theme.dart';
 import '../donnees/base.dart';
 import '../donnees/demonstration.dart';
 import '../donnees/depots.dart';
+import '../donnees/sauvegarde.dart';
 import '../providers/auth_provider.dart';
 import '../providers/donnees.dart';
 import '../providers/securite.dart';
 import '../security/key_vault.dart';
+import '../utils/fichiers.dart';
 import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import 'dialogues.dart';
@@ -157,6 +161,11 @@ class EcranReglages extends ConsumerWidget {
               ligne('timer', 'Verrouiller après', _duree(securite.delai), () => _choisirDelai(context, ref, securite.delai)),
             bascule('visibility_off', 'Masquer dans le multitâche', securite.masquer, (v) => ref.read(securiteProvider.notifier).masquer(v)),
           ]),
+          const SizedBox(height: 14),
+          bloc('Sauvegarde', [
+            ligne('upload', 'Exporter, chiffré', '', () => _exporter(context)),
+            ligne('download', 'Restaurer une sauvegarde', '', () => _restaurer(context, ref)),
+          ]),
           if (avecEssais) ...[
             const SizedBox(height: 14),
             bloc('Essais', [
@@ -248,6 +257,102 @@ class EcranReglages extends ConsumerWidget {
     if (choix == null) return;
     await const DepotReglages().ecrire('debut_mois', '$choix');
     rafraichir(ref);
+  }
+
+  /// Demande la phrase d'une sauvegarde : deux fois à l'export, pour ne
+  /// pas chiffrer avec une faute de frappe qu'on ne retrouverait jamais.
+  static Future<String?> _phrase(BuildContext context, {required bool nouvelle}) {
+    final a = TextEditingController();
+    final b = TextEditingController();
+    String? erreur;
+    return carteSaisie<String>(
+      context,
+      titre: 'Phrase de la sauvegarde',
+      aide: nouvelle
+          ? 'Elle chiffre le fichier. Sans elle, personne ne peut le relire, toi non plus : note-la bien.'
+          : 'Celle choisie au moment de l\'export.',
+      resultat: () {
+        if (a.text.length < 8) return null;
+        if (nouvelle && a.text != b.text) return null;
+        return a.text;
+      },
+      champ: (ctx, valider) => StatefulBuilder(
+        builder: (ctx, maj) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: a,
+              autofocus: true,
+              obscureText: true,
+              onChanged: (_) => maj(() => erreur = null),
+              decoration: const InputDecoration(hintText: 'Au moins 8 caractères'),
+            ),
+            if (nouvelle) ...[
+              const SizedBox(height: 10),
+              TextField(
+                controller: b,
+                obscureText: true,
+                onChanged: (_) => maj(() => erreur = a.text == b.text ? null : 'Les deux phrases diffèrent.'),
+                onSubmitted: (_) => valider(),
+                decoration: const InputDecoration(hintText: 'La même, une seconde fois'),
+              ),
+            ],
+            if (erreur != null) ...[
+              const SizedBox(height: 8),
+              Text(erreur!, style: const TextStyle(fontSize: 13, color: AppColors.alerte)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _exporter(BuildContext context) async {
+    final phrase = await _phrase(context, nouvelle: true);
+    if (phrase == null || !context.mounted) return;
+    final messager = ScaffoldMessenger.of(context);
+    messager.showSnackBar(const SnackBar(content: Text('Chiffrement de la sauvegarde…')));
+    try {
+      final chemin = await Sauvegarde.exporter(phrase);
+      final ok = await Fichiers.enregistrer(chemin, Sauvegarde.nomFichier());
+      // La copie temporaire n'a plus de raison de rester.
+      await File(chemin).delete().catchError((_) => File(chemin));
+      messager.hideCurrentSnackBar();
+      messager.showSnackBar(SnackBar(content: Text(ok ? 'Sauvegarde enregistrée.' : 'Sauvegarde annulée.')));
+    } catch (e) {
+      messager.hideCurrentSnackBar();
+      messager.showSnackBar(SnackBar(content: Text('Échec de la sauvegarde : $e')));
+    }
+  }
+
+  Future<void> _restaurer(BuildContext context, WidgetRef ref) async {
+    final chemin = await Fichiers.choisir();
+    if (chemin == null || !context.mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Restaurer cette sauvegarde ?'),
+        content: const Text('Tout ce qui est dans l\'application sera remplacé par le contenu de la sauvegarde.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Remplacer', style: TextStyle(color: AppColors.alerte))),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+    final phrase = await _phrase(context, nouvelle: false);
+    if (phrase == null || !context.mounted) return;
+    final messager = ScaffoldMessenger.of(context);
+    messager.showSnackBar(const SnackBar(content: Text('Déchiffrement…')));
+    try {
+      await Sauvegarde.restaurer(chemin, phrase);
+      rafraichir(ref);
+      messager.hideCurrentSnackBar();
+      messager.showSnackBar(const SnackBar(content: Text('Sauvegarde restaurée.')));
+    } on FormatException catch (e) {
+      messager.hideCurrentSnackBar();
+      messager.showSnackBar(SnackBar(content: Text(e.message)));
+    }
   }
 
   Future<void> _toutEffacer(BuildContext context, WidgetRef ref) async {

@@ -15,6 +15,7 @@ import 'package:smartbudget/domaine/recurrences.dart';
 import 'package:smartbudget/domaine/virements.dart';
 import 'package:smartbudget/donnees/base.dart';
 import 'package:smartbudget/donnees/depots.dart';
+import 'package:smartbudget/donnees/sauvegarde.dart';
 import 'package:smartbudget/security/key_vault.dart';
 
 const _categories = DepotCategories();
@@ -245,6 +246,26 @@ void main() {
       ]);
       final r = await _ops.recurrences(maintenant: DateTime(2026, 9, 20));
       expect(r.map((x) => x.libelle), contains(startsWith('Free Mobile')));
+    });
+
+    test('une sauvegarde chiffrée se relit, avec la bonne phrase seulement', () async {
+      final compte = await _comptes.courant();
+      await _ops.importer(compte.id, [_op('2026-09-02', 'PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 01/09', -64.12)]);
+      await _comptes.ajouterLivret(nom: 'Livret A', soldeCentimes: 150000);
+      await _reglages.ecrire('budget', '150000');
+      final chemin = await Sauvegarde.exporter('phrase de test');
+
+      // On change tout, puis on restaure.
+      await _ops.importer(compte.id, [_op('2026-09-03', 'PAIEMENT PAR CARTE X4057 UBER EATS 02/09', -18.40)]);
+      await _reglages.ecrire('budget', '1');
+      await expectLater(Sauvegarde.restaurer(chemin, 'mauvaise phrase'), throwsFormatException);
+      expect(await _reglages.lire('budget'), '1', reason: 'Une phrase fausse ne touche à rien.');
+
+      await Sauvegarde.restaurer(chemin, 'phrase de test');
+      final ops = await _ops.entre(DateTime(2000), DateTime(2100));
+      expect(ops.map((o) => o.libelle), ['PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 01/09']);
+      expect((await _comptes.tous()).where((c) => c.nature == NatureCompte.livret).single.soldeCentimes, 150000);
+      expect(await _reglages.lire('budget'), '150000');
     });
   });
 
