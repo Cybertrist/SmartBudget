@@ -367,3 +367,37 @@ Future<void> modifierSolde(BuildContext context, WidgetRef ref, Compte livret) a
   await const DepotComptes().definirSolde(livret.id, v);
   rafraichir(ref);
 }
+
+/// Ouvre le portefeuille, ou corrige ce qu'il contient après avoir compté
+/// ses billets. [portefeuille] à null : il n'existe pas encore.
+Future<void> modifierPortefeuille(BuildContext context, WidgetRef ref, Compte? portefeuille) async {
+  var supprimer = false;
+  final v = await demanderMontant(
+    context,
+    titre: 'Portefeuille',
+    aide: portefeuille == null
+        ? 'Ce que tu as en espèces sur toi. Les retraits l\'augmentent, les dépenses en espèces le diminuent.'
+        : 'Recompte tes billets : le montant se corrige, et repart de là.',
+    initial: portefeuille?.soldeCentimes,
+    vide: true,
+    gauche: portefeuille == null
+        ? null
+        : Builder(
+            builder: (ctx) => TextButton(
+              onPressed: () {
+                supprimer = true;
+                Navigator.pop(ctx);
+              },
+              child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte)),
+            ),
+          ),
+  );
+  if (supprimer && portefeuille != null) {
+    await const DepotComptes().supprimerLivret(portefeuille.id);
+    rafraichir(ref);
+    return;
+  }
+  if (v == null) return;
+  await const DepotComptes().fixerPortefeuille(v);
+  rafraichir(ref);
+}

@@ -103,9 +103,52 @@ class DepotComptes {
     });
   }
 
-  /// Supprime un livret. Le compte courant, lui, ne se supprime pas.
+  static const _repere = 'portefeuille_repere';
+
+  /// Ouvre le portefeuille avec ce qu'il contient, ou en corrige le
+  /// contenu. Les retraits et les dépenses en espèces arrivés ensuite le
+  /// font vivre.
+  Future<void> fixerPortefeuille(int centimes) async {
+    final db = await _db;
+    final existant = await db.query('comptes', where: "nature = 'portefeuille'", limit: 1);
+    if (existant.isEmpty) {
+      await db.insert('comptes', {
+        'nature': NatureCompte.portefeuille.name,
+        'nom': 'Portefeuille',
+        'solde_centimes': centimes,
+        'solde_le': DateTime.now().toIso8601String(),
+        'cree_le': DateTime.now().toIso8601String(),
+      });
+    } else {
+      await definirSolde(existant.first['id']! as int, centimes);
+    }
+    // Le repère : la dernière opération connue. Celles d'après bougent le
+    // portefeuille, celles d'avant sont déjà dans le montant saisi.
+    final dernier = (await db.rawQuery('SELECT MAX(id) AS m FROM operations')).first['m'] as int? ?? 0;
+    await const DepotReglages().ecrire(_repere, '$dernier');
+  }
+
+  /// Le contenu du portefeuille aujourd'hui : le montant saisi, plus les
+  /// retraits au distributeur arrivés depuis, moins les dépenses en espèces.
+  Future<int> soldePortefeuille(Compte portefeuille) async {
+    final repere = int.tryParse(await const DepotReglages().lire(_repere) ?? '') ?? 0;
+    final db = await _db;
+    final retraits = await db.rawQuery(
+      "SELECT COALESCE(SUM(-o.montant_centimes), 0) AS s FROM operations o JOIN categories c ON c.id = o.categorie_id "
+      "WHERE o.id > ? AND c.nom = 'Retraits d''espèces' AND o.montant_centimes < 0",
+      [repere],
+    );
+    final especes = await db.rawQuery(
+      'SELECT COALESCE(SUM(-montant_centimes), 0) AS s FROM operations WHERE id > ? AND especes = 1',
+      [repere],
+    );
+    return portefeuille.soldeCentimes + (retraits.first['s'] as int) - (especes.first['s'] as int);
+  }
+
+  /// Supprime un livret ou le portefeuille. Le compte courant, lui, ne se
+  /// supprime pas.
   Future<void> supprimerLivret(int id) async {
-    await (await _db).delete('comptes', where: "id = ? AND nature = 'livret'", whereArgs: [id]);
+    await (await _db).delete('comptes', where: "id = ? AND nature != 'courant'", whereArgs: [id]);
   }
 
   Future<void> definirSolde(int id, int centimes, {DateTime? le}) async {

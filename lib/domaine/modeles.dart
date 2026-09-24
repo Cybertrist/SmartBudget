@@ -75,7 +75,8 @@ class Categorie {
       );
 }
 
-enum NatureCompte { courant, livret }
+/// Le portefeuille : les espèces qu'on a sur soi.
+enum NatureCompte { courant, livret, portefeuille }
 
 class Compte {
   const Compte({

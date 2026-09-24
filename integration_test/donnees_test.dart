@@ -248,6 +248,18 @@ void main() {
       expect(r.map((x) => x.libelle), contains(startsWith('Free Mobile')));
     });
 
+    test('le portefeuille vit des retraits et des dépenses en espèces', () async {
+      final compte = await _comptes.courant();
+      await _ops.importer(compte.id, [_op('2026-09-01', 'RETRAIT DAB VANNES', -30)]);
+      await _comptes.fixerPortefeuille(5000);
+      // Le retrait d'avant est déjà dans les 50 € comptés ; ceux d'après
+      // s'ajoutent, les dépenses en espèces se retirent.
+      await _ops.importer(compte.id, [_op('2026-09-10', 'RETRAIT DAB VANNES', -20)]);
+      await _ops.ajouterEspeces(le: DateTime(2026, 9, 11), nom: 'Marché', centimes: 1200, categorieId: await _idDe('Courses', 'Marché et primeur'));
+      final p = (await _comptes.tous()).singleWhere((c) => c.nature == NatureCompte.portefeuille);
+      expect(await _comptes.soldePortefeuille(p), 5000 + 2000 - 1200);
+    });
+
     test('une sauvegarde chiffrée se relit, avec la bonne phrase seulement', () async {
       final compte = await _comptes.courant();
       await _ops.importer(compte.id, [_op('2026-09-02', 'PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 01/09', -64.12)]);

@@ -91,8 +91,15 @@ final operationProvider = FutureProvider.family<Operation?, int>((ref, id) async
 
 final comptesProvider = FutureProvider<List<Compte>>((ref) async {
   ref.watch(versionProvider);
-  await const DepotComptes().courant();
-  return const DepotComptes().tous();
+  const depot = DepotComptes();
+  await depot.courant();
+  return [
+    for (final c in await depot.tous())
+      if (c.nature == NatureCompte.portefeuille)
+        Compte(id: c.id, nature: c.nature, nom: c.nom, soldeCentimes: await depot.soldePortefeuille(c), soldeLe: c.soldeLe)
+      else
+        c,
+  ];
 });
 
 final recurrencesProvider = FutureProvider<List<Recurrence>>((ref) async {

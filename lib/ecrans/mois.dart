@@ -15,6 +15,7 @@ import '../widgets/volets.dart';
 import '../config/layout.dart';
 import 'lancement.dart';
 import 'dialogues.dart';
+import 'epargne.dart';
 
 /// Ce que montre une colonne de l'accueil.
 enum PartieMois {
@@ -108,6 +109,7 @@ class _Contenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final courant = comptes.firstWhere((c) => c.nature == NatureCompte.courant);
     final livrets = comptes.where((c) => c.nature == NatureCompte.livret).toList();
+    final portefeuille = comptes.where((c) => c.nature == NatureCompte.portefeuille).firstOrNull;
     final budget = ref.watch(budgetProvider).value ?? 0;
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
     final epargne = livrets.fold<int>(0, (s, c) => s + c.soldeCentimes);
@@ -144,7 +146,7 @@ class _Contenu extends ConsumerWidget {
             children: [
               const Text('Sur tes comptes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
               const SizedBox(height: 6),
-              Montant(courant.soldeCentimes + epargne, taille: 46),
+              Montant(courant.soldeCentimes + epargne + (portefeuille?.soldeCentimes ?? 0), taille: 46),
               // La date de mise à jour et, à côté, ce qui reste à vérifier :
               // une seule ligne, pour que l'accueil déplié tienne.
               if (courant.soldeLe != null || aVerifier > 0) ...[
@@ -199,21 +201,47 @@ class _Contenu extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Surtitre('Mes comptes', droite: Text(pluriel(1 + livrets.length, 'compte'), style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret))),
+                Surtitre('Mes comptes', droite: Text(pluriel(comptes.length, 'compte'), style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret))),
                 const SizedBox(height: 6),
                 for (final c in comptes)
                   _LigneCompte(
-                    icone: c.nature == NatureCompte.courant ? 'credit_card' : 'savings',
+                    icone: switch (c.nature) {
+                      NatureCompte.courant => 'credit_card',
+                      NatureCompte.livret => 'savings',
+                      NatureCompte.portefeuille => 'account_balance_wallet',
+                    },
                     nom: c.nom,
-                    detail: c.nature == NatureCompte.courant ? 'Crédit Mutuel de Bretagne' : 'Livret d\'épargne',
+                    detail: switch (c.nature) {
+                      NatureCompte.courant => 'Crédit Mutuel de Bretagne',
+                      NatureCompte.livret => 'Livret d\'épargne',
+                      NatureCompte.portefeuille => 'Espèces',
+                    },
                     solde: c.soldeCentimes,
-                    couleur: c.nature == NatureCompte.courant ? AppColors.vert : AppColors.epargne,
-                    onTap: () => context.go(c.nature == NatureCompte.courant ? '/analyse' : '/epargne'),
+                    couleur: switch (c.nature) {
+                      NatureCompte.courant => AppColors.vert,
+                      NatureCompte.livret => AppColors.epargne,
+                      NatureCompte.portefeuille => AppColors.attention,
+                    },
+                    onTap: () => switch (c.nature) {
+                      NatureCompte.courant => context.go('/analyse'),
+                      NatureCompte.livret => context.go('/epargne'),
+                      NatureCompte.portefeuille => modifierPortefeuille(context, ref, c),
+                    },
                   ),
-                TextButton.icon(
-                  onPressed: () => context.push('/livret/nouveau'),
-                  icon: Icon(iconeDe('add'), size: 18),
-                  label: const Text('Ajouter un livret'),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => context.push('/livret/nouveau'),
+                      icon: Icon(iconeDe('add'), size: 18),
+                      label: const Text('Ajouter un livret'),
+                    ),
+                    if (portefeuille == null)
+                      TextButton.icon(
+                        onPressed: () => modifierPortefeuille(context, ref, null),
+                        icon: Icon(iconeDe('add'), size: 18),
+                        label: const Text('Portefeuille'),
+                      ),
+                  ],
                 ),
               ],
             ),

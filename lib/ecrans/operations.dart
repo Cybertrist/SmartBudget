@@ -25,6 +25,12 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
   final _cherche = TextEditingController();
   String _texte = '';
 
+  /// Les derniers résultats affichés : ils restent pendant qu'une nouvelle
+  /// recherche se charge. Remplacer la page par une roue de chargement
+  /// retirait le champ de l'écran, et le clavier se fermait en pleine
+  /// frappe.
+  List<Operation> _derniers = const [];
+
   @override
   void dispose() {
     _cherche.dispose();
@@ -40,11 +46,12 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
     final ops = recherche ? ref.watch(rechercheProvider(_texte)) : ref.watch(operationsPeriodeProvider);
     final periode = ref.watch(libellePeriodeProvider);
     final categories = ref.watch(categoriesProvider);
-    if (!ops.hasValue || !categories.hasValue) return const Center(child: CircularProgressIndicator());
+    if (!categories.hasValue) return const Center(child: CircularProgressIndicator());
+    if (ops.hasValue) _derniers = ops.value!;
     final cats = categories.value!;
 
     final jours = <DateTime, List<Operation>>{};
-    for (final o in ops.value!) {
+    for (final o in _derniers) {
       jours.putIfAbsent(DateTime(o.le.year, o.le.month, o.le.day), () => []).add(o);
     }
 
@@ -101,7 +108,7 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
             ],
           ),
         ),
-        if (jours.isEmpty)
+        if (jours.isEmpty && ops.hasValue)
           Padding(
             padding: const EdgeInsets.all(32),
             child: Text(recherche ? 'Rien ne correspond à « ${_texte.trim()} ».' : 'Aucune opération sur la période.',
