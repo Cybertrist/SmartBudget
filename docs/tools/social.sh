@@ -1,6 +1,7 @@
 #!/bin/bash
 # L'image d'aperçu du dépôt, celle que GitHub montre quand le lien est
-# partagé : 1280 x 640, la taille que GitHub recommande. Le logo et le nom
+# partagé : 1280 x 640, la taille que GitHub recommande,
+# rendue en 2560 x 1280 pour rester nette. Le logo et le nom
 # à gauche, deux écrans de l'application à droite. Comme BodyCount.
 #
 # À déposer dans Settings > General > Social preview : GitHub ne la lit
@@ -46,5 +47,8 @@ p{margin-top:22px;font-family:'Space Grotesk',sans-serif;font-size:25px;line-hei
 HTML
 
 "$CH" --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=15000 \
-  --window-size=1280,640 --screenshot="$DOCS/social-preview.png" "file:///$B/html/social.html" >/dev/null 2>&1
-echo "  social-preview.png"
+  --force-device-scale-factor=2 --window-size=1280,640 --screenshot="$D/html/social.png" "file:///$B/html/social.html" >/dev/null 2>&1
+# Rendu deux fois plus dense, puis en JPEG : un PNG de cette taille dépasse
+# le mégaoctet que GitHub accepte.
+node "$B/jpeg.js" "$D/html/social.png" "$DOCS/social-preview.jpg" 0.92
+echo "  social-preview.jpg  $(( $(stat -c %s "$DOCS/social-preview.jpg") / 1024 )) Ko"
