@@ -10,6 +10,7 @@ par un script. Changer un texte, c'est changer une ligne.
     bash docs/tools/figures.sh     # bannière, bandeaux, grilles, couches, modèle, bouton
     bash docs/tools/captures.sh    # les deux planches de captures
     node docs/tools/anime.js       # les cinq schémas animés
+    bash docs/tools/social.sh      # l'aperçu social, à déposer dans Settings > Social preview
 
 ## Ce que fait chaque fichier
 

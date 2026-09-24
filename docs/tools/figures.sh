@@ -238,16 +238,26 @@ rendre palette.html "$DOCS/schemas/palette.png"
 VERSION="$(grep '^version:' "$D/../../pubspec.yaml" | sed 's/version: *//; s/+.*//')"
 APK="$D/../../build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
 TAILLE="$([ -f "$APK" ] && awk "BEGIN{printf \"%.0f Mo\", $(stat -c%s "$APK")/1048576}" || echo '')"
-{ entete 520; echo "$ICONES"; cat <<HTML
+# Comme BodyCount : le logo de l'application à gauche, le nom, la version,
+# et un carré vert de téléchargement. Seuls les coins arrondis sont
+# transparents : GitHub rend les README sur blanc comme sur noir.
+{ entete 720; cat <<HTML
 <style>
-html,body{background:transparent}
-.w{padding:10px;display:flex;justify-content:center}
-a{display:flex;align-items:center;gap:16px;padding:16px 30px 16px 22px;border-radius:999px;text-decoration:none;
-  background:linear-gradient(135deg,#1ED760,#50F48D);box-shadow:0 10px 30px #1ED76044}
-a span{font-family:'Material Symbols Rounded';font-size:34px;color:#04130A}
-a b{display:block;font-family:Syne,sans-serif;font-size:22px;color:#04130A}
-a i{display:block;font-style:normal;font-family:'Space Grotesk',sans-serif;font-size:13.5px;color:#04130ACC}
-</style></head><body><div class="w"><a><span>download</span><div><b>Télécharger l'APK</b><i>Android 8 et plus · v$VERSION · $TAILLE</i></div></a></div>
+html,body{width:720px;height:132px;overflow:hidden;background:transparent}
+.w{width:720px;height:132px;display:flex;align-items:center;gap:22px;padding:0 30px 0 22px;
+   border-radius:18px;border:1.5px solid #1E4A30;background:linear-gradient(100deg,#0E2016 0%,#0C1712 55%,#0A120E 100%)}
+.i{width:84px;height:84px;flex-shrink:0;filter:drop-shadow(0 10px 18px rgba(30,215,96,.35))}
+.t{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px}
+.t b{font-family:Syne,sans-serif;font-weight:800;font-size:22px;letter-spacing:0;color:#F0F4F8;white-space:nowrap}
+.t span{font-family:'JetBrains Mono',monospace;font-size:14px;color:#9AA5B1;letter-spacing:.3px}
+.f{width:58px;height:58px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+   background:linear-gradient(135deg,#1ED760,#50F48D)}
+</style></head><body><div class="w">
+  <img class="i" src="$LOGO">
+  <div class="t"><b>Télécharger Smart Budget</b><span>v$VERSION · Android 8+ · arm64 · $TAILLE</span></div>
+  <div class="f"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#04130A" stroke-width="2.6"
+    stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M6 11l6 6 6-6"/><path d="M5 21h14"/></svg></div>
+</div>
 HTML
 pied; } > "$D/html/telecharger.html"
-rendre telecharger.html "$DOCS/telecharger.png" 520
+rendre telecharger.html "$DOCS/telecharger.png" 720

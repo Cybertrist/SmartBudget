@@ -29,7 +29,7 @@ Sur l'écran déplié du Fold, un rail à gauche, et les pages deviennent des vo
 <img src="docs/sections/s03.png" alt="03 Installer" width="100%">
 
 <p align="center">
-<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/telecharger.png" alt="Télécharger l'APK : Android 8 et plus, version 1.0.0" width="400"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/telecharger.png" alt="Télécharger Smart Budget, version 1.0.0, Android 8 ou plus, arm64" width="480"></a>
 </p>
 
 L'APK n'est pas sur le Play Store : Android demande d'autoriser l'installation depuis le navigateur, une fois. Chaque version est signée par la même clé, ce qui permet de l'installer par-dessus la précédente sans rien perdre. Pour vérifier le fichier téléchargé :
