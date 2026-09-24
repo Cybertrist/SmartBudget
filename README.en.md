@@ -36,14 +36,14 @@ On the Fold's unfolded screen, a rail on the left, and pages become panes side b
 <img src="docs/en/sections/s03.png" alt="03 Install" width="100%">
 
 <p align="center">
-<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/en/telecharger.png" alt="Download Smart Budget, version 1.0.0, Android 8 or later, arm64" width="480"></a>
+<a href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><img src="docs/en/telecharger.png" alt="Download Smart Budget, version 1.0.1, Android 8 or later, arm64" width="480"></a>
 </p>
 
 The APK is not on the Play Store: Android asks, once, to allow installs from the browser. Every version is signed with the same key, so it installs over the previous one without losing anything. To check the downloaded file:
 
 ```
-# SHA-256 of SmartBudget.apk, version 1.0.0
-d73996a9305b03bb00a4ee9235b5087cc661a458f51f4d7c411464b9c5fedfea
+# SHA-256 of SmartBudget.apk, version 1.0.1
+46f0393de3fee6d89081247e0362b0d0f44b906323c060b9390a719d144a6fd3
 
 # SHA-256 of the signing certificate, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
