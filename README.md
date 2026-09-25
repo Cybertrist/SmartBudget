@@ -46,11 +46,11 @@ Deux applications, qui s'installent côte à côte sans se gêner.
 Les APK ne sont pas sur le Play Store : Android demande d'autoriser l'installation depuis le navigateur, une fois. Chaque version est signée par la même clé, ce qui permet de l'installer par-dessus la précédente sans rien perdre. Pour vérifier le fichier téléchargé :
 
 ```
-# SHA-256 de SmartBudget.apk, version 1.1.0
-8ba46b6c6ddd59e2ca070cc10bb91a97952e8c8b4e038a531fa0c017fb501955
+# SHA-256 de SmartBudget.apk, version 1.2.0
+7e4a133a989944b24b058f3d174a1fe7a892df414e8d3e538378804c70b9f1a6
 
-# SHA-256 de SmartBudget-demo.apk, version 1.1.0
-fe4cf85184ed59b62302309c7b00a106e4fdee90e00a51cfa3b9c15d7d63874a
+# SHA-256 de SmartBudget-demo.apk, version 1.2.0
+a9ffca9d9110dc4398d7cdcde7930f12487f3f367fcea07e5cfa19a23f71022f
 
 # SHA-256 du certificat de signature, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -128,11 +128,41 @@ L'accès expire au bout de 180 jours, par la loi, ou plus tôt si la banque n'en
 
 Chaque requête vers Enable Banking porte un jeton signé en RS256 par la clé importée, déchiffrée le temps de l'appel seulement. Le retour de la banque passe par une page de GitHub Pages (`docs/index.html`), qui rend la main à l'application par le lien `smartbudget://banque` ; le jeton d'état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.
 
-**L'alerte de compte en négatif** est la seule notification de l'application. Toutes les six heures, même application fermée, elle relit le solde du compte courant, et lui seul : quatre lectures par jour au plus, la limite que la DSP2 accorde aux accès faits sans toi. S'il passe sous zéro, une notification donne le montant ; la suivante attend que le compte soit remonté puis redescendu.
+<img src="docs/sections/s05.png" alt="05 Les notifications" width="100%">
+
+SmartBudget n'envoie qu'une seule sorte de notification : **le compte courant vient de passer en négatif**. Pas de rappel de budget, pas de résumé de la semaine, pas de publicité : rien d'autre ne sonne.
+
+### Ce que tu reçois
+
+Une notification **« Compte courant en négatif »**, avec le montant : « Ton compte courant est à -42,10 € ». Elle est en priorité haute, et le montant se lit aussi sur l'écran verrouillé : c'est voulu, l'alerte doit se voir sans déverrouiller. La toucher ouvre SmartBudget, derrière l'empreinte comme d'habitude.
+
+### Quand elle part
+
+<img src="docs/schemas/notification-regle.svg" alt="La règle de l'alerte : deux états, armée et prévenu. Six lectures du solde : 120 euros et 35 euros, rien à dire ; -42 euros, le compte passe sous zéro, une notification Compte courant en négatif, et l'état passe à prévenu ; -80 euros, silence, déjà prévenu ; 15 euros, le compte remonte, l'alerte est réarmée ; -8 euros, une nouvelle notification. Une seule alerte par passage sous zéro." width="100%">
+
+**Une seule alerte par passage sous zéro.** Tant que le compte reste en négatif, les lectures suivantes se taisent : pas une notification toutes les six heures. Dès qu'une lecture trouve le compte à zéro ou au-dessus, l'alerte se réarme, et le prochain passage en négatif préviendra de nouveau.
+
+### Comment elle vérifie
+
+<img src="docs/schemas/notification-veille.svg" alt="Une vérification, toutes les six heures, même application fermée. Android réveille la veille quand il y a du réseau ; la clé maîtresse est chargée sans empreinte ; Enable Banking donne le solde, rien d'autre ; le solde est comparé à zéro, en tenant compte d'une alerte déjà donnée ; une notification part seulement au passage sous zéro ; puis tout est refermé, la clé oubliée et la base fermée. La clé ne reste en mémoire que le temps de la lecture. Sans réseau ou accès expiré, rien ne s'affiche et Android réessaie au passage suivant. Chaque synchronisation dans l'application fait la même comparaison." width="100%">
+
+- **Toutes les six heures, même application fermée**, Android réveille une petite tâche de fond (WorkManager), seulement quand il y a du réseau. Android peut la décaler de quelques minutes pour ménager la batterie.
+- Elle lit **le solde du compte courant, et lui seul** : pas les opérations. Quatre lectures par jour au plus, la limite que la DSP2 accorde aux accès faits sans toi. Si le solde a déjà été lu il y a moins d'une heure, elle ne redemande rien à la banque.
+- **Chaque synchronisation dans l'application** fait la même comparaison : l'alerte peut donc aussi partir juste après une synchro.
+- Sans réseau, banque indisponible ou accès expiré, elle ne montre rien et Android réessaie au passage suivant.
 
 <img src="docs/schemas/alerte.svg" alt="La veille du solde. Toutes les six heures, le solde du compte courant est relu : 320, 180 et 60 euros, puis -42,10 euros à minuit, et le téléphone verrouillé reçoit la notification Compte courant en négatif, avec le montant. Aux deux lectures suivantes, -85 et -20 euros, pas de nouvelle alerte : déjà prévenu. À 150 euros, l'alerte se réarme. Quatre lectures par jour au plus, la limite de la DSP2." width="100%">
 
-<img src="docs/sections/s05.png" alt="05 Comment une opération est lue" width="100%">
+**Le prix de l'alerte.** Pour lire le solde, la tâche de fond a besoin de la clé bancaire, donc de la clé maîtresse : elle est chargée sans empreinte, le temps de cette lecture seulement, puis oubliée, et la base refermée. C'est la seule exception à la règle « rien ne s'ouvre sans l'empreinte », et le modèle de confidentialité plus bas la compte parmi ce qui n'est pas protégé.
+
+### L'activer, la couper
+
+- **L'activer** : rien à faire. Dès que le compte est relié, la veille démarre, et Android 13 ou plus récent demande une fois la permission d'envoyer des notifications. Répondre **Autoriser**.
+- **La faire taire** : Paramètres d'Android, Applications, Smart Budget, Notifications, puis couper la catégorie **« Compte en négatif »**. La veille continue de lire le solde, mais ne sonne plus.
+- **L'arrêter complètement** : **Délier** la banque dans les réglages de SmartBudget. Plus aucune lecture ne se fait en arrière-plan.
+- **La démo** n'a pas de banque, donc pas de veille ni de notification.
+
+<img src="docs/sections/s06.png" alt="06 Comment une opération est lue" width="100%">
 
 <img src="docs/schemas/classement.svg" alt="Comment une opération est lue. Le libellé PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 perd son bruit, il reste la clé du marchand. Quatre questions s'enchaînent : virement interne, non ; règle apprise, non ; dictionnaire, oui. Résultat : Courses, Supermarché, essentiel." width="100%">
 
@@ -140,7 +170,7 @@ Un libellé de banque est écrit pour la banque. Le marchand s'en extrait en ret
 
 Ce que rien ne reconnaît tombe dans « À classer » et attend dans **À vérifier**, signalé sur l'accueil. Une opération vérifiée se pointe, et porte une coche verte.
 
-<img src="docs/sections/s06.png" alt="06 Virements, remboursements, espèces" width="100%">
+<img src="docs/sections/s07.png" alt="07 Virements, remboursements, espèces" width="100%">
 
 <img src="docs/schemas/mouvements.svg" alt="Trois pièges d'un relevé. Un virement vers le livret, lu dans VIR VERS LIVRET A DE COMPTE COURANT, est hors budget et compte 200 euros mis de côté. Un chèque de 500 euros rembourse 300 euros d'un billet de train de 380 et 200 euros d'un restaurant de 260 : il reste 80 et 60 euros, et le chèque n'est pas un revenu. Un retrait de 50 euros puis 12 euros au marché en espèces : les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38, et les sorties du mois restent 50 euros." width="100%">
 
@@ -150,17 +180,17 @@ Un budget honnête ne compte pas deux fois le même argent.
 - **Un remboursement** se lie aux dépenses qu'il rembourse, depuis l'une ou depuis l'autre. Elles ne comptent plus que pour leur reste à charge, et lui ne compte pas comme un revenu.
 - **Une dépense en espèces** se saisit à la main. Elle se retranche des retraits du mois, et le **portefeuille**, s'il est ouvert, suit ce qui reste en poche.
 
-<img src="docs/sections/s07.png" alt="07 L'écran déplié" width="100%">
+<img src="docs/sections/s08.png" alt="08 L'écran déplié" width="100%">
 
 <img src="docs/schemas/volets.svg" alt="L'écran déplié. Deux volets côte à côte à droite du rail. Toucher Logement pousse tout vers la gauche et ouvre Logement à droite, puis Loyer, puis l'opération Foncia Loyer. La ligne ouverte reste surlignée à gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un. À droite, la liste des pages ouvertes s'allonge puis se vide." width="100%">
 
 Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur le Fold ouvert, les pages forment une seule grande page dont on voit les deux derniers volets : on descend de l'analyse à l'opération sans jamais perdre d'où l'on vient, et le geste retour de Samsung referme le dernier volet. Chaque colonne se resserre au besoin pour tout montrer d'un coup, sans défiler. Les saisies s'ouvrent dans une carte au-dessus du clavier, jamais dans une feuille qui monte du bas.
 
-<img src="docs/sections/s08.png" alt="08 La pile" width="100%">
+<img src="docs/sections/s09.png" alt="09 La pile" width="100%">
 
 <img src="docs/schemas/stack.png" alt="Flutter 3 pour toute l'application. sqflite_sqlcipher pour SQLite chiffré, schéma en version 6. flutter_secure_storage pour la clé maîtresse dans le Keystore. cryptography pour HKDF, AES-GCM et PBKDF2. local_auth pour l'empreinte. flutter_riverpod pour l'état. go_router pour la navigation et la garde du verrou. pointycastle pour la signature RS256 des requêtes à la banque, en Dart. workmanager pour la veille du solde. flutter_local_notifications pour l'alerte de compte en négatif. intl pour les dates et les montants. material_symbols_icons pour les icônes." width="100%">
 
-<img src="docs/sections/s09.png" alt="09 Architecture" width="100%">
+<img src="docs/sections/s10.png" alt="10 Architecture" width="100%">
 
 <img src="docs/schemas/couches.png" alt="Six couches. ecrans : ne lisent que des providers, aucune ligne de SQL. providers : une écriture fait tout relire. domaine : du Dart pur, lire un libellé, reconnaître un virement, classer, détecter les récurrences, faire le bilan. donnees : le seul endroit où s'écrit du SQL. banque : Enable Banking, la clé déchiffrée le temps d'un appel. security : le trousseau et le verrou." width="100%">
 
@@ -168,7 +198,7 @@ Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur 
 
 Les montants sont des entiers, en centimes : jamais un flottant ne touche à l'argent. Le domaine ne connaît ni Flutter ni la base, ce qui le rend testable sans appareil.
 
-<img src="docs/sections/s10.png" alt="10 Le chiffrement" width="100%">
+<img src="docs/sections/s11.png" alt="11 Le chiffrement" width="100%">
 
 <img src="docs/schemas/chiffrement.svg" alt="L'empreinte charge la clé maîtresse de 32 octets depuis le Keystore. HKDF-SHA256 en dérive la clé de la base SQLCipher et celle qui chiffre en AES-GCM la clé privée d'Enable Banking. La sauvegarde, elle, est chiffrée en AES-GCM par une clé tirée d'une phrase par PBKDF2 en 210 000 tours, relisible sur un autre téléphone. Hors de la veille du solde, toutes les six heures, la clé n'entre en mémoire qu'après l'empreinte." width="100%">
 
@@ -178,11 +208,11 @@ La clé maîtresse est tirée au hasard au premier lancement et ne quitte jamais
 
 **Tout effacer** détruit la clé d'abord, puis la base et ses fichiers annexes : même interrompu, rien de lisible ne reste.
 
-<img src="docs/sections/s11.png" alt="11 Modèle de confidentialité" width="100%">
+<img src="docs/sections/s12.png" alt="12 Modèle de confidentialité" width="100%">
 
 <img src="docs/schemas/confidentialite.png" alt="Ce qui est vrai : aucun serveur, l'application ne parle qu'à Enable Banking ; la base est chiffrée et sa clé chargée après l'empreinte ; la clé bancaire est chiffrée deux fois ; la DSP2 ne donne que la lecture et expire en 180 jours ; l'écran est protégé. Ce qui ne l'est pas : Enable Banking voit passer les opérations ; l'application ouverte montre tout ; une sauvegarde vaut ce que vaut sa phrase ; perdre le téléphone sans sauvegarde, c'est perdre les données ; la veille du solde se passe d'empreinte et montre le montant sur l'écran verrouillé ; l'empreinte se coupe." width="100%">
 
-<img src="docs/sections/s12.png" alt="12 Les tests" width="100%">
+<img src="docs/sections/s13.png" alt="13 Les tests" width="100%">
 
 <img src="docs/schemas/tests.png" alt="Les tests : libellés, virements internes, récurrences, classement et dédoublonnage, bilan avec remboursements et espèces, portefeuille, sauvegarde chiffrée, signature RS256 identique à OpenSSL, alerte de compte en négatif. Les 24 tests tournent sur un émulateur Android." width="100%">
 
@@ -192,7 +222,7 @@ SQLCipher et le Keystore n'existent que sur un appareil : les tests tournent sur
 flutter test integration_test -d emulator-5554
 ```
 
-<img src="docs/sections/s13.png" alt="13 Licence et auteur" width="100%">
+<img src="docs/sections/s14.png" alt="14 Licence et auteur" width="100%">
 
 Le code est publié sous licence [MIT](LICENSE) : libre de le lire, de le reprendre et de le modifier, à condition de garder la mention de copyright. La police Figtree est sous licence SIL Open Font, les icônes Material Symbols sous licence Apache 2.0.
 
@@ -202,4 +232,4 @@ Conçu et écrit par **Tristan Joncour**, élève ingénieur en cyberdéfense à
 
 <br>
 
-<sub>Les images de cette page ne sortent d'aucun logiciel de dessin : ce sont des pages HTML que Chrome capture, et huit SVG animés écrits à la main par <code>anime.js</code>. Les captures viennent d'un émulateur rempli par le jeu d'essai, rognées par <code>rogner.js</code>. Tout est dans <a href="docs/tools/">docs/tools</a>.</sub>
+<sub>Les images de cette page ne sortent d'aucun logiciel de dessin : ce sont des pages HTML que Chrome capture, et dix SVG animés écrits à la main par <code>anime.js</code>. Les captures viennent d'un émulateur rempli par le jeu d'essai, rognées par <code>rogner.js</code>. Tout est dans <a href="docs/tools/">docs/tools</a>.</sub>

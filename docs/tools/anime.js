@@ -1,4 +1,4 @@
-// Les huit schémas animés du README.
+// Les dix schémas animés du README.
 //
 // Des SVG plutôt que des GIF : quelques kilo-octets, nets à toute taille,
 // et le texte reste du texte. Les animations sont en SMIL, que les
@@ -995,6 +995,162 @@ const pastille = (x, y, initiales, couleur) =>
   corps += t(LX, 680, 'son nom est l’identifiant de ton application.', { taille: 13, couleur: OR });
   svg('portail.svg', 1280, 720, corps,
     'Sur le portail d’Enable Banking. Se connecter : taper son adresse e-mail, Continue, puis ouvrir le lien reçu. Créer l’application, Add a new application : Environment Production, Private key Generate in the browser, Application name SmartBudget, puis coller les valeurs copiées depuis SmartBudget : Allowed redirect URLs https://cybertrist.github.io/SmartBudget/, la description, Privacy URL et Terms URL ; Email for data protection, son adresse. Register : un fichier .pem se télécharge, c’est la clé, à ne jamais renommer. Puis Activate by linking accounts : pays, sa banque, type personal, Link, et l’on valide sur sa banque. L’application est active, en mode restreint gratuit.');
+}
+
+// Trois pictogrammes de plus pour les notifications : la cloche, la
+// cloche barrée, la balance.
+Object.assign(P, {
+  cloche: (c) => `<path d="M8 20 V13 A6 6 0 0 1 20 13 V20 L22 22 H6 Z M12 24 A2 2 0 0 0 16 24" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`,
+  silence: (c) => `${P.cloche(c)}<path d="M4 4 L24 24" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`,
+  balance: (c) => `<path d="M14 4 V24 M8 24 H20 M4 9 H24 M4 9 L1 16 H7 Z M24 9 L21 16 H27 Z" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`,
+});
+
+// ------------------------------------------------------------------------
+// 9. La règle de l'alerte : une seule notification par passage sous zéro.
+//
+// Deux états, armée et prévenu. Six lectures du solde défilent en bas ;
+// à chacune, l'état courant s'allume, et la flèche empruntée aussi.
+{
+  const C = 18;
+  const lectures = [
+    ['120,00 €', 'A', null],
+    ['35,00 €', 'A', null],
+    ['-42,00 €', 'P', 'notification'],
+    ['-80,00 €', 'P', 'silence'],
+    ['15,00 €', 'A', 'réarmée'],
+    ['-8,00 €', 'P', 'notification'],
+  ];
+  const s = (k) => 0.05 + k * 0.145;
+  const fin = 0.97;
+  let corps = '';
+  corps += t(60, 52, 'UNE ALERTE PAR PASSAGE SOUS ZÉRO', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
+  corps += t(430, 52, 'Pas une notification à chaque lecture : une seule, puis le silence jusqu’à la remontée.', { taille: 14 });
+
+  // Les deux états.
+  const etats = { A: [170, 'ARMÉE', 'prête à prévenir', VERT], P: [790, 'PRÉVENU', 'déjà dit, se tait', ROUGE] };
+  const EY = 150, EL = 320, EH = 92;
+  for (const [cle, [x, titre, sous, c]] of Object.entries(etats)) {
+    // Allumé pendant les lectures qui y laissent l'état.
+    const e = [[0, 0]];
+    lectures.forEach(([, etat], k) => {
+      const v = etat === cle ? 1 : 0;
+      e.push([s(k), e[e.length - 1][1]], [s(k) + 0.01, v]);
+    });
+    e.push([fin, e[e.length - 1][1]], [fin + 0.01, 0], [1, 0]);
+    corps += `<rect x="${x}" y="${EY}" width="${EL}" height="${EH}" rx="16" fill="${CARTE}" stroke="${BORD}"/>
+      <rect x="${x}" y="${EY}" width="${EL}" height="${EH}" rx="16" fill="${c}" fill-opacity="0.08" stroke="${c}" stroke-width="2" filter="url(#halo)" opacity="0">${fondu('opacity', C, e)}</rect>
+      <circle cx="${x + 46}" cy="${EY + EH / 2}" r="18" fill="${c}" fill-opacity="0.16" stroke="${c}"/>
+      <g transform="translate(${x + 32},${EY + EH / 2 - 14})">${cle === 'A' ? P.cloche(c) : P.silence(c)}</g>
+      ${t(x + 82, EY + 42, titre, { taille: 20, couleur: TITRE, police: MONO, poids: 700, extra: 'letter-spacing="2"' })}
+      ${t(x + 82, EY + 66, sous, { taille: 13.5 })}`;
+  }
+  // Les flèches : en haut vers « prévenu », en bas vers « armée ».
+  const xa = 170 + EL, xb = 790;
+  const haut = `M${xa + 10} ${EY + 22} C ${xa + 110} ${EY - 30}, ${xb - 110} ${EY - 30}, ${xb - 10} ${EY + 22}`;
+  const bas = `M${xb - 10} ${EY + EH - 22} C ${xb - 110} ${EY + EH + 30}, ${xa + 110} ${EY + EH + 30}, ${xa + 10} ${EY + EH - 22}`;
+  const flash = (ks) => {
+    const e = [[0, 0.35]];
+    for (const k of ks) e.push([s(k), 0.35], [s(k) + 0.01, 1], [s(k) + 0.1, 1], [s(k) + 0.11, 0.35]);
+    e.push([1, 0.35]);
+    return fondu('opacity', C, e);
+  };
+  corps += `<g opacity="0.35">${flash([2, 5])}
+      <path d="${haut}" fill="none" stroke="${ROUGE}" stroke-width="2.5"/>
+      <path d="M${xb - 22} ${EY + 14} L${xb - 9} ${EY + 23} L${xb - 24} ${EY + 28}" fill="none" stroke="${ROUGE}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${t(640, EY - 36, 'passe sous zéro → une notification', { taille: 13.5, couleur: TITRE, ancre: 'middle' })}
+    </g>
+    <g opacity="0.35">${flash([4])}
+      <path d="${bas}" fill="none" stroke="${VERT}" stroke-width="2.5"/>
+      <path d="M${xa + 22} ${EY + EH - 14} L${xa + 9} ${EY + EH - 23} L${xa + 24} ${EY + EH - 28}" fill="none" stroke="${VERT}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${t(640, EY + EH + 46, 'remonte à zéro ou plus → réarmée', { taille: 13.5, couleur: TITRE, ancre: 'middle' })}
+    </g>`;
+  corps += t(330, EY + EH + 80, 'au-dessus de zéro : rien à dire', { taille: 12.5, couleur: DISCRET, ancre: 'middle' });
+  corps += t(950, EY + EH + 80, 'encore en négatif : silence', { taille: 12.5, couleur: DISCRET, ancre: 'middle' });
+
+  // Les lectures, une toutes les six heures.
+  const LY = 360, LL = 170, LG = 22, LX = (1280 - (6 * LL + 5 * LG)) / 2;
+  corps += t(LX, LY - 18, 'Six lectures du solde, une toutes les six heures', { taille: 12.5, couleur: DISCRET });
+  lectures.forEach(([montant, , effet], k) => {
+    const x = LX + k * (LL + LG), negatif = montant.startsWith('-');
+    const c = effet === 'notification' ? ROUGE : effet === 'réarmée' ? VERT : effet === 'silence' ? DISCRET : FIL;
+    corps += `<rect x="${x}" y="${LY}" width="${LL}" height="78" rx="12" fill="${CARTE}" stroke="${BORD}"/>
+      <g opacity="0.25">${fondu('opacity', C, [[0, 0.25], [s(k), 0.25], [s(k) + 0.01, 1], [fin, 1], [fin + 0.01, 0.25], [1, 0.25]])}
+        ${t(x + LL / 2, LY + 34, montant, { taille: 20, couleur: negatif ? ROUGE : TITRE, police: MONO, poids: 700, ancre: 'middle' })}
+      </g>
+      <rect x="${x}" y="${LY}" width="${LL}" height="78" rx="12" fill="none" stroke="${c === FIL ? TEXTE : c}" stroke-width="1.5" opacity="0">${visible(C, s(k), s(k) + 0.1)}</rect>
+      <g opacity="0">${visible(C, s(k) + 0.01, fin, 0.01)}
+        ${t(x + LL / 2, LY + 60, effet || 'rien', { taille: 12.5, couleur: effet ? c : DISCRET, poids: 700, ancre: 'middle' })}
+      </g>`;
+  });
+
+  // La notification, sur l'écran verrouillé, aux deux passages sous zéro.
+  for (const k of [2, 5]) {
+    const montant = lectures[k][0];
+    corps += `<g opacity="0">${visible(C, s(k) + 0.01, s(k) + 0.12)}
+      <rect x="440" y="470" width="400" height="58" rx="16" fill="#1B222C" stroke="${ROUGE}" stroke-opacity="0.6"/>
+      <circle cx="472" cy="499" r="13" fill="${ROUGE}" fill-opacity="0.18" stroke="${ROUGE}"/>
+      <g transform="translate(461,488) scale(0.8)">${P.cloche(ROUGE)}</g>
+      ${t(496, 494, 'Compte courant en négatif', { taille: 13, couleur: TITRE, poids: 700 })}
+      ${t(496, 513, `Ton compte courant est à ${montant}`, { taille: 12, couleur: TEXTE })}
+    </g>`;
+  }
+  svg('notification-regle.svg', 1280, 560, corps,
+    'La règle de l’alerte : deux états, armée et prévenu. Six lectures du solde : 120 euros et 35 euros, rien à dire ; -42 euros, le compte passe sous zéro, une notification Compte courant en négatif, et l’état passe à prévenu ; -80 euros, silence, déjà prévenu ; 15 euros, le compte remonte, l’alerte est réarmée ; -8 euros, une nouvelle notification. Une seule alerte par passage sous zéro.');
+}
+
+// ------------------------------------------------------------------------
+// 10. Une vérification : ce qui se passe toutes les six heures, même
+// application fermée, et combien de temps la clé reste en mémoire.
+{
+  const C = 15;
+  const L = 340, H = 86, G = 70;
+  const X = [60, 470, 880];
+  const Y1 = 118, Y2 = 290;
+  const noeuds = [
+    [X[0], Y1, 'Android', 'toutes les 6 h, avec du réseau', P.horloge, BLEU],
+    [X[1], Y1, 'Clé maîtresse', 'chargée sans empreinte', P.cle, OR],
+    [X[2], Y1, 'Enable Banking', 'le solde, rien d’autre', P.nuage, BLEU],
+    [X[2], Y2, 'Comparer à zéro', 'déjà prévenu ou pas ?', P.balance, VERT],
+    [X[1], Y2, 'Notification', 'seulement au passage sous zéro', P.cloche, ROUGE],
+    [X[0], Y2, 'Tout refermé', 'clé oubliée, base fermée', P.cadenas, VERT],
+  ];
+  const cx = (n) => n[0] + L / 2, cy = (n) => n[1] + H / 2;
+  const arrivee = (k) => 0.04 + k * 0.15;
+  const pause = 0.07;
+  let corps = '';
+  corps += t(60, 52, 'UNE VÉRIFICATION, TOUTES LES SIX HEURES', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
+  corps += t(500, 52, 'Même application fermée. Quelques secondes, puis plus rien en mémoire.', { taille: 14 });
+  // Le chemin en serpentin, puis la bille qui s'arrête à chaque carte.
+  const pts = noeuds.map((n) => [cx(n), cy(n)]);
+  const chemin = 'M' + pts.map((p) => p.join(' ')).join(' L');
+  const longueurs = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]));
+  const total = longueurs.reduce((a, b) => a + b, 0);
+  const frac = [0];
+  longueurs.forEach((l, i) => frac.push(frac[i] + l / total));
+  corps += fil(chemin);
+  noeuds.forEach(([x, y, titre, sous, icone, c], k) => {
+    corps += carte(x, y, L, H, titre, sous, c, { icone, allume: [arrivee(k), arrivee(k) + pause + 0.02], cycle: C });
+  });
+  const temps = [0], points = [0];
+  noeuds.forEach((_, k) => {
+    if (k > 0) { temps.push(arrivee(k)); points.push(frac[k]); }
+    temps.push(arrivee(k) + pause); points.push(frac[k]);
+  });
+  temps.push(1); points.push(1);
+  corps += bille(chemin, C, points.map((p) => p.toFixed(4)).join(';'), temps.map((p) => p.toFixed(4)).join(';'));
+
+  // La clé en mémoire : allumée de la deuxième carte à la dernière.
+  const BY = 440, BX = 60, BL = 1160;
+  const a = arrivee(1), b = arrivee(5) + pause;
+  corps += t(BX, BY - 14, 'La clé maîtresse en mémoire', { taille: 12.5, couleur: DISCRET });
+  corps += `<rect x="${BX}" y="${BY}" width="${BL}" height="14" rx="7" fill="${CARTE}" stroke="${BORD}"/>
+    <rect x="${BX + BL * a}" y="${BY}" width="0" height="14" rx="7" fill="${OR}" fill-opacity="0.75">
+      ${fondu('width', C, [[0, 0], [a, 0], [b, BL * (b - a)], [0.97, BL * (b - a)], [0.975, 0], [1, 0]])}</rect>
+    <g opacity="0">${visible(C, b, 0.97)}${t(BX + BL * (a + b) / 2, BY + 40, 'le temps d’une lecture, puis oubliée', { taille: 12.5, couleur: OR, ancre: 'middle' })}</g>`;
+  corps += t(640, 520, 'Sans réseau, banque indisponible ou accès expiré : rien ne s’affiche, Android réessaie au passage suivant.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  corps += t(640, 544, 'Chaque synchronisation dans l’application fait la même comparaison : l’alerte peut aussi partir de là.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  svg('notification-veille.svg', 1280, 570, corps,
+    'Une vérification, toutes les six heures, même application fermée. Android réveille la veille quand il y a du réseau ; la clé maîtresse est chargée sans empreinte ; Enable Banking donne le solde, rien d’autre ; le solde est comparé à zéro, en tenant compte d’une alerte déjà donnée ; une notification part seulement au passage sous zéro ; puis tout est refermé, la clé oubliée et la base fermée. La clé ne reste en mémoire que le temps de la lecture. Sans réseau ou accès expiré, rien ne s’affiche et Android réessaie au passage suivant. Chaque synchronisation dans l’application fait la même comparaison.');
 }
 
 if (EN && manque.size) {

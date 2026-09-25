@@ -66,7 +66,7 @@ pied; } > "$D/html/s$1.html"
 rendre "s$1.html" "$DOCS/sections/s$1.png"
 }
 n=1
-for titre in "Fonctionnalités" "Les écrans" "Installer" "Relier la banque" "Comment une opération est lue" \
+for titre in "Fonctionnalités" "Les écrans" "Installer" "Relier la banque" "Les notifications" "Comment une opération est lue" \
              "Virements, remboursements, espèces" "L'écran déplié" "La pile" "Architecture" \
              "Le chiffrement" "Modèle de confidentialité" "Les tests" "Licence et auteur"; do
   bandeau "$(printf '%02d' $n)" "$titre"; n=$((n+1))

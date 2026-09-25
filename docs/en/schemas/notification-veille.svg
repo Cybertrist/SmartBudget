@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 570" width="1280" height="570" role="img" aria-label="One check, every six hours, even with the app closed. Android wakes the watch when there is a network; the master key is loaded without fingerprint; Enable Banking gives the balance, nothing else; the balance is compared to zero, taking an alert already given into account; a notification goes out only when dropping below zero; then everything is closed, the key forgotten and the database closed. The key stays in memory only for the read. Without a network or with expired access, nothing shows and Android tries again next time. Every sync inside the app runs the same comparison.">
+<title>One check, every six hours, even with the app closed. Android wakes the watch when there is a network; the master key is loaded without fingerprint; Enable Banking gives the balance, nothing else; the balance is compared to zero, taking an alert already given into account; a notification goes out only when dropping below zero; then everything is closed, the key forgotten and the database closed. The key stays in memory only for the read. Without a network or with expired access, nothing shows and Android tries again next time. Every sync inside the app runs the same comparison.</title>
+<defs>
+  <filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <pattern id="grille" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#1ED760" stroke-opacity="0.05"/>
+  </pattern>
+  <pattern id="hachures" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#161D27"/><line x1="0" y1="0" x2="0" y2="10" stroke="#2A3542" stroke-width="4"/>
+  </pattern>
+  <radialGradient id="lueur" cx="50%" cy="0%" r="80%">
+    <stop offset="0" stop-color="#1ED760" stop-opacity="0.10"/><stop offset="1" stop-color="#1ED760" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="1280" height="570" rx="16" fill="#0D1117"/>
+<rect width="1280" height="570" rx="16" fill="url(#grille)"/>
+<rect width="1280" height="570" rx="16" fill="url(#lueur)"/>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">ONE CHECK, EVERY SIX HOURS</text><text x="500" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >Even with the app closed. A few seconds, then nothing left in memory.</text><path d="M230 161 L640 161 L1050 161 L1050 333 L640 333 L230 333" fill="none" stroke="#2F3A47" stroke-width="2" stroke-dasharray="6 7">
+  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><g>
+  <rect x="60" y="118" width="340" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+  <rect x="60" y="118" width="340" height="86" rx="13" fill="none" stroke="#3CE0FF" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.02;0.04;0.13;0.15;1" values="0;0;1;1;0;0"/></rect>
+  <rect x="60" y="132" width="3" height="58" rx="1.5" fill="#3CE0FF"/>
+  <g transform="translate(78,147)"><circle cx="14" cy="14" r="11" fill="none" stroke="#3CE0FF" stroke-width="2"/><path d="M14 8 V14 L18 17" fill="none" stroke="#3CE0FF" stroke-width="2" stroke-linecap="round"/></g>
+  <text x="118" y="158" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Android</text>
+  <text x="118" y="178" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >every 6 h, with a network</text>
+</g><g>
+  <rect x="470" y="118" width="340" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+  <rect x="470" y="118" width="340" height="86" rx="13" fill="none" stroke="#FFC857" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.17;0.19;0.28;0.30000000000000004;1" values="0;0;1;1;0;0"/></rect>
+  <rect x="470" y="132" width="3" height="58" rx="1.5" fill="#FFC857"/>
+  <g transform="translate(488,147)"><circle cx="9" cy="14" r="5" fill="none" stroke="#FFC857" stroke-width="2"/><path d="M14 14 H26 M22 14 V18 M25 14 V17" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/></g>
+  <text x="528" y="158" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Master key</text>
+  <text x="528" y="178" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >loaded without fingerprint</text>
+</g><g>
+  <rect x="880" y="118" width="340" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+  <rect x="880" y="118" width="340" height="86" rx="13" fill="none" stroke="#3CE0FF" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.31999999999999995;0.33999999999999997;0.43;0.45;1" values="0;0;1;1;0;0"/></rect>
+  <rect x="880" y="132" width="3" height="58" rx="1.5" fill="#3CE0FF"/>
+  <g transform="translate(898,147)"><path d="M8 22 H22 A5 5 0 0 0 21 12 A7 7 0 0 0 8 13 A4.5 4.5 0 0 0 8 22 Z" fill="none" stroke="#3CE0FF" stroke-width="2"/></g>
+  <text x="938" y="158" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Enable Banking</text>
+  <text x="938" y="178" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >the balance, nothing else</text>
+</g><g>
+  <rect x="880" y="290" width="340" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+  <rect x="880" y="290" width="340" height="86" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.4699999999999999;0.48999999999999994;0.58;0.6;1" values="0;0;1;1;0;0"/></rect>
+  <rect x="880" y="304" width="3" height="58" rx="1.5" fill="#1ED760"/>
+  <g transform="translate(898,319)"><path d="M14 4 V24 M8 24 H20 M4 9 H24 M4 9 L1 16 H7 Z M24 9 L21 16 H27 Z" fill="none" stroke="#1ED760" stroke-width="2" stroke-linejoin="round"/></g>
+  <text x="938" y="330" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Compare to zero</text>
+  <text x="938" y="350" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >already warned or not?</text>
+</g><g>
+  <rect x="470" y="290" width="340" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+  <rect x="470" y="290" width="340" height="86" rx="13" fill="none" stroke="#FF6B7A" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.62;0.64;0.73;0.75;1" values="0;0;1;1;0;0"/></rect>
+  <rect x="470" y="304" width="3" height="58" rx="1.5" fill="#FF6B7A"/>
+  <g transform="translate(488,319)"><path d="M8 20 V13 A6 6 0 0 1 20 13 V20 L22 22 H6 Z M12 24 A2 2 0 0 0 16 24" fill="none" stroke="#FF6B7A" stroke-width="2" stroke-linejoin="round"/></g>
+  <text x="528" y="330" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Notification</text>
+  <text x="528" y="350" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >only when dropping below zero</text>
+</g><g>
+  <rect x="60" y="290" width="340" height="86" rx="13" fill="#131A24" stroke="#1F2833"/>
+  <rect x="60" y="290" width="340" height="86" rx="13" fill="none" stroke="#1ED760" stroke-width="1.5" opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.77;0.79;0.8800000000000001;0.9000000000000001;1" values="0;0;1;1;0;0"/></rect>
+  <rect x="60" y="304" width="3" height="58" rx="1.5" fill="#1ED760"/>
+  <g transform="translate(78,319)"><rect x="5" y="12" width="18" height="14" rx="3" fill="none" stroke="#1ED760" stroke-width="2"/><path d="M9 12 V8 A5 5 0 0 1 19 8 V12" fill="none" stroke="#1ED760" stroke-width="2"/></g>
+  <text x="118" y="330" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >All closed</text>
+  <text x="118" y="350" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >key forgotten, database closed</text>
+</g><g filter="url(#halo)">
+  <circle r="11" fill="#50F48D" opacity="0.22">
+    <animateMotion dur="15s" repeatCount="indefinite" path="M230 161 L640 161 L1050 161 L1050 333 L640 333 L230 333" keyPoints="0.0000;0.0000;0.2263;0.2263;0.4525;0.4525;0.5475;0.5475;0.7737;0.7737;1.0000;1.0000;1.0000" keyTimes="0.0000;0.1100;0.1900;0.2600;0.3400;0.4100;0.4900;0.5600;0.6400;0.7100;0.7900;0.8600;1.0000" calcMode="linear"/>
+  </circle>
+  <circle r="6" fill="#50F48D">
+    <animateMotion dur="15s" repeatCount="indefinite" path="M230 161 L640 161 L1050 161 L1050 333 L640 333 L230 333" keyPoints="0.0000;0.0000;0.2263;0.2263;0.4525;0.4525;0.5475;0.5475;0.7737;0.7737;1.0000;1.0000;1.0000" keyTimes="0.0000;0.1100;0.1900;0.2600;0.3400;0.4100;0.4900;0.5600;0.6400;0.7100;0.7900;0.8600;1.0000" calcMode="linear"/>
+  </circle>
+</g><text x="60" y="426" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#5C6A7A" text-anchor="start" >The master key in memory</text><rect x="60" y="440" width="1160" height="14" rx="7" fill="#131A24" stroke="#1F2833"/>
+    <rect x="280.4" y="440" width="0" height="14" rx="7" fill="#FFC857" fill-opacity="0.75">
+      <animate attributeName="width" dur="15s" repeatCount="indefinite" keyTimes="0;0.19;0.8600000000000001;0.97;0.975;1" values="0;0;777.2000000000002;777.2000000000002;0;0"/></rect>
+    <g opacity="0"><animate attributeName="opacity" dur="15s" repeatCount="indefinite" keyTimes="0;0.8400000000000001;0.8600000000000001;0.97;0.99;1" values="0;0;1;1;0;0"/><text x="669" y="480" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#FFC857" text-anchor="middle" >for one read, then forgotten</text></g><text x="640" y="520" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >No network, bank unavailable or access expired: nothing shows, Android tries again next time.</text><text x="640" y="544" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >Every sync inside the app runs the same comparison: the alert can come from there too.</text>
+</svg>

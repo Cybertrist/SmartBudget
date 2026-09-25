@@ -48,11 +48,11 @@ Two apps, which install side by side without getting in each other's way.
 The APKs are not on the Play Store: Android asks, once, to allow installs from the browser. Every version is signed with the same key, so it installs over the previous one without losing anything. To check the downloaded file:
 
 ```
-# SHA-256 of SmartBudget.apk, version 1.1.0
-8ba46b6c6ddd59e2ca070cc10bb91a97952e8c8b4e038a531fa0c017fb501955
+# SHA-256 of SmartBudget.apk, version 1.2.0
+7e4a133a989944b24b058f3d174a1fe7a892df414e8d3e538378804c70b9f1a6
 
-# SHA-256 of SmartBudget-demo.apk, version 1.1.0
-fe4cf85184ed59b62302309c7b00a106e4fdee90e00a51cfa3b9c15d7d63874a
+# SHA-256 of SmartBudget-demo.apk, version 1.2.0
+a9ffca9d9110dc4398d7cdcde7930f12487f3f367fcea07e5cfa19a23f71022f
 
 # SHA-256 of the signing certificate, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -132,11 +132,41 @@ Access expires after 180 days, by law, or sooner if the bank grants less: the ba
 
 Every request to Enable Banking carries a token signed with RS256 by the imported key, decrypted only for the duration of the call. The bank's redirect goes through a GitHub Pages page (`docs/index.html`), which hands back to the app through the `smartbudget://banque` link; the state token, drawn at random at the start and checked on return, stops a link forged elsewhere from linking another account.
 
-**The overdrawn alert** is the app's only notification. Every six hours, even with the app closed, it reads the current account's balance again, and nothing else: four reads a day at most, the limit PSD2 grants to access made without you. If it drops below zero, a notification gives the amount; the next one waits until the account has gone back up and down again.
+<img src="docs/en/sections/s05.png" alt="05 Notifications" width="100%">
+
+SmartBudget sends only one kind of notification: **the current account has just gone overdrawn**. No budget reminder, no weekly summary, no advertising: nothing else ever rings.
+
+### What you get
+
+A **"Compte courant en négatif"** (current account overdrawn) notification, with the amount: "Ton compte courant est à -42,10 €" (your current account is at -€42.10). It is high priority, and the amount can also be read on the lock screen: on purpose, the alert must be seen without unlocking. Tapping it opens SmartBudget, behind the fingerprint as usual.
+
+### When it goes out
+
+<img src="docs/en/schemas/notification-regle.svg" alt="The alert rule: two states, armed and warned. Six balance reads: 120 euros and 35 euros, nothing to say; -42 euros, the account drops below zero, a Current account overdrawn notification, and the state becomes warned; -80 euros, silence, already warned; 15 euros, the account recovers, the alert is re-armed; -8 euros, a new notification. One alert per drop below zero." width="100%">
+
+**One alert per drop below zero.** As long as the account stays overdrawn, the following reads stay quiet: no notification every six hours. As soon as a read finds the account at zero or above, the alert re-arms, and the next drop below zero will warn again.
+
+### How it checks
+
+<img src="docs/en/schemas/notification-veille.svg" alt="One check, every six hours, even with the app closed. Android wakes the watch when there is a network; the master key is loaded without fingerprint; Enable Banking gives the balance, nothing else; the balance is compared to zero, taking an alert already given into account; a notification goes out only when dropping below zero; then everything is closed, the key forgotten and the database closed. The key stays in memory only for the read. Without a network or with expired access, nothing shows and Android tries again next time. Every sync inside the app runs the same comparison." width="100%">
+
+- **Every six hours, even with the app closed**, Android wakes a small background task (WorkManager), only when there is a network. Android may shift it by a few minutes to save battery.
+- It reads **the current account's balance, and nothing else**: not the transactions. Four reads a day at most, the limit PSD2 grants to access made without you. If the balance was already read less than an hour ago, it asks the bank for nothing.
+- **Every sync inside the app** runs the same comparison: so the alert can also go out right after a sync.
+- With no network, the bank unavailable or access expired, it shows nothing and Android tries again next time.
 
 <img src="docs/en/schemas/alerte.svg" alt="The balance watch. Every six hours, the current account balance is read again: 320, 180 and 60 euros, then -42.10 euros at midnight, and the locked phone gets the notification Current account overdrawn, with the amount. At the next two reads, -85 and -20 euros, no new alert: already told. At 150 euros, the alert re-arms. Four reads a day at most, the PSD2 limit." width="100%">
 
-<img src="docs/en/sections/s05.png" alt="05 How a transaction is read" width="100%">
+**The price of the alert.** To read the balance, the background task needs the bank key, and so the master key: it is loaded without fingerprint, for that read only, then forgotten, and the database closed again. This is the only exception to the "nothing opens without the fingerprint" rule, and the privacy model below lists it among what is not protected.
+
+### Turning it on, turning it off
+
+- **Turning it on**: nothing to do. As soon as the account is linked, the watch starts, and Android 13 or later asks once for permission to send notifications. Answer **Allow**.
+- **Silencing it**: Android Settings, Apps, Smart Budget, Notifications, then turn off the **"Compte en négatif"** (account overdrawn) category. The watch keeps reading the balance, but no longer rings.
+- **Stopping it entirely**: **Délier** (Unlink) the bank in SmartBudget's settings. No more reads happen in the background.
+- **The demo** has no bank, so no watch and no notification.
+
+<img src="docs/en/sections/s06.png" alt="06 How a transaction is read" width="100%">
 
 <img src="docs/en/schemas/classement.svg" alt="How a transaction is read. The label PAIEMENT PAR CARTE X4057 CARREFOUR MARKET VANNES 12/09 loses its noise, leaving the merchant key. Four questions follow one another: internal transfer, no; learned rule, no; dictionary, yes. Result: Groceries, Supermarket, essential." width="100%">
 
@@ -144,7 +174,7 @@ A bank label is written for the bank. The merchant is pulled out of it by removi
 
 What nothing recognises lands in "À classer" (uncategorised) and waits in **À vérifier** (to review), flagged on the home screen. A checked transaction gets ticked off, with a green tick.
 
-<img src="docs/en/sections/s06.png" alt="06 Transfers, refunds, cash" width="100%">
+<img src="docs/en/sections/s07.png" alt="07 Transfers, refunds, cash" width="100%">
 
 <img src="docs/en/schemas/mouvements.svg" alt="Three traps in a statement. A transfer to savings, read in VIR VERS LIVRET A DE COMPTE COURANT, is outside the budget and counts 200 euros put aside. A 500 euro cheque refunds 300 euros of a 380 euro train ticket and 200 euros of a 260 euro restaurant: 80 and 60 euros are left, and the cheque is not income. A 50 euro withdrawal then 12 euros at the market in cash: withdrawals drop to 38, groceries rise to 12, the wallet goes from 50 to 38, and the month's spending stays at 50 euros." width="100%">
 
@@ -154,17 +184,17 @@ An honest budget never counts the same money twice.
 - **A refund** is linked to the expenses it pays back, from either side. They then only count for what is left to pay, and the refund does not count as income.
 - **A cash expense** is entered by hand. It comes off the month's withdrawals, and the **wallet**, if opened, tracks what is left in your pocket.
 
-<img src="docs/en/sections/s07.png" alt="07 The unfolded screen" width="100%">
+<img src="docs/en/sections/s08.png" alt="08 The unfolded screen" width="100%">
 
 <img src="docs/en/schemas/volets.svg" alt="The unfolded screen. Two panes side by side, right of the rail. Tapping Housing pushes everything left and opens Housing on the right, then Rent, then the Foncia Rent transaction. The open row stays highlighted on the left. The back gesture, a green touch sliding from the right edge to the left, closes the panes one by one. On the right, the list of open pages grows then empties." width="100%">
 
 A phone screen stretched over eight inches no longer looks like anything. On the open Fold, pages form one wide page showing its last two panes: you go down from the analysis to a single transaction without ever losing where you came from, and Samsung's back gesture closes the last pane. Each column tightens when needed to show everything at once, without scrolling. Inputs open in a card above the keyboard, never in a sheet sliding up from the bottom.
 
-<img src="docs/en/sections/s08.png" alt="08 The stack" width="100%">
+<img src="docs/en/sections/s09.png" alt="09 The stack" width="100%">
 
 <img src="docs/en/schemas/stack.png" alt="Flutter 3 for the whole app. sqflite_sqlcipher for encrypted SQLite, schema version 6. flutter_secure_storage for the master key in the Keystore. cryptography for HKDF, AES-GCM and PBKDF2. local_auth for the fingerprint. flutter_riverpod for state. go_router for navigation and the lock guard. pointycastle for the RS256 signature of bank requests, in Dart. workmanager for the balance watch. flutter_local_notifications for the overdrawn alert. intl for dates and amounts. material_symbols_icons for the icons." width="100%">
 
-<img src="docs/en/sections/s09.png" alt="09 Architecture" width="100%">
+<img src="docs/en/sections/s10.png" alt="10 Architecture" width="100%">
 
 <img src="docs/en/schemas/couches.png" alt="Six layers. ecrans, the screens: read providers only, no SQL. providers: a write reloads everything. domaine, the domain: pure Dart, reading a label, spotting a transfer, categorising, detecting recurrences, tallying up. donnees, the data: the only place SQL is written. banque, the bank: Enable Banking, the key decrypted for one call. security: the keychain and the lock." width="100%">
 
@@ -172,7 +202,7 @@ A phone screen stretched over eight inches no longer looks like anything. On the
 
 Amounts are integers, in cents: a float never touches money. The domain knows neither Flutter nor the database, which makes it testable without a device.
 
-<img src="docs/en/sections/s10.png" alt="10 Encryption" width="100%">
+<img src="docs/en/sections/s11.png" alt="11 Encryption" width="100%">
 
 <img src="docs/en/schemas/chiffrement.svg" alt="The fingerprint loads the 32-byte master key from the Keystore. HKDF-SHA256 derives from it the SQLCipher database key and the one that encrypts the Enable Banking private key with AES-GCM. The backup is encrypted with AES-GCM under a key drawn from a passphrase by 210,000 rounds of PBKDF2, readable on another phone. Apart from the balance watch, every six hours, the key only enters memory after the fingerprint." width="100%">
 
@@ -182,11 +212,11 @@ The master key is drawn at random on first launch and never leaves the Android K
 
 **Tout effacer** (Erase everything) destroys the key first, then the database and its side files: even if interrupted, nothing readable is left.
 
-<img src="docs/en/sections/s11.png" alt="11 Privacy model" width="100%">
+<img src="docs/en/sections/s12.png" alt="12 Privacy model" width="100%">
 
 <img src="docs/en/schemas/confidentialite.png" alt="What holds: no server, the app only talks to Enable Banking; the database is encrypted and its key loaded after the fingerprint; the bank key is encrypted twice; PSD2 only grants reading and expires after 180 days; the screen is protected. What does not: Enable Banking sees the transactions go by; an open app shows everything; a backup is only as strong as its passphrase; losing the phone without a backup means losing the data; the balance watch runs without the fingerprint and shows the amount on the lock screen; the fingerprint can be turned off." width="100%">
 
-<img src="docs/en/sections/s12.png" alt="12 Tests" width="100%">
+<img src="docs/en/sections/s13.png" alt="13 Tests" width="100%">
 
 <img src="docs/en/schemas/tests.png" alt="The tests: labels, internal transfers, recurrences, categorising and de-duplication, balance with refunds and cash, wallet, encrypted backup, RS256 signature identical to OpenSSL, overdrawn alert. The 24 tests run on an Android emulator." width="100%">
 
@@ -196,7 +226,7 @@ SQLCipher and the Keystore only exist on a device: the tests run on an emulator,
 flutter test integration_test -d emulator-5554
 ```
 
-<img src="docs/en/sections/s13.png" alt="13 Licence and author" width="100%">
+<img src="docs/en/sections/s14.png" alt="14 Licence and author" width="100%">
 
 The code is released under the [MIT](LICENSE) licence: free to read, reuse and modify, as long as the copyright notice stays. The Figtree font is under the SIL Open Font licence, the Material Symbols icons under Apache 2.0.
 
@@ -206,4 +236,4 @@ Designed and written by **Tristan Joncour**, a cyber-defence engineering student
 
 <br>
 
-<sub>The images on this page come out of no drawing software: they are HTML pages captured by Chrome, and eight animated SVGs written by hand by <code>anime.js</code>, in French and then in English through <code>anglais.json</code>. The screenshots come from an emulator filled with demo data, cropped by <code>rogner.js</code>. It is all in <a href="docs/tools/">docs/tools</a>.</sub>
+<sub>The images on this page come out of no drawing software: they are HTML pages captured by Chrome, and ten animated SVGs written by hand by <code>anime.js</code>, in French and then in English through <code>anglais.json</code>. The screenshots come from an emulator filled with demo data, cropped by <code>rogner.js</code>. It is all in <a href="docs/tools/">docs/tools</a>.</sub>
