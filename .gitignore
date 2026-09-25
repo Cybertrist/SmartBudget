@@ -43,3 +43,7 @@ coverage/
 *.p12
 *.key
 docs/tools/html/
+
+# Outils : dépendances et icônes téléchargées
+tool/node_modules/
+tool/.cache/

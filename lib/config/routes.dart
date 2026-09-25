@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../banque/choix_banque.dart';
+import '../banque/enable_banking.dart';
+import '../banque/guide_cle.dart';
+import '../domaine/modeles.dart';
 import '../ecrans/analyse.dart';
 import '../ecrans/categorie.dart';
 import '../ecrans/epargne.dart';
@@ -84,10 +88,14 @@ final router = GoRouter(
       builder: (_, e) => _Pleine(EcranChoisirRemboursement(id: int.parse(e.pathParameters['id']!))),
     ),
     GoRoute(path: '/operations', builder: (_, _) => const _Pleine(EcranOperations())),
+    GoRoute(path: '/operations/entrees', builder: (_, _) => const _Pleine(EcranOperations(genre: Genre.revenu))),
+    GoRoute(path: '/operations/sorties', builder: (_, _) => const _Pleine(EcranOperations(genre: Genre.depense))),
     GoRoute(path: '/especes/nouvelle', builder: (_, _) => const EcranNouvelleDepense()),
     GoRoute(path: '/verifier', builder: (_, _) => const _Pleine(EcranAVerifier())),
     GoRoute(path: '/livret/nouveau', builder: (_, _) => const EcranNouveauLivret()),
     GoRoute(path: '/internes', builder: (_, _) => const _Pleine(EcranInternes())),
+    GoRoute(path: '/banques', builder: (_, etat) => _Pleine(EcranBanques(actuelle: etat.extra as String?))),
+    GoRoute(path: '/banque/cle', builder: (_, etat) => _Pleine(EcranGuideCle(banque: etat.extra! as Banque))),
   ],
 );
 
@@ -143,6 +151,8 @@ class _VoletsAnalyse extends StatelessWidget {
         if (chemin.startsWith('/operation/')) return EcranOperation(id: id);
         if (chemin == '/internes') return const EcranInternes();
         if (chemin == '/operations') return const EcranOperations();
+        if (chemin == '/operations/entrees') return const EcranOperations(genre: Genre.revenu);
+        if (chemin == '/operations/sorties') return const EcranOperations(genre: Genre.depense);
         return const SizedBox.shrink();
       },
     );

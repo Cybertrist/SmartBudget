@@ -68,16 +68,69 @@ flutter build apk --release --split-per-abi --dart-define=DEMO=true
 
 <img src="docs/en/sections/s04.png" alt="04 Linking the bank" width="100%">
 
-<img src="docs/en/schemas/banque.svg" alt="Linking the bank, an exchange between four parties: Smart Budget, Enable Banking, your bank and GitHub Pages. Smart Budget sends a JWT signed with RS256 and a random state; Enable Banking opens the bank's page; you approve with Safetrans; the bank comes back to GitHub Pages with a code and the state; the page hands back through smartbudget://banque; the app checks the state, trades the code for a 180-day session and the accounts, imports twelve months, then syncs at every launch." width="100%">
-
 Banks do not talk to individuals: you need a PSD2-licensed aggregator. [Enable Banking](https://enablebanking.com) offers one, free in restricted mode, meaning limited to the accounts you linked yourself on its portal. Bridge, Bankin's API, is for businesses only, and GoCardless has closed sign-ups.
 
-1. On the Enable Banking portal, create a production application in restricted mode, with `https://cybertrist.github.io/SmartBudget/` as the redirect URL, then link your bank account to it. The app is built around Crédit Mutuel de Bretagne, whose labels it knows how to read.
-2. Download the private key: a `.pem` file named after the application ID. Never rename it.
-3. In the app, Réglages (Settings), **Importer la clé** (Import the key), pick the file. It is encrypted at once and the copy is erased.
-4. **Relier le compte** (Link the account): the bank's page opens, you approve with Safetrans, and the app takes over again.
+**Before you start**, you need: SmartBudget installed, an email address you can open on the phone, and whatever you use to sign in to your online banking (login, and the usual confirmation, Safetrans at Crédit Mutuel). It takes about ten minutes, once: after that, access lasts 180 days.
 
-Access expires after 180 days, by law: the bank card warns fifteen days ahead, and one tap renews it. PSD2 only shares the current account, which the bank calls "CARTE BANCAIRE": savings accounts are entered by hand, then follow the transfers the app spots.
+<img src="docs/en/schemas/parcours-banque.svg" alt="Choosing and linking your bank, in five steps, on an animated phone. 1, in Settings, the Your bank card, tap Choose the bank. 2, find yours by name or country, then tap it. 3, the Get your key page: Open the portal opens the Enable Banking site in the browser, and every value to paste has its own Copy button. 4, Import the key: pick the .pem file in Downloads, without renaming it; it is encrypted at once and the copy deleted. 5, the bank's page opens, you confirm as usual, then the card shows Synced, access for 180 more days, and the transactions arrive." width="100%">
+
+The app itself is in French: button names below are given as they appear on screen, with their meaning in brackets.
+
+### 1. Choose the bank
+
+**Réglages** (Settings) tab, **Ta banque** (Your bank) card, **Choisir la banque** (Choose the bank) button. The list holds every bank Enable Banking can read for individuals, in some thirty European countries: the major banks of the phone's country first, then all the others from A to Z.
+
+### 2. Find yours
+
+Type part of the name (`mutuel bretagne`) or a country (`belgique`) in the search field, then tap your bank. Each bank fits on one row, with its country: there is nothing to expand. Each one wears its mobile app's icon, bundled with SmartBudget: no image is loaded from the Internet, and banks without an app keep their initials.
+
+Tapping the bank opens the **Obtenir ta clé** (Get your key) page straight away, which guides the next step.
+
+### 3. Get your key on the Enable Banking portal
+
+This is the only step outside the app. The **Obtenir ta clé** page lists the instructions in order, and every value to paste has its own **Copier** (Copy) button: you just go back and forth between SmartBudget and the browser.
+
+<img src="docs/en/schemas/portail.svg" alt="On the Enable Banking portal. Sign in: type your email, Continue, then open the link you receive. Create the application, Add a new application: Environment Production, Private key Generate in the browser, Application name SmartBudget, then paste the values copied from SmartBudget: Allowed redirect URLs https://cybertrist.github.io/SmartBudget/, the description, Privacy URL and Terms URL; Email for data protection, your email. Register: a .pem file downloads, this is the key, never rename it. Then Activate by linking accounts: country, your bank, type personal, Link, and you confirm at your bank. The application is active, in free restricted mode." width="100%">
+
+1. **Sign in.** Tap **Ouvrir le portail** (Open the portal): the sign-in page opens in the browser. Type your email, **Continue**, then open the link you receive by email. The Enable Banking account creates itself the first time.
+2. **Create the application.** In **API applications**, fill in **Add a new application**:
+   - **Environment**: `Production`
+   - **Private key**: leave `Generate in the browser`
+   - **Application name**: `SmartBudget`
+   - **Allowed redirect URLs**: `https://cybertrist.github.io/SmartBudget/` (Copy button)
+   - **Application description**: the suggested sentence (Copy button)
+   - **Email for data protection**: your own email address
+   - **Privacy URL** and **Terms URL**: `https://github.com/Cybertrist/SmartBudget` (Copy buttons)
+3. **Register.** The portal downloads a `.pem` file: this is the application's private key. **Never rename it**: its name is the application ID, and SmartBudget reads it to use the key.
+4. **Link your account on the portal.** On the application's page, tap **Activate by linking accounts**, choose the country, your bank and the `personal` type, then **Link**. The bank's page opens: sign in and confirm as usual. The application switches to restricted mode, free, limited to that account.
+
+### 4. Import the key
+
+Back in SmartBudget, at the bottom of the **Obtenir ta clé** page: **Importer la clé** (Import the key), and pick the `.pem` file in Downloads. It is encrypted on the phone at once (AES-GCM, with a key derived from the Keystore), and the working copy is deleted. The file left in Downloads can then be deleted, or stored somewhere safe to import the key again one day.
+
+### 5. Link the account
+
+The rest follows on its own: the bank's page opens one last time, you confirm as usual, and SmartBudget takes over again. The **Ta banque** card then shows **Synchronisé** (Synced), with the days of access left, and the last twelve months arrive.
+
+After that, there is nothing left to do: SmartBudget syncs **every time it opens**, and every time you come back to it, as soon as the last sync is more than ten minutes old. The card's **Synchroniser** (Sync) button starts one by hand. Transactions still pending at the bank, like today's card payment, show up at once, marked **En attente** (Pending), then are replaced by their final version.
+
+### If something goes wrong
+
+- **"Le nom du fichier ne contient pas l'identifiant de l'application"** (the file name does not contain the application ID): the `.pem` file was renamed, for instance to `cle.pem`. Download it again from the application's page, without touching its name.
+- **"Ce fichier n'est pas une clé privée"** (this file is not a private key): the chosen file is not the portal's `.pem`. Pick the one downloaded in step 3.
+- **"Enable Banking refuse la clé"** (Enable Banking rejects the key): the imported key does not match the application, or the application is not in `Production`. Redo step 3, then import the new key (the card's **Nouvelle clé**, New key, button).
+- **"Pas de connexion à Internet."** (no Internet connection): the sync resumes on its own the next time the app opens with a network.
+- **"Trop de synchronisations aujourd'hui"** (too many syncs today): the bank limits the number of accesses per day. Just wait until tomorrow.
+- **"L'accès a expiré : reconnecte le compte."** (access expired, reconnect the account): the 180 days are up. Tap **Relier le compte** (Link the account) and confirm at the bank: the key stays the same, nothing else to redo.
+- **Your bank is not in the list**: Enable Banking cannot read it yet, or not for individuals.
+
+Access expires after 180 days, by law, or sooner if the bank grants less: the bank card warns fifteen days ahead, and one tap renews it. PSD2 only shares the current account, which the bank calls "CARTE BANCAIRE": savings accounts are entered by hand, then follow the transfers the app spots. The app was written and tested with Crédit Mutuel de Bretagne: elsewhere, categorisation works the same way, but transfers to savings accounts may need to be marked by hand the first time.
+
+### What happens behind the scenes
+
+<img src="docs/en/schemas/banque.svg" alt="Linking the bank, an exchange between four parties: Smart Budget, Enable Banking, your bank and GitHub Pages. Smart Budget sends a JWT signed with RS256 and a random state; Enable Banking opens the bank's page; you approve with Safetrans; the bank comes back to GitHub Pages with a code and the state; the page hands back through smartbudget://banque; the app checks the state, trades the code for a 180-day session and the accounts, imports twelve months, then syncs at every launch." width="100%">
+
+Every request to Enable Banking carries a token signed with RS256 by the imported key, decrypted only for the duration of the call. The bank's redirect goes through a GitHub Pages page (`docs/index.html`), which hands back to the app through the `smartbudget://banque` link; the state token, drawn at random at the start and checked on return, stops a link forged elsewhere from linking another account.
 
 **The overdrawn alert** is the app's only notification. Every six hours, even with the app closed, it reads the current account's balance again, and nothing else: four reads a day at most, the limit PSD2 grants to access made without you. If it drops below zero, a notification gives the amount; the next one waits until the account has gone back up and down again.
 
@@ -109,7 +162,7 @@ A phone screen stretched over eight inches no longer looks like anything. On the
 
 <img src="docs/en/sections/s08.png" alt="08 The stack" width="100%">
 
-<img src="docs/en/schemas/stack.png" alt="Flutter 3 for the whole app. sqflite_sqlcipher for encrypted SQLite, schema version 5. flutter_secure_storage for the master key in the Keystore. cryptography for HKDF, AES-GCM and PBKDF2. local_auth for the fingerprint. flutter_riverpod for state. go_router for navigation and the lock guard. pointycastle for the RS256 signature of bank requests, in Dart. workmanager for the balance watch. flutter_local_notifications for the overdrawn alert. intl for dates and amounts. material_symbols_icons for the icons." width="100%">
+<img src="docs/en/schemas/stack.png" alt="Flutter 3 for the whole app. sqflite_sqlcipher for encrypted SQLite, schema version 6. flutter_secure_storage for the master key in the Keystore. cryptography for HKDF, AES-GCM and PBKDF2. local_auth for the fingerprint. flutter_riverpod for state. go_router for navigation and the lock guard. pointycastle for the RS256 signature of bank requests, in Dart. workmanager for the balance watch. flutter_local_notifications for the overdrawn alert. intl for dates and amounts. material_symbols_icons for the icons." width="100%">
 
 <img src="docs/en/sections/s09.png" alt="09 Architecture" width="100%">
 
@@ -153,4 +206,4 @@ Designed and written by **Tristan Joncour**, a cyber-defence engineering student
 
 <br>
 
-<sub>The images on this page come out of no drawing software: they are HTML pages captured by Chrome, and six animated SVGs written by hand by <code>anime.js</code>, in French and then in English through <code>anglais.json</code>. The screenshots come from an emulator filled with demo data, cropped by <code>rogner.js</code>. It is all in <a href="docs/tools/">docs/tools</a>.</sub>
+<sub>The images on this page come out of no drawing software: they are HTML pages captured by Chrome, and eight animated SVGs written by hand by <code>anime.js</code>, in French and then in English through <code>anglais.json</code>. The screenshots come from an emulator filled with demo data, cropped by <code>rogner.js</code>. It is all in <a href="docs/tools/">docs/tools</a>.</sub>

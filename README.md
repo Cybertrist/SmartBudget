@@ -66,16 +66,67 @@ flutter build apk --release --split-per-abi --dart-define=DEMO=true
 
 <img src="docs/sections/s04.png" alt="04 Relier la banque" width="100%">
 
-<img src="docs/schemas/banque.svg" alt="Relier la banque, un échange entre quatre acteurs : Smart Budget, Enable Banking, ta banque et GitHub Pages. Smart Budget envoie un JWT signé en RS256 et un état tiré au hasard ; Enable Banking ouvre la page de la banque ; tu valides par Safetrans ; la banque revient sur GitHub Pages avec un code et l'état ; la page rend la main par smartbudget://banque ; l'application vérifie l'état, échange le code contre une session de 180 jours et les comptes, importe douze mois, puis se synchronise à chaque ouverture." width="100%">
-
 La banque ne parle pas aux particuliers : il faut un agrégateur agréé DSP2. [Enable Banking](https://enablebanking.com) en propose un, gratuit en mode restreint, c'est-à-dire limité aux comptes qu'on a soi-même reliés sur son portail. Bridge, l'API de Bankin, est réservé aux entreprises, et GoCardless a fermé ses inscriptions.
 
-1. Sur le portail d’Enable Banking, créer une application en production, mode restreint, avec pour adresse de retour `https://cybertrist.github.io/SmartBudget/`, puis y relier son compte au Crédit Mutuel de Bretagne.
-2. Télécharger la clé privée : un fichier `.pem` dont le nom est l'identifiant de l'application. Ne jamais le renommer.
-3. Dans l'application, Réglages, **Importer la clé**, choisir le fichier. Il est aussitôt chiffré et sa copie effacée.
-4. **Relier le compte** : la page de la banque s'ouvre, on valide par Safetrans, et l'application reprend la main.
+**Avant de commencer**, il faut : SmartBudget installé, une adresse e-mail que l'on peut ouvrir sur le téléphone, et de quoi se connecter à sa banque en ligne (identifiant, et la validation habituelle, Safetrans au Crédit Mutuel). Compter une dizaine de minutes, une seule fois : ensuite l'accès tient 180 jours.
 
-L'accès expire au bout de 180 jours, par la loi : la carte de la banque prévient quinze jours avant, et un toucher le renouvelle. La DSP2 ne partage que le compte courant, que la banque appelle « CARTE BANCAIRE » : les livrets se saisissent à la main, puis vivent au fil des virements repérés.
+<img src="docs/schemas/parcours-banque.svg" alt="Choisir et relier sa banque, en cinq étapes, sur un téléphone animé. 1, dans les réglages, la carte Ta banque, toucher Choisir la banque. 2, chercher la sienne par son nom ou son pays, puis la toucher. 3, la page Obtenir ta clé : Ouvrir le portail ouvre le site d'Enable Banking dans le navigateur, et chaque valeur à coller a son bouton Copier. 4, Importer la clé : choisir dans les téléchargements le fichier .pem, sans le renommer ; il est chiffré aussitôt et sa copie effacée. 5, la page de la banque s'ouvre, on valide comme d'habitude, puis la carte affiche Synchronisé, accès encore 180 jours, et les opérations arrivent." width="100%">
+
+### 1. Choisir la banque
+
+Onglet **Réglages**, carte **Ta banque**, bouton **Choisir la banque**. La liste contient toutes les banques qu'Enable Banking sait lire pour un particulier, dans une trentaine de pays d'Europe : d'abord les grandes banques du pays du téléphone, puis toutes les autres de A à Z.
+
+### 2. Chercher la sienne
+
+Taper une partie du nom (`mutuel bretagne`) ou un pays (`belgique`) dans le champ de recherche, puis toucher sa banque. Chaque banque tient sur une ligne, avec son pays : il n'y a rien à déplier. Chacune porte l'icône de son application mobile, rangée dans SmartBudget : aucune image n'est chargée depuis Internet, et celles qui n'ont pas d'application gardent leurs initiales.
+
+Toucher la banque ouvre aussitôt la page **Obtenir ta clé**, qui guide l'étape suivante.
+
+### 3. Obtenir sa clé sur le portail d'Enable Banking
+
+C'est la seule étape hors de l'application. La page **Obtenir ta clé** donne les consignes dans l'ordre, et chaque valeur à coller a son bouton **Copier** : il suffit d'aller et venir entre SmartBudget et le navigateur.
+
+<img src="docs/schemas/portail.svg" alt="Sur le portail d'Enable Banking. Se connecter : taper son adresse e-mail, Continue, puis ouvrir le lien reçu. Créer l'application, Add a new application : Environment Production, Private key Generate in the browser, Application name SmartBudget, puis coller les valeurs copiées depuis SmartBudget : Allowed redirect URLs https://cybertrist.github.io/SmartBudget/, la description, Privacy URL et Terms URL ; Email for data protection, son adresse. Register : un fichier .pem se télécharge, c'est la clé, à ne jamais renommer. Puis Activate by linking accounts : pays, sa banque, type personal, Link, et l'on valide sur sa banque. L'application est active, en mode restreint gratuit." width="100%">
+
+1. **Se connecter.** Toucher **Ouvrir le portail** : la page de connexion s'ouvre dans le navigateur. Taper son adresse e-mail, **Continue**, puis ouvrir le lien reçu par e-mail. Le compte Enable Banking se crée tout seul la première fois.
+2. **Créer l'application.** Dans **API applications**, remplir **Add a new application** :
+   - **Environment** : `Production`
+   - **Private key** : laisser `Generate in the browser`
+   - **Application name** : `SmartBudget`
+   - **Allowed redirect URLs** : `https://cybertrist.github.io/SmartBudget/` (bouton Copier)
+   - **Application description** : la phrase proposée (bouton Copier)
+   - **Email for data protection** : sa propre adresse e-mail
+   - **Privacy URL** et **Terms URL** : `https://github.com/Cybertrist/SmartBudget` (boutons Copier)
+3. **Register.** Le portail télécharge un fichier `.pem` : c'est la clé privée de l'application. **Ne jamais le renommer** : son nom est l'identifiant de l'application, et SmartBudget le lit pour s'en servir.
+4. **Relier son compte sur le portail.** Sur la fiche de l'application, toucher **Activate by linking accounts**, choisir le pays, sa banque et le type `personal`, puis **Link**. La page de la banque s'ouvre : on s'y connecte et on valide comme d'habitude. L'application passe en mode restreint, gratuit, limité à ce compte.
+
+### 4. Importer la clé
+
+Revenir dans SmartBudget, en bas de la page **Obtenir ta clé** : **Importer la clé**, et choisir le fichier `.pem` dans les téléchargements. Il est aussitôt chiffré dans le téléphone (AES-GCM, par une clé tirée du Keystore), et la copie de travail est effacée. Le fichier resté dans les téléchargements peut ensuite être supprimé, ou rangé en lieu sûr pour réimporter la clé un jour.
+
+### 5. Relier le compte
+
+La suite s'enchaîne seule : la page de la banque s'ouvre une dernière fois, on valide comme d'habitude, et SmartBudget reprend la main. La carte **Ta banque** affiche alors **Synchronisé**, avec les jours d'accès restants, et les douze derniers mois arrivent.
+
+Ensuite, il n'y a plus rien à faire : SmartBudget se synchronise **à chaque ouverture**, et à chaque retour dans l'application, dès que la dernière synchronisation a plus de dix minutes. Le bouton **Synchroniser** de la carte relance un échange à la main. Les opérations encore en attente à la banque, comme un paiement par carte du jour, apparaissent tout de suite, marquées **En attente**, puis sont remplacées par leur version définitive.
+
+### Si ça coince
+
+- **« Le nom du fichier ne contient pas l'identifiant de l'application »** : le fichier `.pem` a été renommé, par exemple en `cle.pem`. Le télécharger de nouveau depuis la fiche de l'application, sans toucher à son nom.
+- **« Ce fichier n'est pas une clé privée »** : le fichier choisi n'est pas le `.pem` du portail. Choisir celui téléchargé à l'étape 3.
+- **« Enable Banking refuse la clé »** : la clé importée ne correspond pas à l'application, ou l'application n'est pas en `Production`. Refaire l'étape 3, puis importer la nouvelle clé (bouton **Nouvelle clé** de la carte).
+- **« Pas de connexion à Internet. »** : la synchronisation reprendra seule à la prochaine ouverture avec du réseau.
+- **« Trop de synchronisations aujourd'hui »** : la banque limite le nombre d'accès par jour. Il suffit d'attendre le lendemain.
+- **« L'accès a expiré : reconnecte le compte. »** : les 180 jours sont passés. Toucher **Relier le compte** et valider sur la banque : la clé reste la même, rien d'autre à refaire.
+- **Sa banque n'est pas dans la liste** : Enable Banking ne la lit pas encore, ou pas pour les particuliers.
+
+L'accès expire au bout de 180 jours, par la loi, ou plus tôt si la banque n'en accorde pas autant : la carte de la banque prévient quinze jours avant, et un toucher le renouvelle. La DSP2 ne partage que le compte courant, que la banque appelle « CARTE BANCAIRE » : les livrets se saisissent à la main, puis vivent au fil des virements repérés. L'application a été écrite et testée avec le Crédit Mutuel de Bretagne : ailleurs, le classement marche de la même façon, mais les virements vers les livrets peuvent demander d'être marqués à la main la première fois.
+
+### Ce qui se passe derrière
+
+<img src="docs/schemas/banque.svg" alt="Relier la banque, un échange entre quatre acteurs : Smart Budget, Enable Banking, ta banque et GitHub Pages. Smart Budget envoie un JWT signé en RS256 et un état tiré au hasard ; Enable Banking ouvre la page de la banque ; tu valides par Safetrans ; la banque revient sur GitHub Pages avec un code et l'état ; la page rend la main par smartbudget://banque ; l'application vérifie l'état, échange le code contre une session de 180 jours et les comptes, importe douze mois, puis se synchronise à chaque ouverture." width="100%">
+
+Chaque requête vers Enable Banking porte un jeton signé en RS256 par la clé importée, déchiffrée le temps de l'appel seulement. Le retour de la banque passe par une page de GitHub Pages (`docs/index.html`), qui rend la main à l'application par le lien `smartbudget://banque` ; le jeton d'état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.
 
 **L'alerte de compte en négatif** est la seule notification de l'application. Toutes les six heures, même application fermée, elle relit le solde du compte courant, et lui seul : quatre lectures par jour au plus, la limite que la DSP2 accorde aux accès faits sans toi. S'il passe sous zéro, une notification donne le montant ; la suivante attend que le compte soit remonté puis redescendu.
 
@@ -107,7 +158,7 @@ Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur 
 
 <img src="docs/sections/s08.png" alt="08 La pile" width="100%">
 
-<img src="docs/schemas/stack.png" alt="Flutter 3 pour toute l'application. sqflite_sqlcipher pour SQLite chiffré, schéma en version 5. flutter_secure_storage pour la clé maîtresse dans le Keystore. cryptography pour HKDF, AES-GCM et PBKDF2. local_auth pour l'empreinte. flutter_riverpod pour l'état. go_router pour la navigation et la garde du verrou. pointycastle pour la signature RS256 des requêtes à la banque, en Dart. workmanager pour la veille du solde. flutter_local_notifications pour l'alerte de compte en négatif. intl pour les dates et les montants. material_symbols_icons pour les icônes." width="100%">
+<img src="docs/schemas/stack.png" alt="Flutter 3 pour toute l'application. sqflite_sqlcipher pour SQLite chiffré, schéma en version 6. flutter_secure_storage pour la clé maîtresse dans le Keystore. cryptography pour HKDF, AES-GCM et PBKDF2. local_auth pour l'empreinte. flutter_riverpod pour l'état. go_router pour la navigation et la garde du verrou. pointycastle pour la signature RS256 des requêtes à la banque, en Dart. workmanager pour la veille du solde. flutter_local_notifications pour l'alerte de compte en négatif. intl pour les dates et les montants. material_symbols_icons pour les icônes." width="100%">
 
 <img src="docs/sections/s09.png" alt="09 Architecture" width="100%">
 
@@ -151,4 +202,4 @@ Conçu et écrit par **Tristan Joncour**, élève ingénieur en cyberdéfense à
 
 <br>
 
-<sub>Les images de cette page ne sortent d'aucun logiciel de dessin : ce sont des pages HTML que Chrome capture, et six SVG animés écrits à la main par <code>anime.js</code>. Les captures viennent d'un émulateur rempli par le jeu d'essai, rognées par <code>rogner.js</code>. Tout est dans <a href="docs/tools/">docs/tools</a>.</sub>
+<sub>Les images de cette page ne sortent d'aucun logiciel de dessin : ce sont des pages HTML que Chrome capture, et huit SVG animés écrits à la main par <code>anime.js</code>. Les captures viennent d'un émulateur rempli par le jeu d'essai, rognées par <code>rogner.js</code>. Tout est dans <a href="docs/tools/">docs/tools</a>.</sub>

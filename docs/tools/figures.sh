@@ -113,7 +113,7 @@ grille fonctionnalites 3 \
 
 grille stack 3 \
   "code|Flutter 3|L'application entière, en Dart, un seul code pour le téléphone et l'écran déplié." \
-  "database|sqflite_sqlcipher|SQLite chiffré par SQLCipher, schéma en version 5, migrations sans perte." \
+  "database|sqflite_sqlcipher|SQLite chiffré par SQLCipher, schéma en version 6, migrations sans perte." \
   "key|flutter_secure_storage|La clé maîtresse dans le Keystore Android, jamais sur le disque en clair." \
   "enhanced_encryption|cryptography|HKDF pour dériver les clés, AES-GCM pour la clé bancaire et la sauvegarde, PBKDF2 pour la phrase." \
   "fingerprint|local_auth|L'empreinte, qui charge la clé : sans elle, la base reste illisible." \

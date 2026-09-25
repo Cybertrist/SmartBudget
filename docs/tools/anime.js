@@ -1,4 +1,4 @@
-// Les six schémas animés du README.
+// Les huit schémas animés du README.
 //
 // Des SVG plutôt que des GIF : quelques kilo-octets, nets à toute taille,
 // et le texte reste du texte. Les animations sont en SMIL, que les
@@ -638,6 +638,363 @@ const P = {
   corps += t(640, 458, 'Quatre lectures par jour au plus : la limite que la DSP2 accorde aux accès faits sans toi.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('alerte.svg', 1280, 480, corps,
     'La veille du solde. Toutes les six heures, même application fermée, le solde du compte courant est relu. Sur deux jours, huit lectures : 320, 180 et 60 euros, puis -42,10 euros à minuit, et le téléphone verrouillé reçoit la notification Compte courant en négatif, Ton compte courant est à -42,10 euros. Aux deux lectures suivantes, -85 et -20 euros, pas de nouvelle alerte : déjà prévenu. À 150 euros, l’alerte se réarme. Quatre lectures par jour au plus, la limite de la DSP2 pour les accès faits sans l’utilisateur.');
+}
+
+// ------------------------------------------------------------------------
+// Outils partagés par les deux schémas du choix de la banque : un toucher
+// du doigt, un texte qui se tape, les couleurs de l'application.
+const APP = { fond: '#121212', carte: '#1C1C1C', trait: '#2A2A2A', texte: '#FFFFFF', second: '#B3B3B3', discret: '#7A7A7A' };
+
+/// Un toucher : le doigt se pose, une onde s'ouvre.
+function toucher(cx, cy, cycle, a) {
+  return `<g opacity="0">${visible(cycle, a - 0.018, a + 0.012, 0.004)}
+    <circle cx="${cx}" cy="${cy}" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="${cx}" cy="${cy}" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    ${fondu('opacity', cycle, [[0, 0], [a, 0], [a + 0.002, 0.8], [a + 0.035, 0], [1, 0]])}
+    ${fondu('r', cycle, [[0, 10], [a, 10], [a + 0.035, 30], [1, 30]])}
+  </circle>`;
+}
+
+let _frappes = 0;
+/// Un texte qui se tape lettre à lettre, de [de] à [a].
+function frappe(x, y, s, cycle, de, a, opts = {}) {
+  const id = `frappe${_frappes++}`;
+  const l = tr(s).length * (opts.taille || 14) * 0.62 + 6;
+  return `<clipPath id="${id}"><rect x="${x - 2}" y="${y - 20}" height="28" width="0">
+    ${fondu('width', cycle, [[0, 0], [de, 0], [a, l], [1, l]])}</rect></clipPath>
+  <g clip-path="url(#${id})">${t(x, y, s, opts)}</g>`;
+}
+
+/// Un bouton en pilule.
+const pilule = (x, y, l, h, texte, couleur, { plein = false, taille = 12.5 } = {}) =>
+  `<rect x="${x}" y="${y}" width="${l}" height="${h}" rx="${h / 2}" fill="${plein ? couleur : couleur}" fill-opacity="${plein ? 1 : 0.1}" stroke="${couleur}" stroke-opacity="${plein ? 1 : 0.45}"/>
+  ${t(x + l / 2, y + h / 2 + taille * 0.36, texte, { taille, couleur: plein ? '#000000' : couleur, poids: 800, ancre: 'middle' })}`;
+
+/// Une pastille de banque : ses initiales dans un rond de couleur.
+const pastille = (x, y, initiales, couleur) =>
+  `<circle cx="${x}" cy="${y}" r="15" fill="${couleur}" fill-opacity="0.16" stroke="${couleur}" stroke-opacity="0.6"/>
+  ${t(x, y + 4.5, initiales, { taille: 11, couleur, poids: 800, ancre: 'middle' })}`;
+
+// ------------------------------------------------------------------------
+// 7. Choisir et relier sa banque : le parcours dans l'application.
+//
+// À gauche, le téléphone passe d'écran en écran et le doigt touche ce
+// qu'il faut toucher ; à droite, les cinq étapes s'allument tour à tour.
+{
+  const C = 32, N = 5;
+  const de = (k) => k / N + 0.004, a = (k) => (k + 1) / N - 0.004;
+  const dans = (k, f) => k / N + f / N;
+  const PX = 80, PY = 112, PL = 304, PH = 612;
+  const SX = PX + 12, SY = PY + 16, SL = PL - 24, SH = PH - 32;
+  let corps = '';
+  corps += t(60, 52, 'CHOISIR ET RELIER SA BANQUE', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
+  corps += t(360, 52, 'Tout part des réglages. Une dizaine de minutes la première fois, puis plus rien à faire pendant 180 jours.', { taille: 14 });
+
+  // Le téléphone.
+  corps += `<rect x="${PX}" y="${PY}" width="${PL}" height="${PH}" rx="40" fill="#07090C" stroke="#2F3A47" stroke-width="2"/>
+    <clipPath id="ecranParcours"><rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" rx="28"/></clipPath>
+    <rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" rx="28" fill="${APP.fond}"/>
+    <rect x="${PX + PL / 2 - 34}" y="${PY + 6}" width="68" height="5" rx="2.5" fill="#1B222C"/>`;
+  let ecrans = '';
+  const titre = (s) => t(SX + 18, SY + 54, s, { taille: 22, couleur: APP.texte, poids: 800 });
+  const carteApp = (y, h) => `<rect x="${SX + 12}" y="${y}" width="${SL - 24}" height="${h}" rx="16" fill="${APP.carte}"/>`;
+  const message = (s, k, f1, f2) => `<g opacity="0">${visible(C, dans(k, f1), dans(k, f2), 0.004)}
+      <rect x="${SX + 10}" y="${SY + SH - 70}" width="${SL - 20}" height="44" rx="10" fill="#2E2E2E"/>
+      ${t(SX + 24, SY + SH - 43, s, { taille: 12, couleur: APP.texte })}</g>`;
+
+  // 1. Les réglages : la carte de la banque, encore vide.
+  ecrans += `<g opacity="0">${visible(C, de(0), a(0), 0.004)}
+    ${titre('Réglages')}
+    ${carteApp(SY + 76, 164)}
+    <rect x="${SX + 28}" y="${SY + 94}" width="40" height="40" rx="12" fill="${VERT}" fill-opacity="0.14" stroke="${VERT}" stroke-opacity="0.5"/>
+    <g transform="translate(${SX + 34},${SY + 100})">${P.banque(VERT)}</g>
+    ${t(SX + 80, SY + 110, 'Ta banque', { taille: 15, couleur: APP.texte, poids: 800 })}
+    ${t(SX + 80, SY + 128, 'Choisis ta banque, puis', { taille: 11.5, couleur: APP.second })}
+    ${t(SX + 80, SY + 144, 'SmartBudget te guide pour la relier.', { taille: 11.5, couleur: APP.second })}
+    ${pilule(SX + 28, SY + 170, 170, 40, 'Choisir la banque', VERT)}
+    ${carteApp(SY + 256, 170)}
+    ${t(SX + 30, SY + 286, 'BUDGET', { taille: 11, couleur: APP.second, poids: 700, extra: 'letter-spacing="2"' })}
+    ${['Budget mensuel', 'Objectif d’épargne', 'Le mois commence le'].map((s, i) =>
+      `<line x1="${SX + 28}" y1="${SY + 300 + i * 40}" x2="${SX + SL - 28}" y2="${SY + 300 + i * 40}" stroke="${APP.trait}"/>
+      ${t(SX + 30, SY + 326 + i * 40, s, { taille: 13, couleur: APP.texte, poids: 600 })}`).join('')}
+    ${toucher(SX + 113, SY + 190, C, dans(0, 0.7))}
+  </g>`;
+
+  // 2. La liste des banques : la recherche filtre, le doigt choisit.
+  const banques = [['BNP Paribas', 'BP', '#1ED760'], ['Crédit Agricole', 'CA', '#3CE0FF'], ['Crédit Mutuel de Bretagne', 'CM', '#FFC857'], ['La Banque Postale', 'LB', '#FFC857'], ['Société Générale', 'SG', '#FF6B7A'], ['Boursorama', 'BO', '#FF8FD1']];
+  const ligneBanque = (y, [nom, ini, c], clair = false) => `
+    ${clair ? `<rect x="${SX + 16}" y="${y - 24}" width="${SL - 32}" height="48" rx="12" fill="${VERT}" fill-opacity="0.1" stroke="${VERT}" stroke-opacity="0.5"/>` : ''}
+    ${pastille(SX + 42, y, ini, c)}
+    ${t(SX + 68, y - 2, nom, { taille: 13, couleur: APP.texte, poids: 700 })}
+    ${t(SX + 68, y + 15, 'France', { taille: 11, couleur: APP.discret })}`;
+  const bascule = dans(1, 0.45);
+  ecrans += `<g opacity="0">${visible(C, de(1), a(1), 0.004)}
+    ${t(SX + 18, SY + 54, '‹', { taille: 24, couleur: APP.texte })}
+    ${t(SX + 38, SY + 54, 'Ta banque', { taille: 20, couleur: APP.texte, poids: 800 })}
+    ${t(SX + 18, SY + 80, 'Celles de ton pays en tête, puis de A à Z.', { taille: 11.5, couleur: APP.second })}
+    <rect x="${SX + 14}" y="${SY + 96}" width="${SL - 28}" height="42" rx="21" fill="${APP.carte}"/>
+    <circle cx="${SX + 36}" cy="${SY + 115}" r="6" fill="none" stroke="${APP.second}" stroke-width="2"/><path d="M${SX + 40} ${SY + 119} l5 5" stroke="${APP.second}" stroke-width="2" stroke-linecap="round"/>
+    <g opacity="0">${visible(C, de(1), dans(1, 0.15), 0.004)}${t(SX + 54, SY + 122, 'Nom de la banque, ou pays', { taille: 12.5, couleur: APP.discret })}</g>
+    ${frappe(SX + 54, SY + 122, 'mutuel bretagne', C, dans(1, 0.15), dans(1, 0.42), { taille: 13, couleur: APP.texte })}
+    <g opacity="0">${visible(C, de(1), bascule, 0.004)}
+      ${t(SX + 22, SY + 168, 'LES GRANDES BANQUES · FRANCE', { taille: 10.5, couleur: APP.second, poids: 700, extra: 'letter-spacing="1.5"' })}
+      ${banques.map((b, i) => ligneBanque(SY + 200 + i * 54, b)).join('')}
+    </g>
+    <g opacity="0">${visible(C, bascule, a(1), 0.004)}
+      ${t(SX + 22, SY + 168, 'TOUTES LES BANQUES, DE A À Z', { taille: 10.5, couleur: APP.second, poids: 700, extra: 'letter-spacing="1.5"' })}
+      <g>${ligneBanque(SY + 200, banques[2])}
+        <rect x="${SX + 16}" y="${SY + 176}" width="${SL - 32}" height="48" rx="12" fill="${VERT}" fill-opacity="0.1" stroke="${VERT}" stroke-opacity="0.6" opacity="0">${visible(C, dans(1, 0.72), a(1), 0.004)}</rect>
+      </g>
+    </g>
+    ${toucher(SX + 150, SY + 200, C, dans(1, 0.7))}
+  </g>`;
+
+  // 3. Le guide : le portail s'ouvre, les valeurs se copient.
+  const etapeGuide = (y, n, titreEtape, lignes, h) => `
+    ${carteApp(y, h)}
+    <circle cx="${SX + 38}" cy="${y + 26}" r="12" fill="${VERT}" fill-opacity="0.14"/>
+    ${t(SX + 38, y + 30.5, n, { taille: 12, couleur: VERT, poids: 800, ancre: 'middle' })}
+    ${t(SX + 58, y + 31, titreEtape, { taille: 13.5, couleur: APP.texte, poids: 800 })}
+    ${lignes.map((s, i) => t(SX + 58, y + 50 + i * 16, s, { taille: 11, couleur: APP.second })).join('')}`;
+  ecrans += `<g opacity="0">${visible(C, de(2), a(2), 0.004)}
+    ${t(SX + 18, SY + 54, '‹', { taille: 24, couleur: APP.texte })}
+    ${t(SX + 38, SY + 54, 'Obtenir ta clé', { taille: 20, couleur: APP.texte, poids: 800 })}
+    ${etapeGuide(SY + 72, '1', 'Se connecter au portail', ['Ton adresse e-mail, puis le lien reçu.'], 104)}
+    ${pilule(SX + 58, SY + 136, 150, 30, 'Ouvrir le portail ↗', VERT, { taille: 11.5 })}
+    ${etapeGuide(SY + 186, '2', 'Créer l’application', ['Production · SmartBudget'], 72)}
+    ${carteApp(SY + 268, 108)}
+    ${t(SX + 30, SY + 294, 'À COLLER DANS LE FORMULAIRE', { taille: 10, couleur: APP.second, poids: 700, extra: 'letter-spacing="1.2"' })}
+    ${t(SX + 30, SY + 318, 'Allowed redirect URLs', { taille: 10.5, couleur: APP.discret, poids: 700 })}
+    ${t(SX + 30, SY + 336, 'cybertrist.github.io/SmartBudget/', { taille: 11.5, couleur: APP.texte })}
+    ${t(SX + SL - 30, SY + 330, 'Copier', { taille: 12, couleur: VERT, poids: 800, ancre: 'end' })}
+    ${t(SX + 30, SY + 362, 'Description, Privacy URL, Terms URL…', { taille: 10.5, couleur: APP.discret })}
+    ${etapeGuide(SY + 386, '3', 'Relier ton compte', ['« Activate by linking accounts »'], 72)}
+    ${toucher(SX + 133, SY + 151, C, dans(2, 0.28))}
+    ${toucher(SX + SL - 50, SY + 326, C, dans(2, 0.62))}
+    ${message('Allowed redirect URLs copié.', 2, 0.64, 0.92)}
+  </g>`;
+
+  // 4. L'import de la clé : le fichier .pem téléchargé par le portail.
+  ecrans += `<g opacity="0">${visible(C, de(3), a(3), 0.004)}
+    ${t(SX + 18, SY + 54, '‹', { taille: 24, couleur: APP.texte })}
+    ${t(SX + 38, SY + 54, 'Obtenir ta clé', { taille: 20, couleur: APP.texte, poids: 800 })}
+    ${etapeGuide(SY + 72, '4', 'Importer la clé ici', ['Le fichier .pem téléchargé,', 'sans le renommer : son nom est', 'l’identifiant de ton application.'], 172)}
+    <rect x="${SX + 28}" y="${SY + 188}" width="${SL - 56}" height="42" rx="21" fill="${VERT}"/>
+    <g transform="translate(${SX + 62},${SY + 195})">${P.cle('#000000')}</g>
+    ${t(SX + SL / 2 + 14, SY + 214, 'Importer la clé', { taille: 13.5, couleur: '#000000', poids: 800, ancre: 'middle' })}
+    ${toucher(SX + SL / 2, SY + 209, C, dans(3, 0.2))}
+    <g opacity="0">${visible(C, dans(3, 0.27), dans(3, 0.62), 0.004)}
+      <rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" fill="#000000" fill-opacity="0.6"/>
+      <rect x="${SX + 14}" y="${SY + 150}" width="${SL - 28}" height="220" rx="18" fill="#242424"/>
+      ${t(SX + 34, SY + 186, 'Téléchargements', { taille: 15, couleur: APP.texte, poids: 800 })}
+      ${[['a3f9c2e1-7b4d-….pem', true], ['releve-aout.pdf', false], ['billet-train.pdf', false]].map(([nom, cle], i) => `
+        <g transform="translate(${SX + 32},${SY + 206 + i * 50})">${(cle ? P.cle : P.fichier)(cle ? OR : APP.discret)}</g>
+        ${t(SX + 72, SY + 225 + i * 50, nom, { taille: 12.5, couleur: cle ? APP.texte : APP.discret, poids: cle ? 700 : 400, police: cle ? MONO : SANS })}`).join('')}
+      ${toucher(SX + 140, SY + 220, C, dans(3, 0.5))}
+    </g>
+    <g opacity="0">${visible(C, dans(3, 0.64), a(3), 0.004)}
+      <rect x="${SX + 12}" y="${SY + 262}" width="${SL - 24}" height="120" rx="16" fill="${VERT}" fill-opacity="0.08" stroke="${VERT}" stroke-opacity="0.45"/>
+      <circle cx="${SX + 48}" cy="${SY + 300}" r="15" fill="${VERT}"/>
+      <path d="M${SX + 41} ${SY + 300} l5 5 l9 -10" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      ${t(SX + 74, SY + 296, 'Clé importée', { taille: 14, couleur: APP.texte, poids: 800 })}
+      ${t(SX + 74, SY + 314, 'Chiffrée aussitôt, copie effacée.', { taille: 11.5, couleur: APP.second })}
+      ${t(SX + 30, SY + 358, 'La liaison du compte s’enchaîne…', { taille: 12, couleur: VERT, poids: 700 })}
+    </g>
+  </g>`;
+
+  // 5. La banque, puis le retour : relié, synchronisé.
+  const retour = dans(4, 0.5);
+  ecrans += `<g opacity="0">${visible(C, de(4), retour, 0.004)}
+    <rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" fill="#F4F1EA"/>
+    <rect x="${SX}" y="${SY}" width="${SL}" height="86" fill="#1F3B73"/>
+    ${t(SX + 20, SY + 50, 'Crédit Mutuel de Bretagne', { taille: 15, couleur: '#FFFFFF', poids: 800 })}
+    ${t(SX + 20, SY + 70, 'Espace client', { taille: 11, couleur: '#C9D4EA' })}
+    ${t(SX + 20, SY + 130, 'Enable Banking demande', { taille: 15, couleur: '#1A1A1A', poids: 800 })}
+    ${t(SX + 20, SY + 150, 'à consulter ton compte courant.', { taille: 15, couleur: '#1A1A1A', poids: 800 })}
+    ${t(SX + 20, SY + 180, 'Lecture seule, pendant 180 jours.', { taille: 12, couleur: '#555555' })}
+    <rect x="${SX + 20}" y="${SY + 206}" width="${SL - 40}" height="96" rx="12" fill="#FFFFFF" stroke="#DDD6C8"/>
+    <g transform="translate(${SX + 36},${SY + 238})">${P.telephone('#1F3B73')}</g>
+    ${t(SX + 76, SY + 246, 'Valide sur ton téléphone', { taille: 12.5, couleur: '#1A1A1A', poids: 700 })}
+    ${t(SX + 76, SY + 264, 'comme d’habitude (Safetrans).', { taille: 11.5, couleur: '#555555' })}
+    <rect x="${SX + 20}" y="${SY + 330}" width="${SL - 40}" height="44" rx="22" fill="#1F3B73"/>
+    ${t(SX + SL / 2, SY + 357, 'Valider', { taille: 14, couleur: '#FFFFFF', poids: 800, ancre: 'middle' })}
+    ${toucher(SX + SL / 2, SY + 352, C, dans(4, 0.36))}
+  </g>
+  <g opacity="0">${visible(C, retour, a(4), 0.004)}
+    ${titre('Réglages')}
+    ${carteApp(SY + 76, 168)}
+    <rect x="${SX + 28}" y="${SY + 94}" width="40" height="40" rx="12" fill="${VERT}" fill-opacity="0.14" stroke="${VERT}" stroke-opacity="0.5"/>
+    <g transform="translate(${SX + 34},${SY + 100})">${P.banque(VERT)}</g>
+    ${t(SX + 80, SY + 110, 'Crédit Mutuel de Bretagne', { taille: 13.5, couleur: APP.texte, poids: 800 })}
+    ${t(SX + 80, SY + 128, 'Synchronisé aujourd’hui', { taille: 11.5, couleur: VERT })}
+    ${t(SX + 80, SY + 144, 'accès encore 180 jours', { taille: 11.5, couleur: VERT })}
+    ${pilule(SX + 28, SY + 172, 128, 38, 'Synchroniser', VERT)}
+    ${pilule(SX + 166, SY + 172, 86, 38, 'Délier', APP.second)}
+    ${message('312 nouvelles opérations.', 4, 0.62, 0.99)}
+  </g>`;
+  corps += `<g clip-path="url(#ecranParcours)">${ecrans}</g>`;
+
+  // Les cinq étapes, à droite.
+  const etapes = [
+    ['Choisir la banque', ['Réglages, carte « Ta banque », Choisir la banque.', 'Toutes celles d’Enable Banking, dans une trentaine de pays.']],
+    ['Chercher la sienne', ['Par son nom ou son pays, puis la toucher.', 'Une ligne par banque : rien à déplier.']],
+    ['Suivre le guide du portail', ['Le portail d’Enable Banking s’ouvre dans le navigateur.', 'Chaque valeur à coller a son bouton Copier (schéma suivant).']],
+    ['Importer la clé', ['Le fichier .pem que le portail vient de télécharger,', 'sans le renommer. Chiffré aussitôt, la copie effacée.']],
+    ['Relier le compte', ['La page de ta banque s’ouvre : tu valides comme d’habitude.', 'Douze mois importés, puis une synchro à chaque ouverture.']],
+  ];
+  const EX = 470, EY = 150, PAS = 112;
+  corps += `<line x1="${EX + 22}" y1="${EY}" x2="${EX + 22}" y2="${EY + PAS * (N - 1)}" stroke="${FIL}" stroke-width="2"/>`;
+  corps += `<line x1="${EX + 22}" y1="${EY}" x2="${EX + 22}" y2="${EY}" stroke="${VERT}" stroke-width="2">
+    ${fondu('y2', C, [[0, EY], ...etapes.map((_, k) => [(k + 1) / N - 0.01, EY + PAS * k]), [1, EY + PAS * (N - 1)]])}</line>`;
+  etapes.forEach(([titreEtape, lignes], k) => {
+    const y = EY + k * PAS;
+    corps += `<rect x="${EX - 14}" y="${y - 38}" width="${1220 - EX + 14}" height="${PAS - 16}" rx="14" fill="${CARTE}" stroke="${VERT}" stroke-opacity="0.5" opacity="0">${visible(C, de(k), a(k), 0.006)}</rect>
+      <circle cx="${EX + 22}" cy="${y}" r="20" fill="${FOND}" stroke="${FIL}" stroke-width="2"/>
+      <circle cx="${EX + 22}" cy="${y}" r="20" fill="${VERT}" opacity="0" filter="url(#halo)">${visible(C, de(k), 0.996, 0.006)}</circle>
+      ${t(EX + 22, y + 6, String(k + 1), { taille: 16, couleur: TEXTE, police: MONO, poids: 700, ancre: 'middle' })}
+      <g opacity="0">${visible(C, de(k), 0.996, 0.006)}${t(EX + 22, y + 6, String(k + 1), { taille: 16, couleur: '#000000', police: MONO, poids: 800, ancre: 'middle' })}</g>
+      ${t(EX + 62, y - 6, titreEtape, { taille: 18, couleur: TITRE, poids: 700 })}
+      ${lignes.map((s, i) => t(EX + 62, y + 16 + i * 19, s, { taille: 13.5 })).join('')}`;
+  });
+  corps += t(EX - 14, 712, 'Les étapes 3 et 4 ne se font qu’une fois : la clé reste dans le téléphone, chiffrée.', { taille: 13, couleur: DISCRET });
+  svg('parcours-banque.svg', 1280, 760, corps,
+    'Choisir et relier sa banque, en cinq étapes, sur un téléphone animé. 1, dans les réglages, la carte Ta banque, toucher Choisir la banque. 2, chercher la sienne par son nom ou son pays, ici mutuel bretagne, puis toucher Crédit Mutuel de Bretagne. 3, la page Obtenir ta clé : Ouvrir le portail ouvre le site d’Enable Banking dans le navigateur, et chaque valeur à coller a son bouton Copier. 4, Importer la clé : choisir dans les téléchargements le fichier .pem, sans le renommer ; il est chiffré aussitôt et sa copie effacée. 5, la page de la banque s’ouvre, on valide comme d’habitude, puis la carte affiche Synchronisé, accès encore 180 jours, et les opérations arrivent.');
+}
+
+// ------------------------------------------------------------------------
+// 8. Sur le portail d'Enable Banking : ce que la page guide fait faire.
+//
+// Un navigateur à gauche : la connexion par e-mail, le formulaire qui se
+// remplit champ après champ, la clé qui se télécharge, puis le compte
+// relié. À droite, la liste se coche au fur et à mesure.
+{
+  const C = 30;
+  const BX = 60, BY = 96, BL = 790, BH = 590;
+  const CX = BX + 30, CY = BY + 76;
+  let corps = '';
+  corps += t(60, 52, 'SUR LE PORTAIL D’ENABLE BANKING', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
+  corps += t(420, 52, 'Gratuit, pour tes propres comptes. SmartBudget te donne quoi taper et quoi coller.', { taille: 14 });
+  // Le navigateur.
+  corps += `<rect x="${BX}" y="${BY}" width="${BL}" height="${BH}" rx="14" fill="${CARTE}" stroke="${BORD}"/>
+    <path d="M${BX} ${BY + 44} H${BX + BL}" stroke="${BORD}"/>
+    ${[ROUGE, OR, VERT].map((c, i) => `<circle cx="${BX + 22 + i * 18}" cy="${BY + 22}" r="5.5" fill="${c}" fill-opacity="0.7"/>`).join('')}
+    <rect x="${BX + 90}" y="${BY + 10}" width="${BL - 110}" height="24" rx="12" fill="${FOND}"/>
+    <g transform="translate(${BX + 100},${BY + 13}) scale(0.62)">${P.cadenas(DISCRET)}</g>`;
+  const adresse = (s, de, a) => `<g opacity="0">${visible(C, de, a, 0.004)}${t(BX + 124, BY + 27, s, { taille: 12, couleur: TEXTE, police: MONO })}</g>`;
+  corps += adresse('enablebanking.com/sign-in', 0.004, 0.2);
+  corps += adresse('enablebanking.com/cp/applications/new', 0.2, 0.62);
+  corps += adresse('enablebanking.com/cp/applications/a3f9c2e1…', 0.62, 0.996);
+  const champ = (x, y, l, texte, couleur = TITRE) => `<rect x="${x}" y="${y}" width="${l}" height="34" rx="8" fill="${FOND}" stroke="${BORD}"/>
+    ${t(x + 12, y + 22, texte, { taille: 12.5, couleur, police: MONO })}`;
+  let page = '';
+
+  // A. Se connecter par e-mail.
+  page += `<g opacity="0">${visible(C, 0.004, 0.2, 0.004)}
+    ${t(CX, CY + 20, 'Sign in', { taille: 24, couleur: TITRE, poids: 800 })}
+    ${t(CX, CY + 48, 'Enter your email, we’ll send you a sign-in link.', { taille: 13 })}
+    <rect x="${CX}" y="${CY + 70}" width="360" height="40" rx="8" fill="${FOND}" stroke="${BORD}"/>
+    ${frappe(CX + 14, CY + 96, 'toi@exemple.fr', C, 0.02, 0.07, { taille: 13.5, couleur: TITRE, police: MONO })}
+    ${pilule(CX, CY + 124, 140, 38, 'Continue', BLEU, { plein: true })}
+    ${toucher(CX + 70, CY + 143, C, 0.085)}
+    <g opacity="0">${visible(C, 0.1, 0.2, 0.004)}
+      <rect x="${CX}" y="${CY + 190}" width="${BL - 60}" height="84" rx="12" fill="${BLEU}" fill-opacity="0.08" stroke="${BLEU}" stroke-opacity="0.45"/>
+      <path d="M${CX + 22} ${CY + 214} h34 v26 h-34 z M${CX + 22} ${CY + 214} l17 13 l17 -13" fill="none" stroke="${BLEU}" stroke-width="2" stroke-linejoin="round"/>
+      ${t(CX + 74, CY + 226, 'Check your inbox', { taille: 14, couleur: TITRE, poids: 700 })}
+      ${t(CX + 74, CY + 246, 'Ouvre le lien reçu : le compte se crée tout seul la première fois.', { taille: 12.5 })}
+    </g>
+  </g>`;
+
+  // B. Le formulaire, champ après champ.
+  const champs = [
+    ['Environment', 'Production', null],
+    ['Private key', 'Generate in the browser', null],
+    ['Application name', 'SmartBudget', null],
+    ['Allowed redirect URLs', 'https://cybertrist.github.io/SmartBudget/', 'collé'],
+    ['Application description', 'Application personnelle de suivi de budget…', 'collé'],
+    ['Email for data protection', 'toi@exemple.fr', null],
+    ['Privacy URL', 'https://github.com/Cybertrist/SmartBudget', 'collé'],
+    ['Terms URL', 'https://github.com/Cybertrist/SmartBudget', 'collé'],
+  ];
+  const remplir = (i) => 0.22 + i * 0.037;
+  page += `<g opacity="0">${visible(C, 0.2, 0.62, 0.004)}
+    ${t(CX, CY + 14, 'Add a new application', { taille: 20, couleur: TITRE, poids: 800 })}
+    ${champs.map(([nom, valeur, colle], i) => {
+      const y = CY + 36 + i * 46, s = remplir(i);
+      return `${t(CX, y + 22, nom, { taille: 12.5, couleur: TEXTE, poids: 600 })}
+        <rect x="${CX + 200}" y="${y}" width="${BL - 260}" height="34" rx="8" fill="${FOND}" stroke="${BORD}">
+          ${fondu('stroke', C, [[0, BORD], [s, BORD], [s + 0.004, colle ? VERT : BLEU], [s + 0.03, colle ? VERT : BLEU], [s + 0.034, BORD], [1, BORD]])}</rect>
+        <g opacity="0">${visible(C, s, 0.62, 0.004)}${t(CX + 212, y + 22, valeur, { taille: 12, couleur: TITRE, police: MONO })}</g>
+        ${colle ? `<g opacity="0">${visible(C, s, 0.62, 0.004)}<rect x="${CX + BL - 128}" y="${y + 7}" width="60" height="20" rx="10" fill="${VERT}" fill-opacity="0.14"/>${t(CX + BL - 98, y + 21, colle, { taille: 10.5, couleur: VERT, poids: 700, ancre: 'middle' })}</g>` : ''}`;
+    }).join('')}
+    ${pilule(CX, CY + 412, 130, 38, 'Register', BLEU, { plein: true })}
+    ${toucher(CX + 65, CY + 431, C, 0.53)}
+    <g opacity="0">${visible(C, 0.55, 0.62, 0.004)}
+      <rect x="${CX + 150}" y="${CY + 408}" width="${BL - 210}" height="46" rx="10" fill="${OR}" fill-opacity="0.1" stroke="${OR}" stroke-opacity="0.6"/>
+      <g transform="translate(${CX + 164},${CY + 417})">${P.cle(OR)}</g>
+      ${t(CX + 204, CY + 429, 'a3f9c2e1-7b4d-4e0a-9c11-5d2f8e6b7a90.pem', { taille: 12, couleur: TITRE, police: MONO, poids: 700 })}
+      ${t(CX + 204, CY + 446, 'téléchargé : c’est ta clé, garde ce nom', { taille: 11.5, couleur: OR })}
+    </g>
+  </g>`;
+
+  // C. L'application créée : relier son compte.
+  const relie = 0.9;
+  page += `<g opacity="0">${visible(C, 0.62, 0.996, 0.004)}
+    ${t(CX, CY + 20, 'SmartBudget', { taille: 22, couleur: TITRE, poids: 800 })}
+    ${pilule(CX + 150, CY + 2, 90, 24, 'Production', BLEU, { taille: 10.5 })}
+    ${pilule(CX + 250, CY + 2, 96, 24, 'Restricted', OR, { taille: 10.5 })}
+    ${t(CX, CY + 60, 'Linked accounts', { taille: 13, couleur: TEXTE, poids: 600 })}
+    <g opacity="0">${visible(C, 0.62, relie, 0.004)}${t(CX + 140, CY + 60, '0', { taille: 13, couleur: TITRE, police: MONO, poids: 700 })}</g>
+    <g opacity="0">${visible(C, relie, 0.996, 0.004)}${t(CX + 140, CY + 60, '1 · Crédit Mutuel de Bretagne', { taille: 13, couleur: VERT, police: MONO, poids: 700 })}</g>
+    ${pilule(CX, CY + 82, 260, 40, 'Activate by linking accounts', BLEU)}
+    ${toucher(CX + 130, CY + 102, C, 0.67)}
+    <g opacity="0">${visible(C, 0.69, 0.86, 0.004)}
+      <rect x="${CX + 40}" y="${CY + 140}" width="${BL - 140}" height="270" rx="14" fill="#18212D" stroke="${BLEU}" stroke-opacity="0.5"/>
+      ${t(CX + 66, CY + 176, 'Link accounts', { taille: 17, couleur: TITRE, poids: 800 })}
+      ${[['Country', 'France', 0.7], ['ASPSP', 'Crédit Mutuel de Bretagne', 0.73], ['PSU type', 'personal', 0.76]].map(([nom, valeur, s], i) => `
+        ${t(CX + 66, CY + 214 + i * 46, nom, { taille: 12.5, couleur: TEXTE, poids: 600 })}
+        ${champ(CX + 190, CY + 192 + i * 46, 340, '')}
+        <g opacity="0">${visible(C, s, 0.86, 0.004)}${t(CX + 202, CY + 214 + i * 46, valeur, { taille: 12.5, couleur: TITRE, police: MONO })}</g>`).join('')}
+      ${pilule(CX + 66, CY + 344, 110, 38, 'Link', BLEU, { plein: true })}
+      ${toucher(CX + 121, CY + 363, C, 0.8)}
+      <g opacity="0">${visible(C, 0.815, 0.86, 0.004)}${t(CX + 196, CY + 368, '→ ta banque s’ouvre : tu valides comme d’habitude', { taille: 12.5, couleur: OR })}</g>
+    </g>
+    <g opacity="0">${visible(C, relie, 0.996, 0.004)}
+      <rect x="${CX}" y="${CY + 150}" width="${BL - 60}" height="80" rx="12" fill="${VERT}" fill-opacity="0.08" stroke="${VERT}" stroke-opacity="0.5"/>
+      <circle cx="${CX + 36}" cy="${CY + 190}" r="15" fill="${VERT}"/>
+      <path d="M${CX + 29} ${CY + 190} l5 5 l9 -10" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      ${t(CX + 64, CY + 185, 'Application active, en mode restreint gratuit.', { taille: 14, couleur: TITRE, poids: 700 })}
+      ${t(CX + 64, CY + 205, 'Retour dans SmartBudget : Importer la clé.', { taille: 12.5, couleur: VERT })}
+    </g>
+  </g>`;
+  corps += page;
+
+  // La liste qui se coche, à droite.
+  const LX = 890;
+  const liste = [
+    ['Se connecter par e-mail', 'le lien reçu, ouvert dans le navigateur', 0.1],
+    ['Créer l’application', 'Production, clé générée dans le navigateur', 0.3],
+    ['Coller les valeurs copiées', 'adresse de retour, description, liens', 0.48],
+    ['Register', 'le fichier .pem se télécharge', 0.56],
+    ['Relier son compte', 'sa banque, type personal, puis Link', relie],
+  ];
+  corps += t(LX, 128, 'À COCHER', { taille: 12, couleur: DISCRET, police: MONO, poids: 700, extra: 'letter-spacing="2"' });
+  liste.forEach(([titreItem, sous, fait], i) => {
+    const y = 170 + i * 92;
+    corps += `<rect x="${LX}" y="${y - 22}" width="330" height="76" rx="12" fill="${CARTE}" stroke="${BORD}"/>
+      <rect x="${LX}" y="${y - 22}" width="330" height="76" rx="12" fill="none" stroke="${VERT}" stroke-opacity="0.55" opacity="0">${visible(C, fait, 0.996, 0.004)}</rect>
+      <rect x="${LX + 18}" y="${y - 2}" width="24" height="24" rx="7" fill="none" stroke="${FIL}" stroke-width="2"/>
+      <g opacity="0">${visible(C, fait, 0.996, 0.004)}
+        <rect x="${LX + 18}" y="${y - 2}" width="24" height="24" rx="7" fill="${VERT}"/>
+        <path d="M${LX + 24} ${y + 10} l4 4 l8 -9" fill="none" stroke="#000000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      ${t(LX + 58, y + 10, titreItem, { taille: 15, couleur: TITRE, poids: 700 })}
+      ${t(LX + 58, y + 30, sous, { taille: 12.5 })}`;
+  });
+  corps += t(LX, 660, 'Ne renomme jamais le fichier .pem :', { taille: 13, couleur: OR, poids: 700 });
+  corps += t(LX, 680, 'son nom est l’identifiant de ton application.', { taille: 13, couleur: OR });
+  svg('portail.svg', 1280, 720, corps,
+    'Sur le portail d’Enable Banking. Se connecter : taper son adresse e-mail, Continue, puis ouvrir le lien reçu. Créer l’application, Add a new application : Environment Production, Private key Generate in the browser, Application name SmartBudget, puis coller les valeurs copiées depuis SmartBudget : Allowed redirect URLs https://cybertrist.github.io/SmartBudget/, la description, Privacy URL et Terms URL ; Email for data protection, son adresse. Register : un fichier .pem se télécharge, c’est la clé, à ne jamais renommer. Puis Activate by linking accounts : pays, sa banque, type personal, Link, et l’on valide sur sa banque. L’application est active, en mode restreint gratuit.');
 }
 
 if (EN && manque.size) {

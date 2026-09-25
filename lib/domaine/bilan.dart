@@ -10,6 +10,9 @@ import 'virements.dart';
 /// - une entrée qui rembourse des dépenses ne compte pas comme un revenu
 ///   pour la part liée : cette part vient en déduction des dépenses
 ///   qu'elle rembourse, qui ne comptent plus que pour leur reste à charge ;
+/// - une entrée rangée dans « Remboursements » (la mutuelle, un ami qui
+///   rend sa part) n'est pas un revenu non plus, même sans lien : elle
+///   est comptée à part ;
 /// - une opération masquée ne compte nulle part.
 class Bilan {
   Bilan(this.mois);
@@ -21,6 +24,9 @@ class Bilan {
 
   /// Total des entrées, hors remboursements liés.
   int entrees = 0;
+
+  /// Les remboursements reçus, laissés hors des entrées.
+  int rembourses = 0;
 
   /// Par catégorie de premier niveau : le montant (positif pour une
   /// dépense nette) et le nombre d'opérations.
@@ -99,6 +105,10 @@ Bilan calculerBilan({
     if (p == 0) continue;
 
     if (top.genre == Genre.revenu) {
+      if (estRemboursement(cat, top)) {
+        bilan.rembourses += p;
+        continue;
+      }
       bilan.entrees += p;
       _ajouter(bilan, top, cat, p, o);
       continue;
@@ -156,4 +166,20 @@ void _ajouter(Bilan b, Categorie top, Categorie cat, int montant, Operation o) {
     b.parSous.update(cat.id, (v) => v + montant, ifAbsent: () => montant);
     b.operationsParSous.update(cat.id, (v) => v + 1, ifAbsent: () => 1);
   }
+}
+
+/// La sous-catégorie des remboursements : de l'argent qui revient, pas un
+/// revenu.
+bool estRemboursement(Categorie cat, Categorie top) => top.genre == Genre.revenu && cat.nom == 'Remboursements';
+
+/// Ce que l'analyse compte parmi les entrées ([Genre.revenu]) ou les
+/// sorties ([Genre.depense]) : la liste des opérations suit le même tri
+/// que l'anneau.
+bool compteDans(Genre genre, Operation o, Map<int, Categorie> categories) {
+  if (o.masquee || o.interne != null) return false;
+  final cat = categories[o.categorieId];
+  if (cat == null) return false;
+  final top = cat.parentId == null ? cat : categories[cat.parentId];
+  if (top == null || top.genre != genre) return false;
+  return !estRemboursement(cat, top);
 }

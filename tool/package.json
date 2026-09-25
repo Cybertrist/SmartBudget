@@ -1,0 +1,9 @@
+{
+  "name": "smartbudget-outils",
+  "private": true,
+  "type": "module",
+  "description": "Outils de développement : icônes de l'application et des banques.",
+  "devDependencies": {
+    "sharp": "^0.34.0"
+  }
+}

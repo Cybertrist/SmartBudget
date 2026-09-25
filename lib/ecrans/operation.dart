@@ -46,6 +46,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     final lies = liens.value ?? const <Lien>[];
     final cle = cleMarchand(o.libelle);
     final repetition = ref.watch(recurrencesProvider).value?.where((r) => r.cle == cle).firstOrNull;
+    final remboursements = cats.values.where((c) => c.nom == 'Remboursements' && c.parentId != null && cats[c.parentId]?.genre == Genre.revenu).firstOrNull;
 
     Future<void> modifier(Future<void> Function() f) async {
       await f();
@@ -321,11 +322,24 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                               if (choix != null) await modifier(() => const DepotOperations().choisirRepetition(cle, choix.$1));
                             },
                           ),
+                        // Une entrée qui rembourse une dépense n'est pas un revenu :
+                        // rangée dans « Remboursements », elle sort des entrées.
+                        if (o.entree && o.interne == null && remboursements != null)
+                          _Bascule(
+                            icone: 'currency_exchange',
+                            libelle: 'C\'est un remboursement',
+                            valeur: o.categorieId == remboursements.id,
+                            onChanged: (v) => modifier(() async {
+                              await const DepotOperations().reclasser(o.id, v ? remboursements.id : remboursements.parentId!, apprendre: false);
+                            }),
+                          ),
+                        // Un virement interne est déjà hors de l'analyse : la
+                        // bascule le montre, et ne change qu'avec le mouvement.
                         _Bascule(
                           icone: 'visibility_off',
                           libelle: 'Masquer de l\'analyse',
-                          valeur: o.masquee,
-                          onChanged: (v) => modifier(() => const DepotOperations().modifier(o.id, masquee: v)),
+                          valeur: o.masquee || o.interne != null,
+                          onChanged: o.interne != null ? null : (v) => modifier(() => const DepotOperations().modifier(o.id, masquee: v)),
                         ),
                       ],
                     ),
@@ -482,7 +496,7 @@ class _Bascule extends StatelessWidget {
   final String icone;
   final String libelle;
   final bool valeur;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
 
   @override
   Widget build(BuildContext context) => SizedBox(

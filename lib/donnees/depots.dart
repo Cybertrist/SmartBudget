@@ -189,6 +189,12 @@ class DepotOperations {
   /// Range les opérations venues de la banque. Celles déjà connues, à leur
   /// identifiant bancaire, sont ignorées : une synchronisation peut se
   /// relancer sans rien doubler. Rend le nombre d'opérations nouvelles.
+  ///
+  /// Les opérations en attente sont remplacées à chaque fois : celles de la
+  /// fois d'avant s'effacent, les nouvelles prennent leur place. Ce qui a
+  /// été fait à la main sur l'une d'elles (catégorie, nom, note) passe à
+  /// celle qui la remplace : la même encore en attente, ou la même une fois
+  /// comptabilisée (même montant, à une semaine près).
   Future<int> importer(int compteId, List<OperationBrute> brutes) async {
     final db = await _db;
     final classeur = await _classeur();
@@ -200,25 +206,52 @@ class DepotOperations {
         for (final r in await t.query('reglages', where: 'cle LIKE ?', whereArgs: ['$_nomMarchand%']))
           if (r['valeur'] != null) (r['cle']! as String).substring(_nomMarchand.length): r['valeur']! as String,
       };
+      final enAttente = [
+        ...await t.query('operations', where: 'compte_id = ? AND en_attente = 1', whereArgs: [compteId]),
+      ];
+      await t.delete('operations', where: 'compte_id = ? AND en_attente = 1', whereArgs: [compteId]);
+      // L'ancienne en attente qui correspond à [b], retirée de la liste.
+      Map<String, Object?>? reprise(OperationBrute b) {
+        var i = enAttente.indexWhere((a) => a['uid_banque'] == b.uidBanque);
+        if (i < 0 && !b.enAttente) {
+          i = enAttente.indexWhere((a) =>
+              a['montant_centimes'] == b.montantCentimes && DateTime.parse(a['le']! as String).difference(b.le).inDays.abs() <= 7);
+        }
+        return i < 0 ? null : enAttente.removeAt(i);
+      }
+
       for (final b in brutes) {
         final existe = await t.query('operations', columns: ['id'], where: 'uid_banque = ?', whereArgs: [b.uidBanque], limit: 1);
         if (existe.isNotEmpty) continue;
         final c = classeur.classer(b.libelle, b.montantCentimes);
+        final a = reprise(b);
+        final aLaMain = a != null && a['origine'] == Origine.main.name;
         await t.insert('operations', {
           'compte_id': compteId,
           'uid_banque': b.uidBanque,
           'le': _date(b.le),
           'libelle': b.libelle,
           'montant_centimes': b.montantCentimes,
-          'categorie_id': c.categorieId,
-          'origine': c.origine.name,
-          'interne': c.interne?.name,
-          'nom': noms[cleMarchand(b.libelle)],
+          'categorie_id': aLaMain ? a['categorie_id'] : c.categorieId,
+          'origine': aLaMain ? a['origine'] : c.origine.name,
+          'interne': aLaMain ? a['interne'] : c.interne?.name,
+          'nom': a?['nom'] ?? noms[cleMarchand(b.libelle)],
+          if (a != null) ...{
+            'nature': a['nature'],
+            'mois_compte': a['mois_compte'],
+            'note': a['note'],
+            'masquee': a['masquee'],
+            'recurrente': a['recurrente'],
+            'pointee': a['pointee'],
+          },
+          'en_attente': b.enAttente ? 1 : 0,
         });
-        nouvelles++;
+        // Déjà vue en attente la fois d'avant : rien de neuf à annoncer.
+        if (a == null) nouvelles++;
         // Un virement vers ou depuis un livret suivi fait vivre son solde,
-        // s'il est postérieur au solde saisi.
-        final v = c.interne == null ? null : reconnaitreInterne(b.libelle);
+        // s'il est postérieur au solde saisi. Pas tant qu'il est en attente :
+        // il compterait deux fois.
+        final v = c.interne == null || b.enAttente ? null : reconnaitreInterne(b.libelle);
         if (v == null) continue;
         for (final l in livrets) {
           final motif = normaliser(l.motif ?? l.nom);

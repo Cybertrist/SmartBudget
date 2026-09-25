@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="Sur le portail d’Enable Banking. Se connecter : taper son adresse e-mail, Continue, puis ouvrir le lien reçu. Créer l’application, Add a new application : Environment Production, Private key Generate in the browser, Application name SmartBudget, puis coller les valeurs copiées depuis SmartBudget : Allowed redirect URLs https://cybertrist.github.io/SmartBudget/, la description, Privacy URL et Terms URL ; Email for data protection, son adresse. Register : un fichier .pem se télécharge, c’est la clé, à ne jamais renommer. Puis Activate by linking accounts : pays, sa banque, type personal, Link, et l’on valide sur sa banque. L’application est active, en mode restreint gratuit.">
+<title>Sur le portail d’Enable Banking. Se connecter : taper son adresse e-mail, Continue, puis ouvrir le lien reçu. Créer l’application, Add a new application : Environment Production, Private key Generate in the browser, Application name SmartBudget, puis coller les valeurs copiées depuis SmartBudget : Allowed redirect URLs https://cybertrist.github.io/SmartBudget/, la description, Privacy URL et Terms URL ; Email for data protection, son adresse. Register : un fichier .pem se télécharge, c’est la clé, à ne jamais renommer. Puis Activate by linking accounts : pays, sa banque, type personal, Link, et l’on valide sur sa banque. L’application est active, en mode restreint gratuit.</title>
+<defs>
+  <filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <pattern id="grille" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#1ED760" stroke-opacity="0.05"/>
+  </pattern>
+  <pattern id="hachures" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#161D27"/><line x1="0" y1="0" x2="0" y2="10" stroke="#2A3542" stroke-width="4"/>
+  </pattern>
+  <radialGradient id="lueur" cx="50%" cy="0%" r="80%">
+    <stop offset="0" stop-color="#1ED760" stop-opacity="0.10"/><stop offset="1" stop-color="#1ED760" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="1280" height="720" rx="16" fill="#0D1117"/>
+<rect width="1280" height="720" rx="16" fill="url(#grille)"/>
+<rect width="1280" height="720" rx="16" fill="url(#lueur)"/>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">SUR LE PORTAIL D’ENABLE BANKING</text><text x="420" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >Gratuit, pour tes propres comptes. SmartBudget te donne quoi taper et quoi coller.</text><rect x="60" y="96" width="790" height="590" rx="14" fill="#131A24" stroke="#1F2833"/>
+    <path d="M60 140 H850" stroke="#1F2833"/>
+    <circle cx="82" cy="118" r="5.5" fill="#FF6B7A" fill-opacity="0.7"/><circle cx="100" cy="118" r="5.5" fill="#FFC857" fill-opacity="0.7"/><circle cx="118" cy="118" r="5.5" fill="#1ED760" fill-opacity="0.7"/>
+    <rect x="150" y="106" width="680" height="24" rx="12" fill="#0D1117"/>
+    <g transform="translate(160,109) scale(0.62)"><rect x="5" y="12" width="18" height="14" rx="3" fill="none" stroke="#5C6A7A" stroke-width="2"/><path d="M9 12 V8 A5 5 0 0 1 19 8 V12" fill="none" stroke="#5C6A7A" stroke-width="2"/></g><g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.004;0.2;0.20400000000000001;1" values="0;1;1;0;0"/><text x="184" y="123" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >enablebanking.com/sign-in</text></g><g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.196;0.2;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="184" y="123" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >enablebanking.com/cp/applications/new</text></g><g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.616;0.62;0.996;1" values="0;0;1;1;1"/><text x="184" y="123" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >enablebanking.com/cp/applications/a3f9c2e1…</text></g><g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.004;0.2;0.20400000000000001;1" values="0;1;1;0;0"/>
+    <text x="90" y="192" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="800" fill="#F0F4F8" text-anchor="start" >Sign in</text>
+    <text x="90" y="220" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Enter your email, we’ll send you a sign-in link.</text>
+    <rect x="90" y="242" width="360" height="40" rx="8" fill="#0D1117" stroke="#1F2833"/>
+    <clipPath id="frappe1"><rect x="102" y="248" height="28" width="0">
+    <animate attributeName="width" dur="30s" repeatCount="indefinite" keyTimes="0;0.02;0.07;1" values="0;0;123.17999999999999;123.17999999999999"/></rect></clipPath>
+  <g clip-path="url(#frappe1)"><text x="104" y="268" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >toi@exemple.fr</text></g>
+    <rect x="90" y="296" width="140" height="38" rx="19" fill="#3CE0FF" fill-opacity="1" stroke="#3CE0FF" stroke-opacity="1"/>
+  <text x="160" y="319.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="800" fill="#000000" text-anchor="middle" >Continue</text>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.063;0.067;0.097;0.101;1" values="0;0;1;1;0;0"/>
+    <circle cx="160" cy="315" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="160" cy="315" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.085;0.08700000000000001;0.12000000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="30s" repeatCount="indefinite" keyTimes="0;0.085;0.12000000000000001;1" values="10;10;30;30"/>
+  </circle>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.096;0.1;0.2;0.20400000000000001;1" values="0;0;1;1;0;0"/>
+      <rect x="90" y="362" width="730" height="84" rx="12" fill="#3CE0FF" fill-opacity="0.08" stroke="#3CE0FF" stroke-opacity="0.45"/>
+      <path d="M112 386 h34 v26 h-34 z M112 386 l17 13 l17 -13" fill="none" stroke="#3CE0FF" stroke-width="2" stroke-linejoin="round"/>
+      <text x="164" y="398" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >Check your inbox</text>
+      <text x="164" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Ouvre le lien reçu : le compte se crée tout seul la première fois.</text>
+    </g>
+  </g><g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.196;0.2;0.62;0.624;1" values="0;0;1;1;0;0"/>
+    <text x="90" y="186" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="800" fill="#F0F4F8" text-anchor="start" >Add a new application</text>
+    <text x="90" y="230" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Environment</text>
+        <rect x="290" y="208" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.22;0.224;0.25;0.254;1" values="#1F2833;#1F2833;#3CE0FF;#3CE0FF;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.216;0.22;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="230" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >Production</text></g>
+        <text x="90" y="276" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Private key</text>
+        <rect x="290" y="254" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.257;0.261;0.28700000000000003;0.29100000000000004;1" values="#1F2833;#1F2833;#3CE0FF;#3CE0FF;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.253;0.257;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="276" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >Generate in the browser</text></g>
+        <text x="90" y="322" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Application name</text>
+        <rect x="290" y="300" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.294;0.298;0.32399999999999995;0.32799999999999996;1" values="#1F2833;#1F2833;#3CE0FF;#3CE0FF;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.29;0.294;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="322" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >SmartBudget</text></g>
+        <text x="90" y="368" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Allowed redirect URLs</text>
+        <rect x="290" y="346" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.33099999999999996;0.33499999999999996;0.361;0.365;1" values="#1F2833;#1F2833;#1ED760;#1ED760;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.32699999999999996;0.33099999999999996;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="368" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >https://cybertrist.github.io/SmartBudget/</text></g>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.32699999999999996;0.33099999999999996;0.62;0.624;1" values="0;0;1;1;0;0"/><rect x="752" y="353" width="60" height="20" rx="10" fill="#1ED760" fill-opacity="0.14"/><text x="782" y="367" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#1ED760" text-anchor="middle" >collé</text></g><text x="90" y="414" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Application description</text>
+        <rect x="290" y="392" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.368;0.372;0.398;0.402;1" values="#1F2833;#1F2833;#1ED760;#1ED760;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.364;0.368;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="414" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >Application personnelle de suivi de budget…</text></g>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.364;0.368;0.62;0.624;1" values="0;0;1;1;0;0"/><rect x="752" y="399" width="60" height="20" rx="10" fill="#1ED760" fill-opacity="0.14"/><text x="782" y="413" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#1ED760" text-anchor="middle" >collé</text></g><text x="90" y="460" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Email for data protection</text>
+        <rect x="290" y="438" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.405;0.40900000000000003;0.43500000000000005;0.43900000000000006;1" values="#1F2833;#1F2833;#3CE0FF;#3CE0FF;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.401;0.405;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="460" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >toi@exemple.fr</text></g>
+        <text x="90" y="506" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Privacy URL</text>
+        <rect x="290" y="484" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.44199999999999995;0.44599999999999995;0.472;0.476;1" values="#1F2833;#1F2833;#1ED760;#1ED760;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.43799999999999994;0.44199999999999995;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="506" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >https://github.com/Cybertrist/SmartBudget</text></g>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.43799999999999994;0.44199999999999995;0.62;0.624;1" values="0;0;1;1;0;0"/><rect x="752" y="491" width="60" height="20" rx="10" fill="#1ED760" fill-opacity="0.14"/><text x="782" y="505" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#1ED760" text-anchor="middle" >collé</text></g><text x="90" y="552" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Terms URL</text>
+        <rect x="290" y="530" width="530" height="34" rx="8" fill="#0D1117" stroke="#1F2833">
+          <animate attributeName="stroke" dur="30s" repeatCount="indefinite" keyTimes="0;0.479;0.483;0.509;0.513;1" values="#1F2833;#1F2833;#1ED760;#1ED760;#1F2833;#1F2833"/></rect>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.475;0.479;0.62;0.624;1" values="0;0;1;1;0;0"/><text x="302" y="552" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#F0F4F8" text-anchor="start" >https://github.com/Cybertrist/SmartBudget</text></g>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.475;0.479;0.62;0.624;1" values="0;0;1;1;0;0"/><rect x="752" y="537" width="60" height="20" rx="10" fill="#1ED760" fill-opacity="0.14"/><text x="782" y="551" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#1ED760" text-anchor="middle" >collé</text></g>
+    <rect x="90" y="584" width="130" height="38" rx="19" fill="#3CE0FF" fill-opacity="1" stroke="#3CE0FF" stroke-opacity="1"/>
+  <text x="155" y="607.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="800" fill="#000000" text-anchor="middle" >Register</text>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.508;0.512;0.542;0.546;1" values="0;0;1;1;0;0"/>
+    <circle cx="155" cy="603" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="155" cy="603" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.53;0.532;0.5650000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="30s" repeatCount="indefinite" keyTimes="0;0.53;0.5650000000000001;1" values="10;10;30;30"/>
+  </circle>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.546;0.55;0.62;0.624;1" values="0;0;1;1;0;0"/>
+      <rect x="240" y="580" width="580" height="46" rx="10" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6"/>
+      <g transform="translate(254,589)"><circle cx="9" cy="14" r="5" fill="none" stroke="#FFC857" stroke-width="2"/><path d="M14 14 H26 M22 14 V18 M25 14 V17" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/></g>
+      <text x="294" y="601" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#F0F4F8" text-anchor="start" >a3f9c2e1-7b4d-4e0a-9c11-5d2f8e6b7a90.pem</text>
+      <text x="294" y="618" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#FFC857" text-anchor="start" >téléchargé : c’est ta clé, garde ce nom</text>
+    </g>
+  </g><g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.616;0.62;0.996;1" values="0;0;1;1;1"/>
+    <text x="90" y="192" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#F0F4F8" text-anchor="start" >SmartBudget</text>
+    <rect x="240" y="174" width="90" height="24" rx="12" fill="#3CE0FF" fill-opacity="0.1" stroke="#3CE0FF" stroke-opacity="0.45"/>
+  <text x="285" y="189.78" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="800" fill="#3CE0FF" text-anchor="middle" >Production</text>
+    <rect x="340" y="174" width="96" height="24" rx="12" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.45"/>
+  <text x="388" y="189.78" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="800" fill="#FFC857" text-anchor="middle" >Restricted</text>
+    <text x="90" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#8B99A8" text-anchor="start" >Linked accounts</text>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.616;0.62;0.9;0.904;1" values="0;0;1;1;0;0"/><text x="230" y="232" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#F0F4F8" text-anchor="start" >0</text></g>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.896;0.9;0.996;1" values="0;0;1;1;1"/><text x="230" y="232" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" >1 · Crédit Mutuel de Bretagne</text></g>
+    <rect x="90" y="254" width="260" height="40" rx="20" fill="#3CE0FF" fill-opacity="0.1" stroke="#3CE0FF" stroke-opacity="0.45"/>
+  <text x="220" y="278.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="800" fill="#3CE0FF" text-anchor="middle" >Activate by linking accounts</text>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.648;0.652;0.682;0.686;1" values="0;0;1;1;0;0"/>
+    <circle cx="220" cy="274" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="220" cy="274" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.67;0.672;0.7050000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="30s" repeatCount="indefinite" keyTimes="0;0.67;0.7050000000000001;1" values="10;10;30;30"/>
+  </circle>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.6859999999999999;0.69;0.86;0.864;1" values="0;0;1;1;0;0"/>
+      <rect x="130" y="312" width="650" height="270" rx="14" fill="#18212D" stroke="#3CE0FF" stroke-opacity="0.5"/>
+      <text x="156" y="348" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="17" font-weight="800" fill="#F0F4F8" text-anchor="start" >Link accounts</text>
+      
+        <text x="156" y="386" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >Country</text>
+        <rect x="280" y="364" width="340" height="34" rx="8" fill="#0D1117" stroke="#1F2833"/>
+    <text x="292" y="386" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" ></text>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.696;0.7;0.86;0.864;1" values="0;0;1;1;0;0"/><text x="292" y="386" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >France</text></g>
+        <text x="156" y="432" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >ASPSP</text>
+        <rect x="280" y="410" width="340" height="34" rx="8" fill="#0D1117" stroke="#1F2833"/>
+    <text x="292" y="432" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" ></text>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.726;0.73;0.86;0.864;1" values="0;0;1;1;0;0"/><text x="292" y="432" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >Crédit Mutuel de Bretagne</text></g>
+        <text x="156" y="478" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#8B99A8" text-anchor="start" >PSU type</text>
+        <rect x="280" y="456" width="340" height="34" rx="8" fill="#0D1117" stroke="#1F2833"/>
+    <text x="292" y="478" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" ></text>
+        <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.756;0.76;0.86;0.864;1" values="0;0;1;1;0;0"/><text x="292" y="478" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="400" fill="#F0F4F8" text-anchor="start" >personal</text></g>
+      <rect x="156" y="516" width="110" height="38" rx="19" fill="#3CE0FF" fill-opacity="1" stroke="#3CE0FF" stroke-opacity="1"/>
+  <text x="211" y="539.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="800" fill="#000000" text-anchor="middle" >Link</text>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.778;0.782;0.812;0.8160000000000001;1" values="0;0;1;1;0;0"/>
+    <circle cx="211" cy="535" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="211" cy="535" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.8;0.802;0.8350000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="30s" repeatCount="indefinite" keyTimes="0;0.8;0.8350000000000001;1" values="10;10;30;30"/>
+  </circle>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.8109999999999999;0.815;0.86;0.864;1" values="0;0;1;1;0;0"/><text x="286" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#FFC857" text-anchor="start" >→ ta banque s’ouvre : tu valides comme d’habitude</text></g>
+    </g>
+    <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.896;0.9;0.996;1" values="0;0;1;1;1"/>
+      <rect x="90" y="322" width="730" height="80" rx="12" fill="#1ED760" fill-opacity="0.08" stroke="#1ED760" stroke-opacity="0.5"/>
+      <circle cx="126" cy="362" r="15" fill="#1ED760"/>
+      <path d="M119 362 l5 5 l9 -10" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="154" y="357" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >Application active, en mode restreint gratuit.</text>
+      <text x="154" y="377" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#1ED760" text-anchor="start" >Retour dans SmartBudget : Importer la clé.</text>
+    </g>
+  </g><text x="890" y="128" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#5C6A7A" text-anchor="start" letter-spacing="2">À COCHER</text><rect x="890" y="148" width="330" height="76" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="890" y="148" width="330" height="76" rx="12" fill="none" stroke="#1ED760" stroke-opacity="0.55" opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.096;0.1;0.996;1" values="0;0;1;1;1"/></rect>
+      <rect x="908" y="168" width="24" height="24" rx="7" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.096;0.1;0.996;1" values="0;0;1;1;1"/>
+        <rect x="908" y="168" width="24" height="24" rx="7" fill="#1ED760"/>
+        <path d="M914 180 l4 4 l8 -9" fill="none" stroke="#000000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="948" y="180" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Se connecter par e-mail</text>
+      <text x="948" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >le lien reçu, ouvert dans le navigateur</text><rect x="890" y="240" width="330" height="76" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="890" y="240" width="330" height="76" rx="12" fill="none" stroke="#1ED760" stroke-opacity="0.55" opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.296;0.3;0.996;1" values="0;0;1;1;1"/></rect>
+      <rect x="908" y="260" width="24" height="24" rx="7" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.296;0.3;0.996;1" values="0;0;1;1;1"/>
+        <rect x="908" y="260" width="24" height="24" rx="7" fill="#1ED760"/>
+        <path d="M914 272 l4 4 l8 -9" fill="none" stroke="#000000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="948" y="272" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Créer l’application</text>
+      <text x="948" y="292" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Production, clé générée dans le navigateur</text><rect x="890" y="332" width="330" height="76" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="890" y="332" width="330" height="76" rx="12" fill="none" stroke="#1ED760" stroke-opacity="0.55" opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.476;0.48;0.996;1" values="0;0;1;1;1"/></rect>
+      <rect x="908" y="352" width="24" height="24" rx="7" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.476;0.48;0.996;1" values="0;0;1;1;1"/>
+        <rect x="908" y="352" width="24" height="24" rx="7" fill="#1ED760"/>
+        <path d="M914 364 l4 4 l8 -9" fill="none" stroke="#000000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="948" y="364" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Coller les valeurs copiées</text>
+      <text x="948" y="384" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >adresse de retour, description, liens</text><rect x="890" y="424" width="330" height="76" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="890" y="424" width="330" height="76" rx="12" fill="none" stroke="#1ED760" stroke-opacity="0.55" opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.556;0.56;0.996;1" values="0;0;1;1;1"/></rect>
+      <rect x="908" y="444" width="24" height="24" rx="7" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.556;0.56;0.996;1" values="0;0;1;1;1"/>
+        <rect x="908" y="444" width="24" height="24" rx="7" fill="#1ED760"/>
+        <path d="M914 456 l4 4 l8 -9" fill="none" stroke="#000000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="948" y="456" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Register</text>
+      <text x="948" y="476" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >le fichier .pem se télécharge</text><rect x="890" y="516" width="330" height="76" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="890" y="516" width="330" height="76" rx="12" fill="none" stroke="#1ED760" stroke-opacity="0.55" opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.896;0.9;0.996;1" values="0;0;1;1;1"/></rect>
+      <rect x="908" y="536" width="24" height="24" rx="7" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="30s" repeatCount="indefinite" keyTimes="0;0.896;0.9;0.996;1" values="0;0;1;1;1"/>
+        <rect x="908" y="536" width="24" height="24" rx="7" fill="#1ED760"/>
+        <path d="M914 548 l4 4 l8 -9" fill="none" stroke="#000000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="948" y="548" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Relier son compte</text>
+      <text x="948" y="568" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >sa banque, type personal, puis Link</text><text x="890" y="660" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#FFC857" text-anchor="start" >Ne renomme jamais le fichier .pem :</text><text x="890" y="680" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#FFC857" text-anchor="start" >son nom est l’identifiant de ton application.</text>
+</svg>

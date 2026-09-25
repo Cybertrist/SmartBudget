@@ -207,11 +207,12 @@ class _Repartition extends ConsumerWidget {
     // Toucher le centre de l'anneau ouvre les opérations : à droite de la
     // liste sur l'écran déplié, en page sur téléphone.
     void voirOperations() {
+      final chemin = entrees ? '/operations/entrees' : '/operations/sorties';
       final volet = VoletScope.de(context);
       if (volet != null) {
-        volet.pousser(1, '/operations');
+        volet.pousser(1, chemin);
       } else {
-        context.push('/operations');
+        context.push(chemin);
       }
     }
 
@@ -252,6 +253,14 @@ class _Repartition extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 2, bottom: 8),
               child: _PiluleInterne(montant: bilan.virementsInternes),
+            ),
+          ),
+        // Les remboursements reçus : de l'argent qui revient, pas un revenu.
+        if (liste && entrees && bilan.rembourses > 0)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2, bottom: 8),
+              child: _PiluleRembourses(montant: bilan.rembourses),
             ),
           ),
         ],
@@ -575,4 +584,29 @@ class _Recurrences extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Ce qui est revenu en remboursements, laissé hors des entrées.
+class _PiluleRembourses extends StatelessWidget {
+  const _PiluleRembourses({required this.montant});
+
+  final int montant;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+        decoration: ShapeDecoration(
+          color: const Color(0xFF1A1A1A),
+          shape: StadiumBorder(side: BorderSide(color: AppColors.vert.withValues(alpha: 0.25))),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(iconeDe('currency_exchange'), size: 14, color: AppColors.vert),
+            const SizedBox(width: 7),
+            Text('Hors remboursements · ${euros(montant)} reçus',
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire, fontFeatures: chiffres)),
+          ],
+        ),
+      );
 }

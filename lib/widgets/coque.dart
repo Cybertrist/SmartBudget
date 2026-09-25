@@ -9,6 +9,7 @@ import '../config/theme.dart';
 import '../banque/carte_banque.dart';
 import '../banque/connexion.dart';
 import '../banque/veille.dart';
+import '../security/lock_state.dart';
 import 'base.dart';
 import 'volets.dart';
 
@@ -32,9 +33,10 @@ class Coque extends ConsumerStatefulWidget {
   ConsumerState<Coque> createState() => _EtatCoque();
 }
 
-/// À l'ouverture : terminer une autorisation revenue de la banque, sinon
-/// synchroniser si la dernière fois date de plus d'une heure. Le retour de
-/// la banque rouvre aussi l'application : on le guette à chaque reprise.
+/// À chaque ouverture et à chaque retour dans l'application : terminer une
+/// autorisation revenue de la banque, sinon synchroniser si la dernière
+/// fois date de plus de dix minutes. La banque limite le nombre d'accès
+/// par jour : rouvrir l'appli dix fois de suite ne doit pas les épuiser.
 class _EtatCoque extends ConsumerState<Coque> with WidgetsBindingObserver {
   @override
   void initState() {
@@ -56,17 +58,24 @@ class _EtatCoque extends ConsumerState<Coque> with WidgetsBindingObserver {
 
   Future<void> _auRetour({bool demarrage = false}) async {
     if (!mounted) return;
-    await terminerSiRetour(context, ref);
-    if (!demarrage || !mounted) return;
+    // Chaque étape à part : une qui échoue n'empêche pas les suivantes. La
+    // synchronisation passe avant la veille, dont la demande de permission
+    // attend une réponse.
+    try {
+      await terminerSiRetour(context, ref);
+    } catch (_) {}
+    if (!mounted || !EtatVerrou.instance.isUnlocked) return;
     final e = await const ConnexionBanque().etat();
-    final vieille = e.derniere == null || DateTime.now().difference(e.derniere!) > const Duration(hours: 1);
-    if (e.relie) {
+    final vieille = e.derniere == null || DateTime.now().difference(e.derniere!) > const Duration(minutes: 10);
+    if (e.relie && vieille && mounted) await synchroniser(context, ref, silencieux: true);
+    if (e.relie && demarrage) {
       // La veille du solde tourne tant que le compte est relié ; la demande
       // de permission ne s'affiche qu'une fois, Android s'en souvient.
-      await Veille.planifier();
-      await Veille.demanderPermission();
+      try {
+        await Veille.planifier();
+        await Veille.demanderPermission();
+      } catch (_) {}
     }
-    if (e.relie && vieille && mounted) await synchroniser(context, ref, silencieux: true);
   }
 
   @override

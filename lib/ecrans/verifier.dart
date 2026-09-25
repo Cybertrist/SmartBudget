@@ -129,7 +129,7 @@ class _LigneAVerifier extends ConsumerWidget {
                     children: [
                       Text(o.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 2),
-                      Text('${jour(o.le)} · ${o.libelle.toUpperCase()}',
+                      Text('${jour(o.le)}${o.enAttente ? ' · en attente' : ''} · ${o.libelle.toUpperCase()}',
                           maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
                     ],
                   ),

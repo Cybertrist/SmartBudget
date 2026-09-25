@@ -6,7 +6,9 @@ import '../config/theme.dart';
 import '../providers/donnees.dart';
 import '../security/lock_state.dart';
 import '../widgets/base.dart';
+import 'choix_banque.dart';
 import 'connexion.dart';
+import 'guide_cle.dart';
 import 'enable_banking.dart';
 
 /// L'état de la connexion, relu à chaque écriture.
@@ -15,23 +17,39 @@ final etatBanqueProvider = FutureProvider<EtatBanque>((ref) async {
   return const ConnexionBanque().etat();
 });
 
+/// Vrai pendant un échange avec la banque : l'accueil l'affiche, et une
+/// seconde demande ne relance pas un échange déjà parti.
+final synchroEnCours = ValueNotifier<bool>(false);
+
 /// Synchronise, en retenant le verrou le temps de l'échange, et le dit.
+/// Ce qui sert après l'échange (les données, le messager) est pris avant :
+/// l'écran qui l'a lancée peut avoir été quitté entre-temps.
 Future<void> synchroniser(BuildContext context, WidgetRef ref, {bool silencieux = false}) async {
   final messager = ScaffoldMessenger.of(context);
+  final donnees = ProviderScope.containerOf(context, listen: false);
+  if (synchroEnCours.value) {
+    if (!silencieux) messager.showSnackBar(const SnackBar(content: Text('Synchronisation déjà en cours…')));
+    return;
+  }
+  synchroEnCours.value = true;
   if (!silencieux) messager.showSnackBar(const SnackBar(content: Text('Synchronisation avec la banque…')));
   try {
     final n = await EtatVerrou.instance.retenir(() => const ConnexionBanque().synchroniser());
-    rafraichir(ref);
+    donnees.read(versionProvider.notifier).state++;
     messager.hideCurrentSnackBar();
     if (!silencieux || n > 0) {
       messager.showSnackBar(SnackBar(content: Text(n == 0 ? 'Tout est à jour.' : '${pluriel(n, 'nouvelle opération', 'nouvelles opérations')}.')));
     }
   } on ErreurBanque catch (e) {
     messager.hideCurrentSnackBar();
-    if (!silencieux) messager.showSnackBar(SnackBar(content: Text(e.message)));
+    // Même lancée seule, une synchronisation qui échoue le dit : sinon
+    // rien ne distingue « rien de neuf » de « rien n'est arrivé ».
+    messager.showSnackBar(SnackBar(content: Text(e.message)));
   } catch (e) {
     messager.hideCurrentSnackBar();
-    if (!silencieux) messager.showSnackBar(SnackBar(content: Text('Échec de la synchronisation : $e')));
+    messager.showSnackBar(SnackBar(content: Text('Échec de la synchronisation : $e')));
+  } finally {
+    synchroEnCours.value = false;
   }
 }
 
@@ -41,9 +59,10 @@ Future<void> terminerSiRetour(BuildContext context, WidgetRef ref) async {
   final lien = await connexion.lienEnAttente();
   if (lien == null || !context.mounted) return;
   final messager = ScaffoldMessenger.of(context);
+  final donnees = ProviderScope.containerOf(context, listen: false);
   try {
     await connexion.terminer(lien);
-    rafraichir(ref);
+    donnees.read(versionProvider.notifier).state++;
     if (context.mounted) await synchroniser(context, ref);
   } on ErreurBanque catch (e) {
     messager.showSnackBar(SnackBar(content: Text(e.message)));
@@ -59,8 +78,10 @@ class CarteBanque extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final e = ref.watch(etatBanqueProvider).value ?? const EtatBanque();
     final (texte, couleur) = switch (e) {
-      EtatBanque(cle: false) => ('Importe la clé d\'Enable Banking pour relier ton compte.', AppColors.texteSecondaire),
+      EtatBanque(cle: false, banque: null) => ('Choisis ta banque, puis SmartBudget te guide pour la relier.', AppColors.texteSecondaire),
+      EtatBanque(cle: false) => ('Il reste à obtenir ta clé d\'Enable Banking : touche Connecter.', AppColors.texteSecondaire),
       EtatBanque(relie: false, jusquau: != null) => ('L\'accès a expiré : reconnecte le compte.', AppColors.attention),
+      EtatBanque(banque: null) => ('Clé importée. Choisis ta banque, puis relie le compte.', AppColors.texteSecondaire),
       EtatBanque(relie: false) => ('Clé importée. Il reste à relier le compte.', AppColors.texteSecondaire),
       _ => (
           '${e.derniere == null ? 'Relié' : 'Synchronisé le ${jourCourt(e.derniere!)}'} · accès encore ${pluriel(e.joursRestants ?? 0, 'jour')}',
@@ -77,6 +98,25 @@ class CarteBanque extends ConsumerWidget {
       }
     }
 
+    // La clé s'obtient sur le portail d'Enable Banking ; une fois
+    // importée, la liaison du compte s'enchaîne.
+    Future<void> connecter(Banque b) async {
+      if (await obtenirCle(context, b)) await agir(const ConnexionBanque().autoriser);
+    }
+
+    Future<void> connecterChoisie() async {
+      final pays = await const ConnexionBanque().pays();
+      if (context.mounted && e.banque != null) await connecter(Banque(nom: e.banque!, pays: pays));
+    }
+
+    Future<void> changerBanque() async {
+      final b = await choisirBanque(context, actuelle: e.banque);
+      if (b == null) return;
+      await agir(() => const ConnexionBanque().choisirBanque(b));
+      // Sans clé encore, la connexion commence aussitôt.
+      if (!e.cle && context.mounted) await connecter(b);
+    }
+
     return Carte(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,7 +129,7 @@ class CarteBanque extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Crédit Mutuel de Bretagne', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                    Text(e.banque ?? 'Ta banque', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 3),
                     Text(texte, style: TextStyle(fontSize: 12.5, color: couleur)),
                   ],
@@ -102,11 +142,16 @@ class CarteBanque extends ConsumerWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              if (!e.cle)
-                _Bouton(texte: 'Importer la clé', icone: 'key', onTap: () => agir(const ConnexionBanque().importerCle))
-              else if (!e.relie)
-                _Bouton(texte: 'Relier le compte', icone: 'link', onTap: () => agir(const ConnexionBanque().autoriser))
-              else ...[
+              if (e.banque == null)
+                _Bouton(texte: 'Choisir la banque', icone: 'account_balance', onTap: changerBanque)
+              else if (!e.cle) ...[
+                _Bouton(texte: 'Connecter', icone: 'link', onTap: connecterChoisie),
+                _Bouton(texte: 'Changer', icone: 'swap_horiz', discret: true, onTap: changerBanque),
+              ] else if (!e.relie) ...[
+                _Bouton(texte: 'Relier le compte', icone: 'link', onTap: () => agir(const ConnexionBanque().autoriser)),
+                _Bouton(texte: 'Changer', icone: 'swap_horiz', discret: true, onTap: changerBanque),
+                _Bouton(texte: 'Nouvelle clé', icone: 'key', discret: true, onTap: connecterChoisie),
+              ] else ...[
                 _Bouton(texte: 'Synchroniser', icone: 'sync', onTap: () => synchroniser(context, ref)),
                 _Bouton(
                   texte: 'Délier',

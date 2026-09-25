@@ -120,12 +120,17 @@ class OperationBrute {
     required this.le,
     required this.libelle,
     required this.montantCentimes,
+    this.enAttente = false,
   });
 
   final String uidBanque;
   final DateTime le;
   final String libelle;
   final int montantCentimes;
+
+  /// Pas encore comptabilisée : la banque la montre, mais son libellé et
+  /// sa référence changeront quand elle passera.
+  final bool enAttente;
 }
 
 class Operation {
@@ -147,6 +152,7 @@ class Operation {
     this.pointee = false,
     this.nom,
     this.especes = false,
+    this.enAttente = false,
   });
 
   final int id;
@@ -181,6 +187,9 @@ class Operation {
   /// Payée en espèces, saisie à la main : elle ne vient pas de la banque.
   final bool especes;
 
+  /// Pas encore comptabilisée par la banque.
+  final bool enAttente;
+
   /// Ce qu'on affiche : le nom choisi, sinon celui tiré du libellé.
   String get titre => (nom == null || nom!.isEmpty) ? joli(libelle) : nom!;
 
@@ -204,6 +213,7 @@ class Operation {
         pointee: (l['pointee'] as int? ?? 0) == 1,
         nom: l['nom'] as String?,
         especes: (l['especes'] as int? ?? 0) == 1,
+        enAttente: (l['en_attente'] as int? ?? 0) == 1,
       );
 }
 

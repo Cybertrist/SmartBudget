@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -13,10 +14,13 @@ import 'veille.dart';
 
 /// Ce que l'application sait de sa connexion à la banque.
 class EtatBanque {
-  const EtatBanque({this.cle = false, this.compte, this.jusquau, this.derniere});
+  const EtatBanque({this.cle = false, this.banque, this.compte, this.jusquau, this.derniere});
 
   /// La clé privée d'Enable Banking a été importée.
   final bool cle;
+
+  /// Le nom de la banque choisie.
+  final String? banque;
 
   /// Le compte courant relié chez Enable Banking.
   final String? compte;
@@ -45,19 +49,29 @@ class ConnexionBanque {
   static const _reglages = DepotReglages();
   static const _cleChiffree = 'banque_cle';
   static const _appId = 'banque_app_id';
+  static const _banque = 'banque_nom';
+  static const _pays = 'banque_pays';
+  static const _dureeMax = 'banque_duree_max';
+  static const _liste = 'banques_liste';
+  static const _listeLe = 'banques_liste_le';
   static const _compte = 'banque_compte';
   static const _jusquau = 'banque_jusquau';
   static const _derniere = 'banque_derniere';
   static const _etat = 'banque_etat';
   static const _soldeLe = 'banque_solde_le';
   static const _canal = MethodChannel('smartbudget/banque');
+  static const _historique = 'Crédit Mutuel de Bretagne';
 
   Future<EtatBanque> etat() async {
     final jusquau = await _reglages.lire(_jusquau);
     final derniere = await _reglages.lire(_derniere);
+    final compte = await _reglages.lire(_compte);
     return EtatBanque(
       cle: await _reglages.lire(_cleChiffree) != null,
-      compte: await _reglages.lire(_compte),
+      // Avant le choix de la banque, seul le Crédit Mutuel de Bretagne
+      // pouvait être relié.
+      banque: await _reglages.lire(_banque) ?? (compte != null ? _historique : null),
+      compte: compte,
       jusquau: jusquau == null ? null : DateTime.tryParse(jusquau),
       derniere: derniere == null ? null : DateTime.tryParse(derniere),
     );
@@ -85,9 +99,7 @@ class ConnexionBanque {
       if (id == null) {
         throw const ErreurBanque('Le nom du fichier ne contient pas l\'identifiant de l\'application : garde le nom donné par Enable Banking.');
       }
-      final nonce = List<int>.generate(12, (_) => Random.secure().nextInt(256));
-      final boite = await AesGcm.with256bits().encrypt(utf8.encode(pem), secretKey: await KeyVault.instance.banqueKey(), nonce: nonce);
-      await _reglages.ecrire(_cleChiffree, base64Encode([...nonce, ...boite.cipherText, ...boite.mac.bytes]));
+      await _reglages.ecrire(_cleChiffree, await _chiffrer(pem));
       await _reglages.ecrire(_appId, id);
     } finally {
       if (await fichier.exists()) await fichier.delete();
@@ -98,20 +110,93 @@ class ConnexionBanque {
     final chiffree = await _reglages.lire(_cleChiffree);
     final id = await _reglages.lire(_appId);
     if (chiffree == null || id == null) throw const ErreurBanque('Importe d\'abord la clé d\'Enable Banking.');
+    return EnableBanking(appId: id, pem: await _dechiffrer(chiffree));
+  }
+
+  /// Une clé, chiffrée en AES-GCM par sa propre clé, dérivée de la clé
+  /// maîtresse.
+  Future<String> _chiffrer(String pem) async {
+    final nonce = List<int>.generate(12, (_) => Random.secure().nextInt(256));
+    final boite = await AesGcm.with256bits().encrypt(utf8.encode(pem), secretKey: await KeyVault.instance.banqueKey(), nonce: nonce);
+    return base64Encode([...nonce, ...boite.cipherText, ...boite.mac.bytes]);
+  }
+
+  Future<String> _dechiffrer(String chiffree) async {
     final o = base64Decode(chiffree);
     final boite = SecretBox(o.sublist(12, o.length - 16), nonce: o.sublist(0, 12), mac: Mac(o.sublist(o.length - 16)));
-    final pem = utf8.decode(await AesGcm.with256bits().decrypt(boite, secretKey: await KeyVault.instance.banqueKey()));
-    return EnableBanking(appId: id, pem: pem);
+    return utf8.decode(await AesGcm.with256bits().decrypt(boite, secretKey: await KeyVault.instance.banqueKey()));
   }
+
+  // ---------------------------------------------------------------- banque
+
+  /// Toutes les banques, pour la liste du choix. Enable Banking met
+  /// plusieurs secondes à la donner : elle est gardée ici, rendue tout de
+  /// suite, et remise à jour en silence une fois par semaine.
+  Future<List<Banque>> banques() async {
+    final gardee = await _reglages.lire(_liste);
+    if (gardee == null) return _telechargerBanques();
+    final le = DateTime.tryParse(await _reglages.lire(_listeLe) ?? '');
+    if (le == null || DateTime.now().difference(le) > const Duration(days: 7)) {
+      unawaited(_telechargerBanques().then((_) {}, onError: (_) {}));
+    }
+    return [
+      for (final ligne in gardee.split('\n'))
+        if (ligne.split('\t') case [final nom, final pays, final duree])
+          Banque(nom: nom, pays: pays, dureeMax: switch (int.tryParse(duree)) {
+            final int s => Duration(seconds: s),
+            null => null,
+          }),
+    ];
+  }
+
+  Future<List<Banque>> _telechargerBanques() async {
+    final liste = await EnableBanking.banques();
+    await _reglages.ecrire(_liste, [for (final b in liste) '${b.nom}\t${b.pays}\t${b.dureeMax?.inSeconds ?? ''}'].join('\n'));
+    await _reglages.ecrire(_listeLe, DateTime.now().toIso8601String());
+    return liste;
+  }
+
+  /// Retient la banque choisie. Changer de banque oublie le compte relié.
+  Future<void> choisirBanque(Banque b) async {
+    final avant = (await etat()).banque;
+    if (avant != null && avant != b.nom) await deconnecter();
+    await _retenir(b);
+  }
+
+  Future<void> _retenir(Banque b) async {
+    await _reglages.ecrire(_banque, b.nom);
+    await _reglages.ecrire(_pays, b.pays);
+    await _reglages.ecrire(_dureeMax, b.dureeMax?.inSeconds.toString());
+  }
+
+  /// Le pays de la banque choisie, la France sinon.
+  Future<String> pays() async => await _reglages.lire(_pays) ?? 'FR';
 
   // ---------------------------------------------------------- autorisation
 
   /// Ouvre la page de la banque. Au retour, [terminer] reçoit le lien.
   Future<void> autoriser() async {
     final client = await _client();
+    var banque = await _reglages.lire(_banque);
+    if (banque == null && await _reglages.lire(_compte) != null) {
+      // Un compte relié avant le choix de la banque : le Crédit Mutuel de
+      // Bretagne, dont le nom exact se cherche dans la liste.
+      final b = (await banques()).where((b) => b.pays == 'FR').where((b) => b.nom.toLowerCase().contains('bretagne') && b.nom.toLowerCase().contains('mutuel'));
+      if (b.isNotEmpty) {
+        await _retenir(b.first);
+        banque = b.first.nom;
+      }
+    }
+    if (banque == null) throw const ErreurBanque('Choisis d\'abord ta banque.');
+    final duree = int.tryParse(await _reglages.lire(_dureeMax) ?? '');
     final etat = base64Url.encode(List<int>.generate(16, (_) => Random.secure().nextInt(256)));
     await _reglages.ecrire(_etat, etat);
-    final url = await client.autoriser(banque: await client.nomBanque(), etat: etat);
+    final url = await client.autoriser(
+      banque: banque,
+      pays: await pays(),
+      dureeMax: duree == null ? null : Duration(seconds: duree),
+      etat: etat,
+    );
     await EnableBanking.ouvrirLien(url);
   }
 

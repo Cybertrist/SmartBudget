@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 
 import '../domaine/modeles.dart';
 import 'rs256.dart';
 
-/// Le client d'Enable Banking, l'agrégateur qui lit le compte au Crédit
-/// Mutuel de Bretagne par la DSP2.
+/// Le client d'Enable Banking, l'agrégateur qui lit le compte courant par
+/// la DSP2, dans la banque choisie.
 ///
 /// Chaque requête porte un JWT signé en RS256 avec la clé privée de
 /// l'application, par pointycastle : en Dart, pour que la vérification du
@@ -65,23 +66,53 @@ class EnableBanking {
     }
   }
 
-  /// Le nom exact de la banque chez Enable Banking, cherché dans sa liste
-  /// plutôt qu'écrit en dur.
-  Future<String> nomBanque() async {
-    final r = await _requete('GET', '/aspsps', parametres: {'country': 'FR'}) as Map<String, dynamic>;
-    final noms = [for (final a in r['aspsps'] as List) (a as Map)['name'] as String];
-    return noms.firstWhere(
-      (n) => n.toLowerCase().contains('bretagne') && n.toLowerCase().contains('mutuel'),
-      orElse: () => throw const ErreurBanque('Crédit Mutuel de Bretagne introuvable chez Enable Banking.'),
-    );
+  /// Les banques qu'Enable Banking sait lire pour un particulier, tous
+  /// pays confondus, par ordre alphabétique. La liste publique du portail :
+  /// elle ne demande pas de clé, on choisit donc sa banque avant d'en avoir
+  /// une.
+  static Future<List<Banque>> banques() async {
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 20);
+    try {
+      final reponse = await (await client.getUrl(Uri.https('enablebanking.com', '/api/aspsps'))).close().timeout(const Duration(seconds: 40));
+      final texte = await reponse.transform(utf8.decoder).join();
+      if (reponse.statusCode >= 400) throw ErreurBanque.depuis(reponse.statusCode, texte);
+      // Trois mégaoctets de JSON : lus à côté, pour que l'écran reste fluide.
+      return await Isolate.run(() => lireBanques(texte));
+    } on SocketException {
+      throw const ErreurBanque('Pas de connexion à Internet.');
+    } finally {
+      client.close();
+    }
+  }
+
+  /// La liste des banques, tirée de la réponse d'Enable Banking.
+  static List<Banque> lireBanques(String texte) {
+    final r = jsonDecode(texte) as Map<String, dynamic>;
+    final liste = [
+      for (final a in (r['aspsps'] as List? ?? const []).cast<Map>())
+        if ((a['psu_types'] as List?)?.contains('personal') ?? true)
+          Banque(
+            nom: a['name'] as String,
+            pays: a['country'] as String? ?? '',
+            logo: a['logo'] as String?,
+            dureeMax: switch (a['maximum_consent_validity']) {
+              final int s when s > 0 => Duration(seconds: s),
+              _ => null,
+            },
+          ),
+    ];
+    return liste..sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
   }
 
   /// Ouvre une demande d'autorisation : rend l'adresse où l'utilisateur
-  /// se connecte à sa banque. Le consentement dure 180 jours.
-  Future<String> autoriser({required String banque, required String etat}) async {
+  /// se connecte à sa banque. Le consentement dure 180 jours, ou moins si
+  /// la banque n'en accorde pas autant.
+  Future<String> autoriser({required String banque, required String pays, Duration? dureeMax, required String etat}) async {
+    var duree = const Duration(days: 180);
+    if (dureeMax != null && dureeMax < duree) duree = dureeMax;
     final r = await _requete('POST', '/auth', corps: {
-      'access': {'valid_until': DateTime.now().toUtc().add(const Duration(days: 180)).toIso8601String()},
-      'aspsp': {'name': banque, 'country': 'FR'},
+      'access': {'valid_until': DateTime.now().toUtc().add(duree).toIso8601String()},
+      'aspsp': {'name': banque, 'country': pays},
       'state': etat,
       'redirect_url': redirection,
       'psu_type': 'personal',
@@ -123,20 +154,39 @@ class EnableBanking {
     return _centimes((pris['balance_amount'] as Map)['amount']);
   }
 
-  /// Les opérations comptabilisées depuis [depuis], page après page. Les
-  /// opérations en attente sont laissées de côté : leur libellé et leur
-  /// référence changent souvent quand elles passent.
+  /// Les opérations depuis [depuis], page après page : les comptabilisées,
+  /// puis celles en attente, un paiement par carte du jour que le solde
+  /// compte déjà. Une banque qui ne donne pas les secondes rend les
+  /// premières seules.
   Future<List<OperationBrute>> operations(String compte, DateTime depuis) async {
+    final sortie = await _page(compte, depuis, 'BOOK');
+    try {
+      // Deux cafés au même prix le même jour ont la même empreinte : la
+      // seconde prend un numéro.
+      final vues = <String, int>{};
+      for (final o in await _page(compte, depuis, 'PDNG')) {
+        final n = vues[o.uidBanque] = (vues[o.uidBanque] ?? 0) + 1;
+        sortie.add(n == 1
+            ? o
+            : OperationBrute(uidBanque: '${o.uidBanque}-$n', le: o.le, libelle: o.libelle, montantCentimes: o.montantCentimes, enAttente: true));
+      }
+    } on ErreurBanque {
+      // Pas d'opérations en attente chez cette banque.
+    }
+    return sortie;
+  }
+
+  Future<List<OperationBrute>> _page(String compte, DateTime depuis, String statut) async {
     final sortie = <OperationBrute>[];
     String? suite;
     do {
       final r = await _requete('GET', '/accounts/$compte/transactions', parametres: {
         'date_from': depuis.toIso8601String().substring(0, 10),
-        'transaction_status': 'BOOK',
+        'transaction_status': statut,
         'continuation_key': ?suite,
       }) as Map<String, dynamic>;
       for (final t in (r['transactions'] as List? ?? const [])) {
-        final o = _operation(t as Map);
+        final o = _operation(t as Map, enAttente: statut == 'PDNG');
         if (o != null) sortie.add(o);
       }
       suite = r['continuation_key'] as String?;
@@ -144,7 +194,7 @@ class EnableBanking {
     return sortie;
   }
 
-  static OperationBrute? _operation(Map t) {
+  static OperationBrute? _operation(Map t, {bool enAttente = false}) {
     final montant = _centimes((t['transaction_amount'] as Map?)?['amount']);
     final date = (t['booking_date'] ?? t['value_date'] ?? t['transaction_date']) as String?;
     if (montant == null || date == null) return null;
@@ -156,8 +206,12 @@ class EnableBanking {
     final nom = libelle.isNotEmpty ? libelle : (tiers?['name'] as String? ?? 'Opération');
     // La référence de la banque, sinon une empreinte stable de l'opération :
     // une synchronisation relancée ne doit rien doubler.
-    final uid = (t['entry_reference'] ?? t['transaction_id']) as String? ?? 'eb-$date-$montant-${nom.hashCode}';
-    return OperationBrute(uidBanque: uid, le: DateTime.parse(date), libelle: nom, montantCentimes: signe * montant.abs());
+    // En attente, la référence change au passage : l'empreinte suffit,
+    // l'opération est de toute façon remplacée à chaque synchronisation.
+    final uid = enAttente
+        ? 'attente-$date-${signe * montant.abs()}-$nom'
+        : (t['entry_reference'] ?? t['transaction_id']) as String? ?? 'eb-$date-$montant-${nom.hashCode}';
+    return OperationBrute(uidBanque: uid, le: DateTime.parse(date), libelle: nom, montantCentimes: signe * montant.abs(), enAttente: enAttente);
   }
 
   static int? _centimes(Object? montant) {
@@ -175,6 +229,23 @@ class Session {
   final String id;
   final DateTime jusquau;
   final List<CompteBanque> comptes;
+}
+
+/// Une banque de la liste d'Enable Banking.
+class Banque {
+  const Banque({required this.nom, required this.pays, this.logo, this.dureeMax});
+
+  /// Le nom exact attendu par Enable Banking.
+  final String nom;
+
+  /// Le code du pays, sur deux lettres.
+  final String pays;
+
+  /// L'adresse du logo, chez Enable Banking.
+  final String? logo;
+
+  /// La durée d'accès la plus longue que la banque accorde.
+  final Duration? dureeMax;
 }
 
 class CompteBanque {

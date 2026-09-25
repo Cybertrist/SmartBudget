@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../config/format.dart';
 import '../config/theme.dart';
+import '../domaine/bilan.dart';
 import '../domaine/modeles.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
@@ -13,9 +14,13 @@ import 'epargne.dart';
 /// Toutes les opérations du mois, jour par jour. Sur l'écran déplié, elles
 /// occupent le volet à côté du mois : ce que l'accueil ne montre pas déjà.
 class EcranOperations extends ConsumerStatefulWidget {
-  const EcranOperations({super.key, this.dansVolet = false});
+  const EcranOperations({super.key, this.dansVolet = false, this.genre});
 
   final bool dansVolet;
+
+  /// Seulement les entrées, ou seulement les sorties, telles que l'analyse
+  /// les compte : ouvertes depuis le centre de son anneau.
+  final Genre? genre;
 
   @override
   ConsumerState<EcranOperations> createState() => _EtatOperations();
@@ -47,8 +52,9 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
     final periode = ref.watch(libellePeriodeProvider);
     final categories = ref.watch(categoriesProvider);
     if (!categories.hasValue) return const Center(child: CircularProgressIndicator());
-    if (ops.hasValue) _derniers = ops.value!;
     final cats = categories.value!;
+    final genre = widget.genre;
+    if (ops.hasValue) _derniers = genre == null ? ops.value! : ops.value!.where((o) => compteDans(genre, o, cats)).toList();
 
     final jours = <DateTime, List<Operation>>{};
     for (final o in _derniers) {
@@ -58,7 +64,11 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
     final liste = ListView(
       padding: const EdgeInsets.only(bottom: 40),
       children: [
-        EnTetePage(surtitre: recherche ? 'Toutes les opérations' : periode, titre: 'Opérations'),
+        EnTetePage(surtitre: recherche ? 'Toutes les opérations' : periode, titre: switch (genre) {
+          Genre.revenu => 'Entrées',
+          Genre.depense => 'Sorties',
+          _ => 'Opérations',
+        }),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
           child: Row(

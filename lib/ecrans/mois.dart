@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../banque/carte_banque.dart';
+import '../config/essais.dart';
 import '../config/format.dart';
 import '../config/theme.dart';
 import '../domaine/bilan.dart';
@@ -157,13 +159,23 @@ class _Contenu extends ConsumerWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     if (courant.soldeLe != null)
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(iconeDe('sync'), size: 14, color: AppColors.texteDiscret),
-                          const SizedBox(width: 5),
-                          Text('Mis à jour le ${jourCourt(courant.soldeLe!)}', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
-                        ],
+                      // Pendant l'échange avec la banque, la ligne le dit.
+                      ValueListenableBuilder(
+                        valueListenable: synchroEnCours,
+                        builder: (_, enCours, _) => Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (enCours)
+                              const SizedBox.square(dimension: 12, child: CircularProgressIndicator(strokeWidth: 1.6, color: AppColors.texteDiscret))
+                            else
+                              Icon(iconeDe('sync'), size: 14, color: AppColors.texteDiscret),
+                            const SizedBox(width: 5),
+                            Text(
+                              enCours ? 'Synchronisation…' : 'Mis à jour le ${jourCourt(courant.soldeLe!)}',
+                              style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret),
+                            ),
+                          ],
+                        ),
                       ),
                     if (aVerifier > 0)
                     Material(
@@ -212,7 +224,7 @@ class _Contenu extends ConsumerWidget {
                     },
                     nom: c.nom,
                     detail: switch (c.nature) {
-                      NatureCompte.courant => 'Crédit Mutuel de Bretagne',
+                      NatureCompte.courant => ref.watch(etatBanqueProvider).value?.banque ?? (modeDemo ? 'Crédit Mutuel de Bretagne' : 'Compte bancaire'),
                       NatureCompte.livret => 'Livret d\'épargne',
                       NatureCompte.portefeuille => 'Espèces',
                     },
