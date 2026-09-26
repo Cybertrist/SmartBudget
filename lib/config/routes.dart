@@ -95,7 +95,7 @@ final router = GoRouter(
     GoRoute(path: '/livret/nouveau', builder: (_, _) => const EcranNouveauLivret()),
     GoRoute(path: '/internes', builder: (_, _) => const _Pleine(EcranInternes())),
     GoRoute(path: '/banques', builder: (_, etat) => _Pleine(EcranBanques(actuelle: etat.extra as String?))),
-    GoRoute(path: '/banque/cle', builder: (_, etat) => _Pleine(EcranGuideCle(banque: etat.extra! as Banque))),
+    GoRoute(path: '/banque/cle', builder: (_, etat) => etat.extra is Banque ? _Pleine(EcranGuideCle(banque: etat.extra! as Banque)) : const _Pleine(EcranBanques())),
   ],
 );
 

@@ -41,7 +41,7 @@ class EcranMois extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // L'accueil, c'est maintenant : toujours le mois en cours. On remonte
     // le temps dans l'analyse.
-    final mois = Mois.de(DateTime.now());
+    final mois = ref.watch(moisCourantProvider);
     final bilan = ref.watch(bilanProvider(mois));
     final ops = ref.watch(operationsMoisProvider(mois));
     final comptes = ref.watch(comptesProvider);

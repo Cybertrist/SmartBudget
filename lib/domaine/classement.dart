@@ -68,7 +68,7 @@ class Classeur {
     }
 
     for (final r in _regles) {
-      if (contient(texte, r.motif)) return Classement(r.categorieId, Origine.regle);
+      if (contient(texte, r.motif, motEntier: true)) return Classement(r.categorieId, Origine.regle);
     }
 
     final entree = montantCentimes > 0;
@@ -112,5 +112,16 @@ bool _alnum(int c) =>
     (c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122);
 
 /// Le motif à retenir quand l'utilisateur reclasse une opération : la clé
-/// du marchand, qui vaudra pour toutes ses opérations suivantes.
-String motifAApprendre(String libelle) => cleMarchand(libelle);
+/// du marchand, qui vaudra pour toutes ses opérations suivantes. Rien pour
+/// un chèque ou un retrait, qui n'ont pas de marchand : leur clé tombe sur
+/// un « N » ou une ville, et la règle aurait avalé des centaines
+/// d'opérations sans rapport.
+String? motifAApprendre(String libelle) {
+  if (sansMarchand(libelle)) return null;
+  final m = cleMarchand(libelle);
+  return motifValable(m) ? m : null;
+}
+
+/// Un motif assez précis pour devenir une règle.
+bool motifValable(String motif) =>
+    motif.length >= 3 && !RegExp(r'^(REMISE|REM|CHEQUE|CHQ|RETRAIT)\b').hasMatch(normaliser(motif));

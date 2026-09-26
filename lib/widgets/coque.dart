@@ -9,6 +9,8 @@ import '../config/theme.dart';
 import '../banque/carte_banque.dart';
 import '../banque/connexion.dart';
 import '../banque/veille.dart';
+import '../donnees/depots.dart';
+import '../providers/donnees.dart';
 import '../security/lock_state.dart';
 import 'base.dart';
 import 'volets.dart';
@@ -65,6 +67,11 @@ class _EtatCoque extends ConsumerState<Coque> with WidgetsBindingObserver {
       await terminerSiRetour(context, ref);
     } catch (_) {}
     if (!mounted || !EtatVerrou.instance.isUnlocked) return;
+    if (demarrage) {
+      try {
+        if (await const DepotOperations().reparerRegles() > 0) rafraichir(ref);
+      } catch (_) {}
+    }
     final e = await const ConnexionBanque().etat();
     final vieille = e.derniere == null || DateTime.now().difference(e.derniere!) > const Duration(minutes: 10);
     if (e.relie && vieille && mounted) await synchroniser(context, ref, silencieux: true);

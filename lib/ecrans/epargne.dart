@@ -7,7 +7,6 @@ import '../config/layout.dart';
 import '../config/theme.dart';
 import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
-import '../domaine/mois.dart';
 import '../domaine/virements.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
@@ -27,7 +26,7 @@ class EcranEpargne extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // L'épargne, c'est maintenant : ce qu'il y a sur les livrets à cet
     // instant, et les mouvements du mois en cours.
-    final mois = Mois.de(DateTime.now());
+    final mois = ref.watch(moisCourantProvider);
     final comptes = ref.watch(comptesProvider);
     final bilan = ref.watch(bilanProvider(mois));
     final ops = ref.watch(operationsMoisProvider(mois));

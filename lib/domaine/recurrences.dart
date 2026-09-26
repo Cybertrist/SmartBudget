@@ -19,10 +19,17 @@ enum Frequence {
 /// Le passage suivant, une fréquence après [d].
 DateTime suivante(DateTime d, Frequence f) => switch (f) {
       Frequence.hebdomadaire => d.add(const Duration(days: 7)),
-      Frequence.mensuelle => DateTime(d.year, d.month + 1, d.day),
-      Frequence.trimestrielle => DateTime(d.year, d.month + 3, d.day),
-      Frequence.annuelle => DateTime(d.year + 1, d.month, d.day),
+      Frequence.mensuelle => _plusMois(d, 1),
+      Frequence.trimestrielle => _plusMois(d, 3),
+      Frequence.annuelle => _plusMois(d, 12),
     };
+
+/// [n] mois plus tard, au même jour, ou au dernier du mois s'il est plus
+/// court : le 31 janvier donne le 28 février, pas le 3 mars.
+DateTime _plusMois(DateTime d, int n) {
+  final dernier = DateTime(d.year, d.month + n + 1, 0).day;
+  return DateTime(d.year, d.month + n, d.day > dernier ? dernier : d.day);
+}
 
 class Recurrence {
   const Recurrence({
@@ -57,8 +64,9 @@ class Recurrence {
 
   /// Nombre de jours avant le prochain passage, négatif s'il est dépassé.
   int dansJours(DateTime maintenant) =>
-      DateTime(prochaine.year, prochaine.month, prochaine.day)
-          .difference(DateTime(maintenant.year, maintenant.month, maintenant.day))
+      // En UTC : le passage à l'heure d'été ne vole pas un jour.
+      DateTime.utc(prochaine.year, prochaine.month, prochaine.day)
+          .difference(DateTime.utc(maintenant.year, maintenant.month, maintenant.day))
           .inDays;
 }
 

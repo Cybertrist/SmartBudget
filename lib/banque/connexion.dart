@@ -221,6 +221,24 @@ class ConnexionBanque {
     await _reglages.ecrire(_etat, null);
   }
 
+  /// Après une restauration sur un autre téléphone, la clé bancaire de la
+  /// sauvegarde est chiffrée par une clé maîtresse qui n'est pas celle-ci :
+  /// illisible, elle est oubliée avec l'accès, et il faut la réimporter.
+  /// Rend vrai si elle a dû l'être.
+  Future<bool> oublierCleIllisible() async {
+    final chiffree = await _reglages.lire(_cleChiffree);
+    if (chiffree == null) return false;
+    try {
+      await _dechiffrer(chiffree);
+      return false;
+    } catch (_) {
+      await _reglages.ecrire(_cleChiffree, null);
+      await _reglages.ecrire(_appId, null);
+      await deconnecter();
+      return true;
+    }
+  }
+
   /// Oublie l'accès au compte. La clé reste, pour se reconnecter.
   Future<void> deconnecter() async {
     for (final c in [_compte, _jusquau, _derniere, _soldeLe]) {
@@ -242,7 +260,8 @@ class ConnexionBanque {
     final depuis = e.derniere?.subtract(const Duration(days: 7)) ?? DateTime.now().subtract(const Duration(days: 365));
     final operations = await client.operations(e.compte!, depuis);
     final courant = await const DepotComptes().courant();
-    final nouvelles = await const DepotOperations().importer(courant.id, operations);
+    final nouvelles = await const DepotOperations()
+        .importer(courant.id, operations, attenteLue: client.attenteLue, depuis: depuis);
     final solde = await client.solde(e.compte!);
     if (solde != null) await _retenirSolde(courant.id, solde);
     await _reglages.ecrire(_derniere, DateTime.now().toIso8601String());

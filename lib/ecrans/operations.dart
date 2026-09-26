@@ -64,7 +64,7 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
     final liste = ListView(
       padding: const EdgeInsets.only(bottom: 40),
       children: [
-        EnTetePage(surtitre: recherche ? 'Toutes les opérations' : periode, titre: switch (genre) {
+        EnTetePage(surtitre: recherche ? (genre == null ? 'Toutes les opérations' : 'Recherche dans toutes les opérations') : periode, titre: switch (genre) {
           Genre.revenu => 'Entrées',
           Genre.depense => 'Sorties',
           _ => 'Opérations',
@@ -118,7 +118,16 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
             ],
           ),
         ),
-        if (jours.isEmpty && ops.hasValue)
+        // Les résultats d'avant restent affichés pendant que la recherche se
+        // charge : une barre le dit, et une erreur ne passe pas en silence.
+        if (ops.isLoading)
+          const Padding(padding: EdgeInsets.fromLTRB(24, 0, 24, 14), child: LinearProgressIndicator(minHeight: 2)),
+        if (ops.hasError && !ops.isLoading)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+            child: Text('Recherche impossible : ${ops.error}', style: const TextStyle(color: AppColors.alerte)),
+          ),
+        if (jours.isEmpty && ops.hasValue && !ops.isLoading)
           Padding(
             padding: const EdgeInsets.all(32),
             child: Text(recherche ? 'Rien ne correspond à « ${_texte.trim()} ».' : 'Aucune opération sur la période.',

@@ -71,12 +71,17 @@ String cleMarchand(String libelle) {
   return cle.isEmpty ? marchand(libelle) : cle;
 }
 
+/// Un chèque, une remise de chèque ou un retrait : pas de marchand, rien
+/// à apprendre ni à renommer d'un coup.
+bool sansMarchand(String libelle) =>
+    RegExp(r'^((REMISE|REM)( \d+)? (CHEQUES?|CHQ)|CHEQUE|CHQ|RETRAIT)\b').hasMatch(normaliser(libelle));
+
 /// Le nom à afficher : « Carrefour Market Vannes ».
 String joli(String libelle) {
   final n = normaliser(libelle);
   // Un chèque ou un retrait n'a pas de marchand : son libellé ne garde
   // qu'un numéro, et il n'en restait qu'un « N ».
-  if (RegExp(r'^REMISE (CHEQUE|CHQ)').hasMatch(n)) return 'Remise de chèque';
+  if (RegExp(r'^(REMISE|REM)( \d+)? (CHEQUE|CHQ)').hasMatch(n)) return 'Remise de chèque';
   if (RegExp(r'^(CHEQUE|CHQ)\b').hasMatch(n)) return 'Chèque';
   if (RegExp(r'^RETRAIT').hasMatch(n)) return 'Retrait d\'espèces';
   final m = marchand(libelle).toLowerCase();

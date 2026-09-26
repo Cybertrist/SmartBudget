@@ -489,7 +489,8 @@ class _Recurrences extends ConsumerWidget {
     if (!r.hasValue) return const Padding(padding: EdgeInsets.all(60), child: Center(child: CircularProgressIndicator()));
     final maintenant = DateTime.now();
     final liste = r.value!;
-    bool dansMois(DateTime d) => Mois.de(d) == mois;
+    final debut = ref.watch(debutMoisProvider).value ?? 1;
+    bool dansMois(DateTime d) => Mois.de(d, debut: debut) == mois;
     final payees = liste.where((x) => dansMois(x.derniere)).toList();
     final retard = liste.where((x) => x.enRetard(maintenant) && !dansMois(x.derniere)).toList();
     final aVenir = liste.where((x) => !x.enRetard(maintenant) && !dansMois(x.derniere) && dansMois(x.prochaine)).toList();

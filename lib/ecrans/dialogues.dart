@@ -6,12 +6,7 @@ import '../config/theme.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
 
-/// Lit un montant en euros tapé à la française : « 1 500 », « 12,5 ».
-int? lireEuros(String texte) {
-  final t = texte.replaceAll(RegExp(r'[\s  €]'), '').replaceAll(',', '.');
-  final v = double.tryParse(t);
-  return v == null ? null : (v * 100).round();
-}
+export '../config/format.dart' show lireEuros;
 
 /// Demande un montant et l'enregistre dans les réglages.
 Future<void> fixerMontant(BuildContext context, WidgetRef ref, {required String cle, required String titre}) async {

@@ -45,6 +45,8 @@ const dictionnaire = <Motif>[
   Motif('INTERETS', 'Autres revenus', 'Intérêts', seulementEntree: true),
   Motif('REMISE CHEQUE', 'Autres revenus', 'Remboursements', seulementEntree: true),
   Motif('REMISE CHQ', 'Autres revenus', 'Remboursements', seulementEntree: true),
+  // Au Crédit Mutuel de Bretagne : « REM 2 CHQ BORNE ... ».
+  Motif('REM', 'Autres revenus', 'Remboursements', seulementEntree: true),
 
   // Livraison de repas avant les VTC.
   Motif('UBER EATS', 'Restaurants et sorties', 'Livraison de repas'),

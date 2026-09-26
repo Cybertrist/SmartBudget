@@ -1,3 +1,4 @@
+import 'classement.dart';
 import 'modeles.dart';
 import 'mois.dart';
 import 'virements.dart';
@@ -68,19 +69,32 @@ Bilan calculerBilan({
   Mois moisDe(Operation o) =>
       o.moisCompte != null ? Mois.lire(o.moisCompte!) : Mois.de(o.le, debut: debut);
 
-  // Ce que chaque opération pèse une fois les remboursements répartis.
-  final poids = <int, int>{for (final o in operations) o.id: o.montantCentimes};
-  for (final l in liens) {
-    final entree = parId[l.entreeId];
-    final depense = parId[l.depenseId];
-    if (entree != null) poids[entree.id] = poids[entree.id]! - l.montantCentimes;
-    if (depense != null) poids[depense.id] = poids[depense.id]! + l.montantCentimes;
-  }
-
   Categorie? racine(int id) {
     final c = categories[id];
     if (c == null) return null;
     return c.parentId == null ? c : categories[c.parentId];
+  }
+
+  // Un virement entre ses comptes ne rembourse rien et n'est pas remboursé.
+  bool interne(Operation? o) => o != null && (o.interne != null || racine(o.categorieId)?.genre == Genre.interne);
+
+  // Ce que chaque opération pèse une fois les remboursements répartis.
+  // Une dépense ne reçoit jamais plus que son montant, même si d'anciens
+  // liens le dépassaient : elle deviendrait un gain.
+  final poids = <int, int>{for (final o in operations) o.id: o.montantCentimes};
+  final recu = <int, int>{};
+  for (final l in liens) {
+    final entree = parId[l.entreeId];
+    final depense = parId[l.depenseId];
+    if (interne(entree) || interne(depense)) continue;
+    var m = l.montantCentimes;
+    if (depense != null) {
+      final libre = -depense.montantCentimes - (recu[depense.id] ?? 0);
+      m = m.clamp(0, libre < 0 ? 0 : libre);
+      recu[depense.id] = (recu[depense.id] ?? 0) + m;
+    }
+    if (entree != null) poids[entree.id] = poids[entree.id]! - m;
+    if (depense != null) poids[depense.id] = poids[depense.id]! + m;
   }
 
   // Les retraits au distributeur, et ce qui a été dépensé en espèces.
@@ -96,8 +110,11 @@ Bilan calculerBilan({
     if (top.genre == Genre.interne) {
       final m = o.montantCentimes.abs();
       bilan.virementsInternes += m;
-      if (o.interne == SensInterne.versEpargne) bilan.misDeCote += m;
-      if (o.interne == SensInterne.depuisEpargne) bilan.pioche += m;
+      // Le sens, ou à défaut celui de sa sous-catégorie, s'il a été rangé
+      // là à la main.
+      final sens = o.interne ?? SensInterne.values.where((s) => sousCategorieInterne(s) == cat.nom).firstOrNull;
+      if (sens == SensInterne.versEpargne) bilan.misDeCote += m;
+      if (sens == SensInterne.depuisEpargne) bilan.pioche += m;
       continue;
     }
 
@@ -107,6 +124,8 @@ Bilan calculerBilan({
     if (top.genre == Genre.revenu) {
       if (estRemboursement(cat, top)) {
         bilan.rembourses += p;
+        bilan.parSous.update(cat.id, (v) => v + p, ifAbsent: () => p);
+        bilan.operationsParSous.update(cat.id, (v) => v + 1, ifAbsent: () => 1);
         continue;
       }
       bilan.entrees += p;

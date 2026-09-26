@@ -154,12 +154,27 @@ class EnableBanking {
     return _centimes((pris['balance_amount'] as Map)['amount']);
   }
 
+  /// Faux si la dernière lecture n'a pas pu donner les opérations en
+  /// attente : celles déjà connues ne doivent pas s'effacer pour autant.
+  bool attenteLue = false;
+
   /// Les opérations depuis [depuis], page après page : les comptabilisées,
   /// puis celles en attente, un paiement par carte du jour que le solde
   /// compte déjà. Une banque qui ne donne pas les secondes rend les
   /// premières seules.
   Future<List<OperationBrute>> operations(String compte, DateTime depuis) async {
-    final sortie = await _page(compte, depuis, 'BOOK');
+    attenteLue = false;
+    final lues = await _page(compte, depuis, 'BOOK');
+    // Sans référence de la banque, deux cafés au même prix le même jour
+    // auraient la même empreinte : le second prend un numéro.
+    final sortie = <OperationBrute>[];
+    final memes = <String, int>{};
+    for (final o in lues) {
+      final n = memes[o.uidBanque] = (memes[o.uidBanque] ?? 0) + 1;
+      sortie.add(n == 1 || !o.uidBanque.startsWith('eb-')
+          ? o
+          : OperationBrute(uidBanque: '${o.uidBanque}-$n', le: o.le, libelle: o.libelle, montantCentimes: o.montantCentimes));
+    }
     try {
       // Deux cafés au même prix le même jour ont la même empreinte : la
       // seconde prend un numéro.
@@ -170,6 +185,7 @@ class EnableBanking {
             ? o
             : OperationBrute(uidBanque: '${o.uidBanque}-$n', le: o.le, libelle: o.libelle, montantCentimes: o.montantCentimes, enAttente: true));
       }
+      attenteLue = true;
     } on ErreurBanque {
       // Pas d'opérations en attente chez cette banque.
     }

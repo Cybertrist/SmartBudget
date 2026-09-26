@@ -13,8 +13,18 @@ final versionProvider = StateProvider<int>((ref) => 0);
 /// Après une modification : les écrans relisent la base.
 void rafraichir(WidgetRef ref) => ref.read(versionProvider.notifier).state++;
 
+/// Le jour où commence le mois budgétaire, 1 par défaut.
+final debutMoisProvider = FutureProvider<int>((ref) async {
+  ref.watch(versionProvider);
+  return const DepotReglages().debutMois();
+});
+
+/// Le mois budgétaire en cours : avec un début au 25, le 26 septembre est
+/// déjà en octobre.
+final moisCourantProvider = Provider<Mois>((ref) => Mois.de(DateTime.now(), debut: ref.watch(debutMoisProvider).value ?? 1));
+
 /// Le mois affiché, partagé par tous les écrans.
-final moisProvider = StateProvider<Mois>((ref) => Mois.de(DateTime.now()));
+final moisProvider = StateProvider<Mois>((ref) => ref.watch(moisCourantProvider));
 
 /// Un mois, trois mois ou un an, pour l'analyse.
 enum Periode { mois, trimestre, annee }
@@ -108,11 +118,10 @@ final recurrencesProvider = FutureProvider<List<Recurrence>>((ref) async {
 });
 
 /// Le résultat d'une recherche dans toutes les opérations.
-final rechercheProvider = FutureProvider.family<List<Operation>, String>((ref, texte) async {
+final rechercheProvider = FutureProvider.autoDispose.family<List<Operation>, String>((ref, texte) async {
   ref.watch(versionProvider);
   final t = texte.trim();
-  final v = double.tryParse(t.replaceAll(RegExp(r'[\s €]'), '').replaceAll(',', '.'));
-  return const DepotOperations().chercher(t, centimes: v == null ? null : (v * 100).round());
+  return const DepotOperations().chercher(t, centimes: lireEuros(t));
 });
 
 /// Les opérations non reconnues, à vérifier.
@@ -149,6 +158,7 @@ Bilan fusionner(Mois mois, List<Bilan> bilans) {
     b.misDeCote += x.misDeCote;
     b.pioche += x.pioche;
     b.virementsInternes += x.virementsInternes;
+    b.rembourses += x.rembourses;
     void somme(Map<int, int> a, Map<int, int> de) => de.forEach((k, v) => a.update(k, (w) => w + v, ifAbsent: () => v));
     somme(b.parCategorie, x.parCategorie);
     somme(b.operationsParCategorie, x.operationsParCategorie);

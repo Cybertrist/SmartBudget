@@ -26,3 +26,15 @@ String jour(DateTime d) => _majuscule(_jour.format(d));
 String jourCourt(DateTime d) => _jourCourt.format(d);
 
 String pluriel(int n, String un, [String? plusieurs]) => '$n ${n > 1 ? (plusieurs ?? '${un}s') : un}';
+
+/// Lit un montant en euros tapé à la française : « 1 500 », « 12,5 »,
+/// « 1.500,00 ». Rien pour ce qui n'est pas un nombre fini.
+int? lireEuros(String texte) {
+  var t = texte.replaceAll(RegExp(r'[\s  €]'), '');
+  // Avec une virgule pour les centimes, les points séparent les milliers.
+  if (t.contains(',')) t = t.replaceAll('.', '');
+  t = t.replaceAll(',', '.');
+  if (!RegExp(r'^[+-]?(\d+(\.\d{0,2})?|\.\d{1,2})$').hasMatch(t)) return null;
+  final v = double.tryParse(t);
+  return v == null || !v.isFinite ? null : (v * 100).round();
+}

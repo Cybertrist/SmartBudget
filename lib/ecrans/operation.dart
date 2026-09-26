@@ -33,15 +33,22 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     final op = ref.watch(operationProvider(widget.id));
     final categories = ref.watch(categoriesProvider);
     final liens = ref.watch(liensProvider(widget.id));
+    Widget page(Widget corps) => Scaffold(
+          body: SafeArea(child: Column(children: [const BarreRetour(titre: 'Opération'), Expanded(child: corps)])),
+        );
+    final erreur = op.hasError ? op.error : categories.hasError ? categories.error : null;
+    if (erreur != null && (!op.hasValue || !categories.hasValue)) {
+      return page(_Echec(message: 'Lecture impossible. ${_messageErreur(erreur)}', reessayer: () => rafraichir(ref)));
+    }
     if (!op.hasValue || !categories.hasValue) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     final o = op.value;
-    if (o == null) return const Scaffold(body: Center(child: Text('Opération supprimée.')));
+    if (o == null) return page(const _Echec(message: 'Cette opération n\'existe plus.'));
     final cats = categories.value!;
     final cat = cats[o.categorieId]!;
     final parent = cat.parentId == null ? cat : cats[cat.parentId]!;
     final couleur = Color(parent.couleur);
     final nature = o.nature ?? cat.nature;
-    final moisOp = Mois.de(o.le);
+    final moisOp = Mois.de(o.le, debut: ref.watch(debutMoisProvider).value ?? 1);
     final moisCompte = o.moisCompte == null ? moisOp : Mois.lire(o.moisCompte!);
     final lies = liens.value ?? const <Lien>[];
     final cle = cleMarchand(o.libelle);
@@ -49,7 +56,11 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     final remboursements = cats.values.where((c) => c.nom == 'Remboursements' && c.parentId != null && cats[c.parentId]?.genre == Genre.revenu).firstOrNull;
 
     Future<void> modifier(Future<void> Function() f) async {
-      await f();
+      try {
+        await f();
+      } catch (e) {
+        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_messageErreur(e))));
+      }
       rafraichir(ref);
     }
 
@@ -347,7 +358,9 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                   if (o.origine == Origine.main || o.origine == Origine.regle) ...[
                     const SizedBox(height: 14),
                     _Info(
-                      texte: o.origine == Origine.main
+                      texte: o.origine == Origine.main && motifAApprendre(o.libelle) == null
+                          ? 'Reclassée à la main. Un chèque ou un retrait n\'a pas de marchand : les suivants ne la suivront pas.'
+                          : o.origine == Origine.main
                           ? 'Reclassée à la main. Les prochaines opérations « ${joli(cleMarchand(o.libelle))} » iront d\'elles-mêmes dans ${cat.nom}.'
                           : 'Classée d\'après une de tes corrections précédentes.',
                     ),
@@ -632,7 +645,36 @@ class _BlocRembourse extends ConsumerWidget {
   }
 }
 
-/// Répartir une entrée sur les dépenses qu'elle rembourse.
+/// Un message à la place d'une page qui n'a pas pu se charger, avec de
+/// quoi réessayer : jamais un chargement qui tourne sans fin.
+class _Echec extends StatelessWidget {
+  const _Echec({required this.message, this.reessayer});
+
+  final String message;
+  final VoidCallback? reessayer;
+
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.texteSecondaire, height: 1.5)),
+              if (reessayer != null) ...[
+                const SizedBox(height: 12),
+                TextButton(onPressed: reessayer, child: const Text('Réessayer')),
+              ],
+            ],
+          ),
+        ),
+      );
+}
+
+String _messageErreur(Object e) => e is ArgumentError ? '${e.message}' : 'Échec : $e';
+
+/// Répartir une entrée sur les dépenses qu'elle rembourse : l'achat peut
+/// précéder le remboursement ou le suivre.
 class EcranLier extends ConsumerStatefulWidget {
   const EcranLier({super.key, required this.id});
 
@@ -644,8 +686,16 @@ class EcranLier extends ConsumerStatefulWidget {
 
 class _EtatLier extends ConsumerState<EcranLier> {
   final _parts = <int, TextEditingController>{};
-  List<Operation>? _depenses;
-  bool _lu = false;
+  Operation? _entree;
+  List<(Operation, int)>? _depenses;
+  String? _erreur;
+  bool _enCours = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _charger();
+  }
 
   @override
   void dispose() {
@@ -655,31 +705,56 @@ class _EtatLier extends ConsumerState<EcranLier> {
     super.dispose();
   }
 
-  Future<void> _charger(Operation entree) async {
-    final fin = entree.le.add(const Duration(days: 1));
-    final ops = await const DepotOperations().entre(entree.le.subtract(const Duration(days: 60)), fin);
-    final liens = await const DepotLiens().concernant([entree.id]);
-    setState(() {
-      _depenses = ops.where((o) => !o.entree && o.interne == null).toList();
-      for (final l in liens.where((l) => l.entreeId == entree.id)) {
-        _parts[l.depenseId] = TextEditingController(text: euros(l.montantCentimes).replaceAll(' €', ''));
+  Future<void> _charger() async {
+    if (_erreur != null) setState(() => _erreur = null);
+    try {
+      final entree = await const DepotOperations().une(widget.id);
+      if (entree == null || !entree.entree) {
+        if (mounted) setState(() => _erreur = 'Cette entrée d\'argent n\'existe plus.');
+        return;
       }
-    });
+      final depenses = await const DepotOperations().depensesRemboursables(entree);
+      final liens = await const DepotLiens().concernant([entree.id]);
+      if (!mounted) return;
+      setState(() {
+        _entree = entree;
+        _depenses = depenses;
+        for (final c in _parts.values) {
+          c.dispose();
+        }
+        _parts.clear();
+        for (final l in liens.where((l) => l.entreeId == entree.id)) {
+          _parts[l.depenseId] = TextEditingController(text: euros(l.montantCentimes).replaceAll(' €', ''));
+        }
+      });
+    } catch (e) {
+      if (mounted) setState(() => _erreur = 'Lecture impossible. ${_messageErreur(e)}');
+    }
   }
 
   int get _reparti => _parts.values.fold(0, (s, c) => s + (lireEuros(c.text) ?? 0));
 
+  Future<void> _enregistrer(Operation entree) async {
+    if (_enCours) return;
+    setState(() => _enCours = true);
+    final parts = {for (final e in _parts.entries) e.key: lireEuros(e.value.text) ?? 0}..removeWhere((_, v) => v <= 0);
+    try {
+      await const DepotLiens().repartir(entree.id, parts);
+      rafraichir(ref);
+      if (mounted) context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _enCours = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_messageErreur(e))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final entree = ref.watch(operationProvider(widget.id)).value;
-    if (entree == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (!_lu) {
-      _lu = true;
-      _charger(entree);
-    }
+    final entree = _entree;
     final depenses = _depenses;
     final reparti = _reparti;
-    final trop = reparti > entree.montantCentimes;
+    final trop = entree != null && reparti > entree.montantCentimes;
 
     return Scaffold(
       body: SafeArea(
@@ -687,93 +762,109 @@ class _EtatLier extends ConsumerState<EcranLier> {
           children: [
             const BarreRetour(titre: 'Lier des dépenses'),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 110),
-                children: [
-                  Carte(
-                    couleur: const Color(0xFF16231C),
-                    child: Row(
-                      children: [
-                        const Tuile(icone: 'payments', couleur: Color(0xFF7FE0A8), taille: 40),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(entree.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700))),
-                        Montant(entree.montantCentimes, signe: true, couleur: const Color(0xFF7FE0A8)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Expanded(child: Text('Réparti', style: TextStyle(color: AppColors.texteSecondaire))),
-                      Text('${euros(reparti)} / ${euros(entree.montantCentimes)}',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontFeatures: chiffres, color: trop ? AppColors.alerte : AppColors.texte)),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Jauge(part: reparti / entree.montantCentimes, couleur: trop ? AppColors.alerte : AppColors.vert),
-                  const SizedBox(height: 18),
-                  const Surtitre('Dépenses des 60 jours précédents'),
-                  const SizedBox(height: 8),
-                  if (depenses == null) const Center(child: CircularProgressIndicator()),
-                  for (final d in depenses ?? const <Operation>[])
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: _parts.containsKey(d.id),
-                            onChanged: (v) => setState(() {
-                              if (v == true) {
-                                final reste = entree.montantCentimes - _reparti;
-                                final part = reste.clamp(0, -d.montantCentimes);
-                                _parts[d.id] = TextEditingController(text: euros(part).replaceAll(' €', ''));
-                              } else {
-                                _parts.remove(d.id)?.dispose();
-                              }
-                            }),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(d.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
-                                Text('${jourCourt(d.le)} · ${euros(d.montantCentimes)}', style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
-                              ],
-                            ),
-                          ),
-                          if (_parts.containsKey(d.id))
-                            SizedBox(
-                              width: 100,
-                              child: TextField(
-                                controller: _parts[d.id],
-                                onChanged: (_) => setState(() {}),
-                                textAlign: TextAlign.right,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                decoration: const InputDecoration(suffixText: '€', isDense: true),
+              child: _erreur != null
+                  ? _Echec(message: _erreur!, reessayer: _charger)
+                  : entree == null || depenses == null
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 110),
+                          children: [
+                            Carte(
+                              couleur: const Color(0xFF16231C),
+                              child: Row(
+                                children: [
+                                  const Tuile(icone: 'payments', couleur: Color(0xFF7FE0A8), taille: 40),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(entree.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                        Text(jourCourt(entree.le), style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
+                                      ],
+                                    ),
+                                  ),
+                                  Montant(entree.montantCentimes, signe: true, couleur: const Color(0xFF7FE0A8)),
+                                ],
                               ),
                             ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Réparti', style: TextStyle(color: AppColors.texteSecondaire))),
+                                Text('${euros(reparti)} / ${euros(entree.montantCentimes)}',
+                                    style: TextStyle(fontWeight: FontWeight.w700, fontFeatures: chiffres, color: trop ? AppColors.alerte : AppColors.texte)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Jauge(
+                              part: entree.montantCentimes == 0 ? 0 : reparti / entree.montantCentimes,
+                              couleur: trop ? AppColors.alerte : AppColors.vert,
+                            ),
+                            const SizedBox(height: 18),
+                            const Surtitre('Dépenses, deux mois avant à un mois après'),
+                            const SizedBox(height: 8),
+                            if (depenses.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Text('Aucune dépense autour de cette date.',
+                                    textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire)),
+                              ),
+                            for (final (d, ailleurs) in depenses)
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
+                                child: Row(
+                                  children: [
+                                    Checkbox(
+                                      value: _parts.containsKey(d.id),
+                                      onChanged: (v) => setState(() {
+                                        if (v == true) {
+                                          final reste = entree.montantCentimes - _reparti;
+                                          final libre = -d.montantCentimes - ailleurs;
+                                          final part = reste.clamp(0, libre < 0 ? 0 : libre);
+                                          _parts[d.id] = TextEditingController(text: euros(part).replaceAll(' €', ''));
+                                        } else {
+                                          _parts.remove(d.id)?.dispose();
+                                        }
+                                      }),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(d.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                          Text(
+                                            '${jourCourt(d.le)} · ${euros(d.montantCentimes)}'
+                                            '${ailleurs > 0 ? ' · ${euros(ailleurs)} déjà remboursés' : ''}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (_parts.containsKey(d.id))
+                                      SizedBox(
+                                        width: 100,
+                                        child: TextField(
+                                          controller: _parts[d.id],
+                                          onChanged: (_) => setState(() {}),
+                                          textAlign: TextAlign.right,
+                                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                          decoration: const InputDecoration(suffixText: '€', isDense: true),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
               child: FilledButton(
-                onPressed: trop
-                    ? null
-                    : () async {
-                        final parts = {for (final e in _parts.entries) e.key: lireEuros(e.value.text) ?? 0}..removeWhere((_, v) => v <= 0);
-                        try {
-                          await const DepotLiens().repartir(entree.id, parts);
-                          rafraichir(ref);
-                          if (context.mounted) context.pop();
-                        } on ArgumentError catch (e) {
-                          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${e.message}')));
-                        }
-                      },
+                onPressed: entree == null || trop || _enCours ? null : () => _enregistrer(entree),
                 child: Text(_parts.isEmpty ? 'Enregistrer' : 'Lier ${pluriel(_parts.length, 'dépense')}'),
               ),
             ),
@@ -784,7 +875,8 @@ class _EtatLier extends ConsumerState<EcranLier> {
   }
 }
 
-/// Depuis une dépense : choisir l'entrée d'argent qui la rembourse.
+/// Depuis une dépense : choisir l'entrée d'argent qui la rembourse. Les
+/// autres entrées qui la remboursent déjà restent liées.
 class EcranChoisirRemboursement extends ConsumerStatefulWidget {
   const EcranChoisirRemboursement({super.key, required this.id});
 
@@ -796,9 +888,13 @@ class EcranChoisirRemboursement extends ConsumerStatefulWidget {
 
 class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement> {
   Operation? _depense;
-  List<Operation> _entrees = const [];
+  List<(Operation, int)> _entrees = const [];
+  int? _initial;
   int? _choix;
+  int _autres = 0;
   bool _pret = false;
+  bool _enCours = false;
+  String? _erreur;
 
   @override
   void initState() {
@@ -807,35 +903,52 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
   }
 
   Future<void> _charger() async {
-    final d = await const DepotOperations().une(widget.id);
-    if (d == null) return;
-    final entrees = await const DepotOperations().remboursementsPossibles(d);
-    final liens = await const DepotLiens().concernant([d.id]);
-    if (!mounted) return;
-    setState(() {
-      _depense = d;
-      _entrees = entrees;
-      _choix = liens.where((l) => l.depenseId == d.id).firstOrNull?.entreeId;
-      _pret = true;
-    });
+    if (_erreur != null) setState(() => _erreur = null);
+    try {
+      final d = await const DepotOperations().une(widget.id);
+      if (d == null || d.entree) {
+        if (mounted) setState(() => _erreur = 'Cette dépense n\'existe plus.');
+        return;
+      }
+      final entrees = await const DepotOperations().remboursementsPossibles(d);
+      final liens = (await const DepotLiens().concernant([d.id])).where((l) => l.depenseId == d.id).toList();
+      if (!mounted) return;
+      setState(() {
+        _depense = d;
+        _entrees = entrees;
+        _initial = _choix = liens.firstOrNull?.entreeId;
+        _autres = liens.length - 1;
+        _pret = true;
+      });
+    } catch (e) {
+      if (mounted) setState(() => _erreur = 'Lecture impossible. ${_messageErreur(e)}');
+    }
   }
 
   Future<void> _valider() async {
+    if (_enCours) return;
+    if (_choix == _initial) {
+      context.pop();
+      return;
+    }
+    setState(() => _enCours = true);
     try {
-      await const DepotLiens().rembourser(widget.id, _choix);
+      await const DepotLiens().rembourser(widget.id, ancienne: _initial, nouvelle: _choix);
       rafraichir(ref);
       if (mounted) context.pop();
-    } on ArgumentError catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${e.message}')));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _enCours = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_messageErreur(e))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final categories = ref.watch(categoriesProvider).value ?? const <int, Categorie>{};
-    final jours = <DateTime, List<Operation>>{};
-    for (final o in _entrees) {
-      jours.putIfAbsent(DateTime(o.le.year, o.le.month, o.le.day), () => []).add(o);
+    final jours = <DateTime, List<(Operation, int)>>{};
+    for (final e in _entrees) {
+      jours.putIfAbsent(DateTime(e.$1.le.year, e.$1.le.month, e.$1.le.day), () => []).add(e);
     }
     return Scaffold(
       body: SafeArea(
@@ -847,52 +960,56 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
                 child: Text(
-                  'Pour « ${_depense!.titre} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse.',
+                  'Pour « ${_depense!.titre} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse, avant ou après l\'achat.'
+                  '${_autres > 0 ? ' Elle est aussi liée à ${pluriel(_autres, 'autre entrée')}, qui le reste.' : ''}',
                   style: const TextStyle(fontSize: 13.5, height: 1.5, color: AppColors.texteSecondaire),
                 ),
               ),
             Expanded(
-              child: !_pret
-                  ? const Center(child: CircularProgressIndicator())
-                  : _entrees.isEmpty
-                      ? const Padding(
-                          padding: EdgeInsets.all(32),
-                          child: Text('Aucune entrée d\'argent autour de cette date.',
-                              textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire)),
-                        )
-                      : ListView(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          children: [
-                            for (final e in jours.entries) ...[
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
-                                child: Text(jour(e.key),
-                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
-                              ),
-                              Carte(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                child: Column(
-                                  children: [
-                                    for (var i = 0; i < e.value.length; i++)
-                                      _LigneChoix(
-                                        operation: e.value[i],
-                                        categorie: categories[e.value[i].categorieId]?.nom ?? '',
-                                        choisie: _choix == e.value[i].id,
-                                        separateur: i > 0,
-                                        onTap: () => setState(() => _choix = _choix == e.value[i].id ? null : e.value[i].id),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                            ],
-                          ],
-                        ),
+              child: _erreur != null
+                  ? _Echec(message: _erreur!, reessayer: _charger)
+                  : !_pret
+                      ? const Center(child: CircularProgressIndicator())
+                      : _entrees.isEmpty
+                          ? const Padding(
+                              padding: EdgeInsets.all(32),
+                              child: Text('Aucune entrée d\'argent libre dans les deux mois autour de cette date.',
+                                  textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire)),
+                            )
+                          : ListView(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              children: [
+                                for (final e in jours.entries) ...[
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+                                    child: Text(jour(e.key),
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
+                                  ),
+                                  Carte(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Column(
+                                      children: [
+                                        for (var i = 0; i < e.value.length; i++)
+                                          _LigneChoix(
+                                            operation: e.value[i].$1,
+                                            reste: e.value[i].$2,
+                                            categorie: categories[e.value[i].$1.categorieId]?.nom ?? '',
+                                            choisie: _choix == e.value[i].$1.id,
+                                            separateur: i > 0,
+                                            onTap: () => setState(() => _choix = _choix == e.value[i].$1.id ? null : e.value[i].$1.id),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                ],
+                              ],
+                            ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
               child: FilledButton(
-                onPressed: _pret ? _valider : null,
+                onPressed: _pret && !_enCours ? _valider : null,
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(54),
                   shape: const StadiumBorder(),
@@ -900,7 +1017,11 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                   foregroundColor: Colors.black,
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
-                child: Text(_choix == null ? 'Aucun remboursement' : 'Valider'),
+                child: Text(_choix == null && _initial != null
+                    ? 'Délier'
+                    : _choix == null
+                        ? 'Aucun remboursement'
+                        : 'Valider'),
               ),
             ),
           ],
@@ -911,39 +1032,56 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
 }
 
 class _LigneChoix extends StatelessWidget {
-  const _LigneChoix({required this.operation, required this.categorie, required this.choisie, required this.separateur, required this.onTap});
+  const _LigneChoix({
+    required this.operation,
+    required this.reste,
+    required this.categorie,
+    required this.choisie,
+    required this.separateur,
+    required this.onTap,
+  });
 
   final Operation operation;
+  final int reste;
   final String categorie;
   final bool choisie;
   final bool separateur;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
-          child: Row(
-            children: [
-              Icon(iconeDe(choisie ? 'task_alt' : 'radio_button_unchecked'), color: choisie ? AppColors.vert : AppColors.texteDiscret),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(operation.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+  Widget build(BuildContext context) {
+    final details = [
+      if (categorie.isNotEmpty) categorie,
+      if (operation.enAttente) 'En attente',
+      if (reste < operation.montantCentimes) 'reste ${euros(reste)}',
+    ].join(' · ');
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
+        child: Row(
+          children: [
+            Icon(iconeDe(choisie ? 'task_alt' : 'radio_button_unchecked'), color: choisie ? AppColors.vert : AppColors.texteDiscret),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(operation.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  if (details.isNotEmpty) ...[
                     const SizedBox(height: 2),
-                    Text('$categorie · Compte courant', style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                    Text(details, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                   ],
-                ),
+                ],
               ),
-              Montant(operation.montantCentimes, taille: 15.5, signe: true, couleur: AppColors.vert),
-            ],
-          ),
+            ),
+            Montant(operation.montantCentimes, taille: 15.5, signe: true, couleur: AppColors.vert),
+          ],
         ),
-      );
+      ),
+    );
+  }
 }
 
 /// La note d'une opération, telle qu'elle s'affiche sur sa page.

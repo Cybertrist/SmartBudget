@@ -66,13 +66,19 @@ class _EtatNouveauLivret extends ConsumerState<EcranNouveauLivret> {
     final nom = _nom.text.trim();
     if (nom.isEmpty || _enCours) return;
     setState(() => _enCours = true);
-    await const DepotComptes().ajouterLivret(
-      nom: nom,
-      soldeCentimes: lireEuros(_solde.text) ?? 0,
-      motif: _motif.text.trim().isEmpty ? null : _motif.text.trim(),
-    );
-    rafraichir(ref);
-    if (mounted) context.pop();
+    try {
+      await const DepotComptes().ajouterLivret(
+        nom: nom,
+        soldeCentimes: lireEuros(_solde.text) ?? 0,
+        motif: _motif.text.trim().isEmpty ? null : _motif.text.trim(),
+      );
+      rafraichir(ref);
+      if (mounted) context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _enCours = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Échec : $e')));
+    }
   }
 
   @override

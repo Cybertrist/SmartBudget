@@ -17,7 +17,7 @@ class SelecteurMois extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mois = ref.watch(moisProvider);
-    final courant = Mois.de(DateTime.now());
+    final courant = ref.watch(moisCourantProvider);
     void aller(Mois m) => ref.read(moisProvider.notifier).state = m;
     return Container(
       height: 52,

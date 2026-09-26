@@ -50,15 +50,21 @@ class _EtatNouvelleDepense extends ConsumerState<EcranNouvelleDepense> {
   Future<void> _ajouter() async {
     if (!_complet || _enCours) return;
     setState(() => _enCours = true);
-    await const DepotOperations().ajouterEspeces(
-      le: _le,
-      nom: _nom.text.trim(),
-      centimes: lireEuros(_montant.text)!,
-      categorieId: _categorie!,
-      note: _note.text.trim().isEmpty ? null : _note.text.trim(),
-    );
-    rafraichir(ref);
-    if (mounted) context.pop();
+    try {
+      await const DepotOperations().ajouterEspeces(
+        le: _le,
+        nom: _nom.text.trim(),
+        centimes: lireEuros(_montant.text)!,
+        categorieId: _categorie!,
+        note: _note.text.trim().isEmpty ? null : _note.text.trim(),
+      );
+      rafraichir(ref);
+      if (mounted) context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _enCours = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Échec : $e')));
+    }
   }
 
   @override

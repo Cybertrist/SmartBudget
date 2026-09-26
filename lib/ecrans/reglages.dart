@@ -7,6 +7,7 @@ import '../config/essais.dart';
 import '../config/format.dart';
 import '../config/theme.dart';
 import '../banque/carte_banque.dart';
+import '../banque/connexion.dart';
 import '../banque/veille.dart';
 import '../donnees/base.dart';
 import '../donnees/demonstration.dart';
@@ -329,12 +330,19 @@ class EcranReglages extends ConsumerWidget {
     messager.showSnackBar(const SnackBar(content: Text('Déchiffrement…')));
     try {
       await Sauvegarde.restaurer(chemin, phrase);
+      final cleOubliee = await const ConnexionBanque().oublierCleIllisible();
       rafraichir(ref);
       messager.hideCurrentSnackBar();
-      messager.showSnackBar(const SnackBar(content: Text('Sauvegarde restaurée.')));
+      messager.showSnackBar(SnackBar(
+          content: Text(cleOubliee
+              ? 'Sauvegarde restaurée. La clé bancaire venait d\'un autre téléphone : importe-la de nouveau pour relier le compte.'
+              : 'Sauvegarde restaurée.')));
     } on FormatException catch (e) {
       messager.hideCurrentSnackBar();
       messager.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      messager.hideCurrentSnackBar();
+      messager.showSnackBar(SnackBar(content: Text('Restauration impossible : $e')));
     }
   }
 
