@@ -72,6 +72,40 @@ for titre in "Fonctionnalités" "Les écrans" "Installer" "Relier la banque" "Au
              "Chiffrement et sauvegarde" "Modèle de confidentialité" "Architecture" "Les tests" "Licence et auteur"; do
   bandeau "$(printf '%02d' $n)" "$titre"; n=$((n+1))
 done
+bandeau "00" "Sommaire"
+
+# --------------------------------------------------------------- sommaire
+# Une tuile par section : son icône, son numéro, son titre. Une image
+# chacune, pour que chaque tuile du README mène à sa section.
+tuile () {
+{ entete 250; echo "$ICONES"; cat <<HTML
+<style>
+.c{height:64px;display:flex;align-items:center;gap:13px;padding:0 14px;background:var(--carte);border:1px solid var(--bord);border-radius:14px}
+.ic{font-family:'Material Symbols Rounded';font-size:22px;width:38px;height:38px;flex-shrink:0;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;color:#1ED760;background:#1ED76014;border:1px solid #1ED76038;box-shadow:0 0 16px #1ED76026}
+.n{font-family:'JetBrains Mono',monospace;font-size:11px;color:#1ED760B0;letter-spacing:1px}
+h3{font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;line-height:1.2;margin-top:2px}
+</style></head><body>
+<div class="c"><span class="ic">$2</span><div><div class="n">$1</div><h3>$3</h3></div></div>
+HTML
+pied; } > "$D/html/sommaire-$1.html"
+rendre "sommaire-$1.html" "$DOCS/sommaire/$1.png" 250
+}
+mkdir -p "$DOCS/sommaire"
+tuile 01 auto_awesome 'Fonctionnalités'
+tuile 02 smartphone 'Les écrans'
+tuile 03 download 'Installer'
+tuile 04 account_balance 'Relier la banque'
+tuile 05 today 'Au quotidien'
+tuile 06 receipt_long 'Lecture d’une opération'
+tuile 07 sync_alt 'Virements et épargne'
+tuile 08 notifications_active 'L’alerte'
+tuile 09 devices_fold 'L’écran déplié'
+tuile 10 lock 'Chiffrement'
+tuile 11 shield 'Confidentialité'
+tuile 12 account_tree 'Architecture'
+tuile 13 task_alt 'Les tests'
+tuile 14 gavel 'Licence'
 
 # ------------------------------------------------------------- les grilles
 # grille <nom> <colonnes> "icone|titre|texte" ...

@@ -532,5 +532,13 @@
   "Attentes qui passent, changent de montant ou sont levées, un an d'historique : rien ne double, rien ne se perd.": "Pending transactions that get booked, change amount or are lifted, a year of history: nothing doubles, nothing is lost.",
   "Jamais figée": "Never frozen",
   "Chaque test borne ses accès à la base dans le temps : un verrou mort ferait échouer la suite au lieu de la geler.": "Every test puts a time limit on its database access: a deadlock would fail the suite instead of freezing it.",
-  "73 tests : 15 sur la logique pure, 58 sur un émulateur Android, où SQLCipher et le Keystore existent.": "73 tests: 15 on pure logic, 58 on an Android emulator, where SQLCipher and the Keystore exist."
+  "73 tests : 15 sur la logique pure, 58 sur un émulateur Android, où SQLCipher et le Keystore existent.": "73 tests: 15 on pure logic, 58 on an Android emulator, where SQLCipher and the Keystore exist.",
+  "Sommaire": "Contents",
+  "Lecture d’une opération": "Reading a transaction",
+  "Virements et épargne": "Transfers and savings",
+  "L’alerte": "The alert",
+  "L’écran déplié": "The unfolded screen",
+  "Chiffrement": "Encryption",
+  "Confidentialité": "Privacy",
+  "Licence": "Licence"
 }

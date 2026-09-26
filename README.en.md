@@ -17,21 +17,26 @@ It reads the current account over PSD2, files every transaction under its catego
 
 It came from a simple wish: stop spending without looking, and stop dipping into savings. The model is Bankin; the style is Spotify's, plain and dark, with a single green. The app itself is in French; this page is its English description, and button names are given as they appear on screen, with their meaning in brackets.
 
+<img src="docs/en/sections/s00.png" alt="00 Contents" width="100%">
+
 <p align="center">
-<a href="#fonctionnalites">Features</a> ·
-<a href="#ecrans">The screens</a> ·
-<a href="#installer">Install</a> ·
-<a href="#relier">Linking the bank</a> ·
-<a href="#quotidien">Day to day</a> ·
-<a href="#lecture">Reading a transaction</a> ·
-<a href="#mouvements">Transfers and refunds</a><br>
-<a href="#alerte">The alert</a> ·
-<a href="#deplie">The unfolded screen</a> ·
-<a href="#chiffrement">Encryption and backup</a> ·
-<a href="#confidentialite">Privacy</a> ·
-<a href="#architecture">Architecture</a> ·
-<a href="#tests">Tests</a> ·
-<a href="#licence">Licence</a>
+<a href="#fonctionnalites"><img src="docs/en/sommaire/01.png" alt="01 Features" width="210"></a>
+<a href="#ecrans"><img src="docs/en/sommaire/02.png" alt="02 The screens" width="210"></a>
+<a href="#installer"><img src="docs/en/sommaire/03.png" alt="03 Install" width="210"></a>
+<a href="#relier"><img src="docs/en/sommaire/04.png" alt="04 Linking the bank" width="210"></a>
+<br>
+<a href="#quotidien"><img src="docs/en/sommaire/05.png" alt="05 Day to day" width="210"></a>
+<a href="#lecture"><img src="docs/en/sommaire/06.png" alt="06 Reading a transaction" width="210"></a>
+<a href="#mouvements"><img src="docs/en/sommaire/07.png" alt="07 Transfers and savings" width="210"></a>
+<a href="#alerte"><img src="docs/en/sommaire/08.png" alt="08 The alert" width="210"></a>
+<br>
+<a href="#deplie"><img src="docs/en/sommaire/09.png" alt="09 The unfolded screen" width="210"></a>
+<a href="#chiffrement"><img src="docs/en/sommaire/10.png" alt="10 Encryption" width="210"></a>
+<a href="#confidentialite"><img src="docs/en/sommaire/11.png" alt="11 Privacy" width="210"></a>
+<a href="#architecture"><img src="docs/en/sommaire/12.png" alt="12 Architecture" width="210"></a>
+<br>
+<a href="#tests"><img src="docs/en/sommaire/13.png" alt="13 Tests" width="210"></a>
+<a href="#licence"><img src="docs/en/sommaire/14.png" alt="14 Licence" width="210"></a>
 </p>
 
 <a id="fonctionnalites"></a>
