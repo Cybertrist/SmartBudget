@@ -1,22 +1,21 @@
 // Les six couches de l'application, traversées par une écriture.
 //
 // À gauche, le téléphone : sur « Associer à un remboursement », le
-// virement de Camille Roux est choisi, et le doigt touche « Valider ». À
-// droite, les six couches, de l'écran au trousseau, et la base en dessous.
-// Une bille verte descend avec l'écriture : l'écran appelle un dépôt, qui
-// écrit dans une transaction, dans une base que seule la clé du trousseau
-// ouvre. Puis l'écran monte la version (rafraichir), et une bille bleue
-// remonte avec la relecture : les dépôts relisent, le domaine refait le
-// bilan, les providers rendent leur nouvelle valeur, la fiche se redessine.
-// La règle de chaque couche s'allume au passage ; la banque reste hors du
-// trajet.
+// virement de Camille Roux est choisi, et le doigt touche « Valider ». Au
+// milieu, les couches et la base, en une colonne. Des flèches numérotées
+// vont d'une carte à l'autre dans l'ordre du code : en vert, à gauche,
+// l'écriture qui descend ; en bleu, à droite, la relecture qui remonte.
+// La bille suit chaque flèche, qui reste tracée : à la fin, tout le trajet
+// se lit d'un coup. providers/ et domaine/ sont grisés pendant la
+// descente, que l'écran fait sans eux ; banque/ reste hors du trajet.
 //
 // Tout suit le code : EcranChoisirRemboursement._valider appelle
-// DepotLiens().rembourser puis rafraichir(ref) ; versionProvider est lu
-// par chaque provider ; DepotBilan.du relit le mois ; calculerBilan retire
-// la part liée de la dépense et des entrées.
+// DepotLiens().rembourser (donnees/depots.dart), dont la base ne s'ouvre
+// qu'avec la clé du KeyVault (donnees/base.dart), puis rafraichir(ref)
+// monte versionProvider (providers/donnees.dart) ; bilanProvider relit par
+// DepotBilan.du, qui passe le mois à calculerBilan (domaine/bilan.dart).
 module.exports = (O) => {
-  const { svg, t, visible, toucher, P, APP, MONO, CARTE, BORD, TITRE, TEXTE, DISCRET, FIL, VERT, NEON, BLEU, OR, ROSE, INTERNE } = O;
+  const { svg, t, visible, fondu, toucher, P, APP, MONO, FOND, CARTE, BORD, TITRE, TEXTE, DISCRET, VERT, NEON, BLEU, OR, ROSE, INTERNE } = O;
   const C = 24;
   const VIOLET = '#B08CFF';
   let corps = '';
@@ -25,7 +24,7 @@ module.exports = (O) => {
 
   // Les instants du cycle.
   const TAP = 0.07;          // le doigt touche « Valider »
-  const POP = 0.56;          // l'écriture faite, la fiche revient
+  const POP = 0.53;          // l'écriture faite, la fiche revient
   const REDESSIN = 0.885;    // la fiche relue se redessine
   const FIN = 0.975;
 
@@ -115,10 +114,28 @@ module.exports = (O) => {
   corps += `<g clip-path="url(#ecranCouches)">${ecrans}</g>`;
 
   // ------------------------------------------------------------------ couches
-  const KX = 440, KL = 780, KY = 88, PAS = 100, KH = 86;
-  const cy = (k) => KY + k * PAS + KH / 2;
-  const RD = 394, RM = 416; // les deux rails : la descente, la remontée
-  const BY = KY + 6 * PAS + 6, BH = 62, bcy = BY + BH / 2;
+  // Une colonne de cartes ; l'écriture passe à gauche, entre le téléphone et
+  // les cartes, la relecture à droite. Chaque flèche va d'une carte à une
+  // autre et ne coupe jamais un texte.
+  const KX = 600, KL = 360, KY = 88, ECART = 20;
+  const hCarte = (n) => 62 + (n - 1) * 17;
+  const couches = [
+    { cle: 'ecrans', nom: 'ecrans/', c: NEON, regle: ['Lisent des providers, écrivent par des dépôts,', 'jamais de SQL. Sur l’écran déplié, les pages', 'deviennent des volets.'] },
+    { cle: 'providers', nom: 'providers/', c: BLEU, regle: ['Riverpod. Une écriture monte un numéro', 'de version : tout ce qui lit la base se relit,', 'd’un seul appel.'] },
+    { cle: 'domaine', nom: 'domaine/', c: OR, regle: ['Du Dart pur, testé sans appareil : lire un libellé,', 'reconnaître un virement interne, classer, détecter', 'les récurrences, faire le bilan.'] },
+    { cle: 'donnees', nom: 'donnees/', c: ROSE, regle: ['Le seul endroit où s’écrit du SQL : les dépôts,', 'le schéma et ses migrations, la sauvegarde,', 'le jeu d’essai.'] },
+    { cle: 'security', nom: 'security/', c: VIOLET, regle: ['Le trousseau : clé maîtresse dans le Keystore,', 'dérivations HKDF, verrou. Rien ne lit un fichier', 'en passant outre.'] },
+    { cle: 'base', nom: 'smartbudget.db', c: INTERNE, regle: ['SQLite chiffré par SQLCipher, schéma en version 6.'] },
+    { cle: 'banque', nom: 'banque/', c: VERT, regle: ['Enable Banking : JWT signé, session, opérations,', 'solde. La clé privée n’est déchiffrée que le', 'temps d’un appel.'] },
+  ];
+  let yc = KY;
+  const K = {};
+  for (const k of couches) {
+    k.h = hCarte(k.regle.length);
+    k.y = yc;
+    yc += k.h + ECART;
+    K[k.cle] = k;
+  }
 
   // Des pictogrammes dans une grille de 28, dessinés en traits.
   const trait = (c) => `fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
@@ -127,102 +144,127 @@ module.exports = (O) => {
     providers: (c) => `<g ${trait(c)}><rect x="2" y="3" width="10" height="8" rx="2.5"/><rect x="16" y="3" width="10" height="8" rx="2.5"/><rect x="16" y="17" width="10" height="8" rx="2.5"/><path d="M12 7 H16 M14 7 V21 H16"/></g>`,
     domaine: (c) => `<path d="M21 5 H7 L15 14 L7 23 H21" ${trait(c)}/>`,
     donnees: (c) => `<g ${trait(c)}><rect x="3" y="3" width="22" height="6" rx="2"/><rect x="3" y="11" width="22" height="6" rx="2"/><rect x="3" y="19" width="22" height="6" rx="2"/></g><circle cx="7" cy="6" r="1.3" fill="${c}"/><circle cx="7" cy="14" r="1.3" fill="${c}"/><circle cx="7" cy="22" r="1.3" fill="${c}"/>`,
-    banque: P.banque,
     security: (c) => `<g ${trait(c)}><path d="M14 2 L24 6 V13 C24 19 19.5 23.5 14 26 C8.5 23.5 4 19 4 13 V6 Z"/><rect x="10" y="13" width="8" height="6.5" rx="1.5"/><path d="M11.5 13 V11 A2.5 2.5 0 0 1 16.5 11 V13"/></g>`,
+    base: P.base,
+    banque: P.banque,
   };
 
-  // Ce que fait chaque couche au passage de l'écriture (vert), du signal
-  // (or) et de la relecture (bleu) : [de, a, texte, couleur, allumée].
-  const couches = [
-    ['ecrans/', 'ecrans', NEON, ['Lisent des providers, écrivent par des dépôts, jamais de SQL.', 'Sur l’écran déplié, les pages deviennent des volets.'], [
-      [TAP - 0.005, 0.15, 'toucher « Valider » : DepotLiens().rembourser(…)', NEON, true],
-      [0.5, 0.56, 'puis rafraichir(ref), et la fiche revient', OR, true],
-      [REDESSIN, FIN, 'la fiche se redessine : 45,00 € reçus', BLEU, true],
-    ]],
-    ['providers/', 'providers', BLEU, ['Riverpod. Une écriture monte un numéro de version :', 'tout ce qui lit la base se relit, d’un seul appel.'], [
-      [0.545, 0.62, 'versionProvider + 1 : chaque provider qui le lit repart', OR, true],
-      [0.8, 0.875, 'liensProvider, bilanProvider… rendent leur nouvelle valeur', BLEU, true],
-    ]],
-    ['domaine/', 'domaine', OR, ['Du Dart pur, testé sans appareil : lire un libellé, reconnaître un virement interne,', 'classer, détecter les récurrences, faire le bilan.'], [
-      [0.71, 0.79, 'calculerBilan : Concert ne pèse plus que 45 €, et les 45 € ne sont pas un revenu', BLEU, true],
-    ]],
-    ['donnees/', 'donnees', ROSE, ['Le seul endroit où s’écrit du SQL : les dépôts, le schéma et ses migrations,', 'la sauvegarde, le jeu d’essai.'], [
-      [0.19, 0.31, 'une transaction : la part est le plus petit des deux restes', NEON, true],
-      [0.635, 0.705, 'DepotBilan.du(septembre) relit le mois et ses liens', BLEU, true],
-    ]],
-    ['banque/', 'banque', VERT, ['Enable Banking : JWT signé, session, opérations, solde.', 'La clé privée n’est déchiffrée que le temps d’un appel.'], [
-      [0.3, 0.37, 'hors du trajet : elle ne sert qu’à la synchronisation', DISCRET, false],
-      [0.6, 0.64, 'hors du trajet : elle ne sert qu’à la synchronisation', DISCRET, false],
-    ]],
-    ['security/', 'security', VIOLET, ['Le trousseau : clé maîtresse dans le Keystore, dérivations HKDF, verrou.', 'Rien ne lit un fichier en passant outre.'], [
-      [0.36, 0.45, 'la base ne s’ouvre qu’avec la clé que HKDF tire du Keystore', NEON, true],
-    ]],
-  ];
+  // Les étapes, dans l'ordre du code. [de, a] : le temps que met la bille.
+  const E1 = [TAP + 0.005, 0.11], E2 = [0.13, 0.21], E3 = [0.24, 0.3], E4 = [0.33, 0.41];
+  const E5 = [0.47, 0.52], E6a = [0.56, 0.62], E6b = [0.62, 0.67], E7 = [0.7, 0.76], E8a = [0.79, 0.83], E8b = [0.845, REDESSIN];
 
-  // Une étiquette, calée à droite sur la ligne du titre.
-  const etiquette_ = (xd, y, texte, couleur) => {
-    const l = Math.round(O.tr(texte).length * 6.3 + 26);
-    return `<rect x="${xd - l}" y="${y - 12}" width="${l}" height="24" rx="12" fill="${couleur}" fill-opacity="0.12" stroke="${couleur}" stroke-opacity="0.55"/>
-      ${t(xd - l / 2, y + 4.5, texte, { taille: 12, couleur, poids: 700, ancre: 'middle' })}`;
+  // Les cartes, allumées quand une bille y arrive.
+  const allume = {
+    ecrans: [[E1[1], E2[0] + 0.02], [E5[0] - 0.02, E5[0] + 0.01], [E8a[1], E8b[0] + 0.01]],
+    donnees: [[E2[1], E4[0] + 0.01], [E6a[1], E7[0] + 0.01]],
+    security: [[E3[1], E3[1] + 0.05]],
+    base: [[E4[1], E4[1] + 0.06], [E6b[1], E6b[1] + 0.03]],
+    providers: [[E5[1], E6a[0] + 0.01], [E7[1], E8a[0] + 0.01]],
+    domaine: [[E7[1], E7[1] + 0.05]],
+    banque: [],
   };
-
-  // Les rails, et les attaches vers chaque couche.
-  corps += `<line x1="${RD}" y1="${cy(0)}" x2="${RD}" y2="${bcy}" stroke="${NEON}" stroke-opacity="0.18" stroke-width="2"/>
-    <line x1="${RM}" y1="${cy(0)}" x2="${RM}" y2="${bcy}" stroke="${BLEU}" stroke-opacity="0.18" stroke-width="2"/>
-    <line x1="${PX + PL}" y1="${cy(0)}" x2="${KX}" y2="${cy(0)}" stroke="${FIL}" stroke-width="2" stroke-dasharray="3 5"/>`;
-  for (let k = 1; k < 6; k++) corps += `<line x1="${RD}" y1="${cy(k)}" x2="${KX}" y2="${cy(k)}" stroke="${FIL}" stroke-width="2" stroke-dasharray="3 5"/>`;
-  corps += `<line x1="${RD}" y1="${bcy}" x2="${KX}" y2="${bcy}" stroke="${FIL}" stroke-width="2" stroke-dasharray="3 5"/>`;
-  corps += t(RD, KY - 10, '↓', { taille: 13, couleur: NEON, ancre: 'middle', poids: 700 });
-  corps += t(RM, KY - 10, '↑', { taille: 13, couleur: BLEU, ancre: 'middle', poids: 700 });
-
-  couches.forEach(([nom, cle, accent, regle, passages], k) => {
-    const y = KY + k * PAS;
-    corps += `<rect x="${KX}" y="${y}" width="${KL}" height="${KH}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${KX}" y="${y + 14}" width="3" height="${KH - 28}" rx="1.5" fill="${accent}"/>
-      <g transform="translate(${KX + 18},${y + 14})">${I[cle](accent)}</g>
-      ${t(KX + 58, y + 30, nom, { taille: 14.5, couleur: accent, police: MONO, poids: 700 })}
-      ${regle.map((l, i) => t(KX + 58, y + 53 + i * 18, l, { taille: 13 })).join('')}`;
-    for (const [de, a, texte, couleur, allumee] of passages) {
-      if (allumee) {
-        corps += `<rect x="${KX}" y="${y}" width="${KL}" height="${KH}" rx="13" fill="${accent}" fill-opacity="0.05" stroke="${accent}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, de, a, 0.006)}</rect>
-          <g opacity="0">${visible(C, de, a, 0.006)}${regle.map((l, i) => t(KX + 58, y + 53 + i * 18, l, { taille: 13, couleur: TITRE })).join('')}</g>`;
-      }
-      corps += `<g opacity="0">${visible(C, de, a, 0.006)}${etiquette_(KX + KL - 16, y + 25, texte, couleur)}</g>`;
+  for (const k of couches) {
+    const x = KX, y = k.y, h = k.h;
+    corps += `<rect x="${x}" y="${y}" width="${KL}" height="${h}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
+      <rect x="${x}" y="${y + 14}" width="3" height="${h - 28}" rx="1.5" fill="${k.c}"/>
+      <g transform="translate(${x + 16},${y + 11}) scale(0.82)">${I[k.cle](k.c)}</g>
+      ${t(x + 50, y + 29, k.nom, { taille: 14.5, couleur: k.cle === 'base' ? TITRE : k.c, police: MONO, poids: 700 })}
+      ${k.regle.map((l, i) => t(x + 20, y + 52 + i * 17, l, { taille: 12.5 })).join('')}`;
+    for (const [de, a] of allume[k.cle]) {
+      corps += `<rect x="${x}" y="${y}" width="${KL}" height="${h}" rx="13" fill="${k.c}" fill-opacity="0.05" stroke="${k.c}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, de, a, 0.006)}</rect>
+        <g opacity="0">${visible(C, de, a, 0.006)}${k.regle.map((l, i) => t(x + 20, y + 52 + i * 17, l, { taille: 12.5, couleur: TITRE })).join('')}</g>`;
     }
-  });
-
-  // La base, sous les couches.
-  corps += `<rect x="${KX}" y="${BY}" width="${KL}" height="${BH}" rx="13" fill="#0F151D" stroke="${BORD}"/>
-    <rect x="${KX}" y="${BY + 12}" width="3" height="${BH - 24}" rx="1.5" fill="${INTERNE}"/>
-    <g transform="translate(${KX + 18},${BY + 17})">${P.base(INTERNE)}</g>
-    ${t(KX + 58, BY + 27, 'smartbudget.db', { taille: 14.5, couleur: TITRE, police: MONO, poids: 700 })}
-    ${t(KX + 58, BY + 47, 'SQLite chiffré par SQLCipher, schéma en version 6', { taille: 12.5 })}`;
-  for (const [de, a, texte, couleur] of [
-    [0.47, 0.565, 'INSERT INTO liens : 1262 → 1287, 4 500 centimes', NEON],
-    [0.585, 0.64, 'SELECT : les opérations du mois, et leurs liens', BLEU],
-  ]) {
-    corps += `<rect x="${KX}" y="${BY}" width="${KL}" height="${BH}" rx="13" fill="none" stroke="${couleur}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, de, a, 0.006)}</rect>
-      <g opacity="0">${visible(C, de, a, 0.006)}${etiquette_(KX + KL - 16, BY + BH / 2, texte, couleur)}</g>`;
+  }
+  // Pendant la descente, providers/ et domaine/ restent à l'écart : grisés.
+  for (const cle of ['providers', 'domaine']) {
+    corps += `<rect x="${KX}" y="${K[cle].y}" width="${KL}" height="${K[cle].h}" rx="13" fill="${FOND}" opacity="0">${fondu('opacity', C, [[0, 0], [E1[0], 0], [E1[0] + 0.01, 0.62], [E5[0] - 0.01, 0.62], [E5[0], 0], [1, 0]])}</rect>`;
+  }
+  // La banque, toujours à l'écart.
+  corps += `<rect x="${KX}" y="${K.banque.y}" width="${KL}" height="${K.banque.h}" rx="13" fill="${FOND}" opacity="0.62"/>`;
+  {
+    const s = 'hors de ce trajet', l = Math.round(O.tr(s).length * 6.9 + 24);
+    corps += `<rect x="${KX + KL - 16 - l}" y="${K.banque.y + 14}" width="${l}" height="24" rx="12" fill="${CARTE}" stroke="${DISCRET}" stroke-opacity="0.8"/>
+      ${t(KX + KL - 16 - l / 2, K.banque.y + 30.5, s, { taille: 11.5, couleur: TEXTE, police: MONO, poids: 700, ancre: 'middle' })}`;
   }
 
-  // Les billes : une pause à chaque couche qui travaille.
-  const trajet = (x, cles, couleur, de, a) => {
-    const temps = [0, ...cles.map((c) => c[0]), 1].join(';');
-    const ys = [cles[0][1], ...cles.map((c) => c[1]), cles.at(-1)[1]].join(';');
-    const anim = `<animate attributeName="cy" dur="${C}s" repeatCount="indefinite" keyTimes="${temps}" values="${ys}"/>`;
-    return `<g filter="url(#halo)" opacity="0">${visible(C, de, a, 0.004)}
-      <circle cx="${x}" cy="${cles[0][1]}" r="11" fill="${couleur}" opacity="0.22">${anim}</circle>
-      <circle cx="${x}" cy="${cles[0][1]}" r="6" fill="${couleur}">${anim}</circle></g>`;
+  // --------------------------------------------------------------- flèches
+  // Une cubique de A à B ; sa longueur et ses points, calculés ici.
+  const bez = (p, u) => {
+    const v = 1 - u;
+    return [0, 1].map((i) => v * v * v * p[0][i] + 3 * v * v * u * p[1][i] + 3 * v * u * u * p[2][i] + u * u * u * p[3][i]);
   };
-  // L'écriture descend : écran, dépôt, trousseau, base.
-  corps += trajet(RD, [[TAP, cy(0)], [0.12, cy(0)], [0.19, cy(3)], [0.3, cy(3)], [0.36, cy(5)], [0.43, cy(5)], [0.47, bcy]], NEON, TAP, 0.52);
-  // Le signal : l'écran monte la version.
-  corps += trajet(RM, [[0.51, cy(0)], [0.545, cy(1)]], OR, 0.505, 0.56);
-  // La relecture remonte : base, dépôt, domaine, providers, écran.
-  corps += trajet(RM, [[0.585, bcy], [0.635, cy(3)], [0.69, cy(3)], [0.71, cy(2)], [0.78, cy(2)], [0.8, cy(1)], [0.86, cy(1)], [REDESSIN, cy(0)]], BLEU, 0.585, FIN);
+  const longueur = (p) => {
+    let l = 0, a = p[0];
+    for (let i = 1; i <= 60; i++) { const b = bez(p, i / 60); l += Math.hypot(b[0] - a[0], b[1] - a[1]); a = b; }
+    return Math.ceil(l);
+  };
+  const r1 = (n) => Math.round(n * 10) / 10;
+  // Un arc qui quitte le bord d'une carte et revient sur le bord d'une autre,
+  // bombé jusqu'à [sommet] ; ou une ligne presque droite.
+  const arc = (x, y1, y2, sommet) => {
+    const xc = x + (sommet - x) / 0.75;
+    return [[x, y1], [xc, y1], [xc, y2], [x, y2]];
+  };
+  const droit = (x1, y, x2) => [[x1, y], [x1 + (x2 - x1) / 3, y], [x1 + 2 * (x2 - x1) / 3, y], [x2, y]];
 
-  corps += t(640, 792, 'Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  const G = KX, D = KX + KL; // les bords gauche et droit des cartes
+  const PD = PX + PL;        // le bord droit du téléphone
+  const Ky = (cle, f) => K[cle].y + f;
+  // [numéro, points, couleur, [de, a], étiquette (une ou deux lignes), où la poser (0..1)]
+  const fleches = [
+    ['1', droit(PD + 2, Ky('ecrans', 18), G - 2), NEON, E1, ['toucher Valider'], 0.5],
+    ['2', arc(G - 2, Ky('ecrans', 82), Ky('donnees', 20), 488), NEON, E2, ['DepotLiens().rembourser()'], 0.5],
+    ['3', arc(G - 2, Ky('donnees', 70), Ky('security', 40), 530), NEON, E3, ['la clé de', 'la base'], 0.5],
+    ['4', arc(G - 2, Ky('donnees', 44), Ky('base', 31), 430), NEON, E4, ['INSERT INTO liens'], 0.75],
+    ['5', arc(D + 2, Ky('ecrans', 84), Ky('providers', 16), 1058), BLEU, E5, ['rafraichir(ref)', 'version + 1'], 0.5],
+    ['6', arc(D + 2, Ky('providers', 70), Ky('donnees', 24), 1178), BLEU, E6a, ['DepotBilan.du'], 0.5],
+    ['6', arc(D + 2, Ky('donnees', 78), Ky('base', 31), 1110), BLEU, E6b, ['SELECT'], 0.5],
+    ['7', arc(D + 2, Ky('donnees', 8), Ky('domaine', 40), 1058), BLEU, E7, ['calculerBilan()'], 0.5],
+    ['8', arc(D + 2, Ky('providers', 44), Ky('ecrans', 56), 1168), BLEU, E8a, [], 0.5],
+    ['8', droit(G - 2, Ky('ecrans', 52), PD + 2), BLEU, E8b, ['la fiche se redessine :', '45,00 € reçus'], 0.5],
+  ];
+  let traits = '', billes = '', etiquettes = '';
+  for (const [n, p, c, [de, a], lignes, ou] of fleches) {
+    const d = `M${p.map((q) => q.map(r1).join(' ')).join(' ').replace(/^(\S+ \S+) /, '$1 C')}`;
+    const l = longueur(p);
+    // Le trait se dessine derrière la bille, puis reste jusqu'à la fin.
+    traits += `<path d="${d}" fill="none" stroke="${c}" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="${l}" stroke-dashoffset="${l}" opacity="0">
+      ${fondu('stroke-dashoffset', C, [[0, l], [de, l], [a, 0], [1, 0]])}${visible(C, de, FIN, 0.004)}</path>`;
+    // La pointe, orientée comme la fin de la courbe.
+    const [x2, y2] = p[3], [xa, ya] = bez(p, 0.97);
+    const ang = Math.atan2(y2 - ya, x2 - xa) * 180 / Math.PI;
+    traits += `<g opacity="0">${visible(C, a - 0.004, FIN, 0.004)}<path transform="translate(${r1(x2)},${r1(y2)}) rotate(${r1(ang)})" d="M-11 -7 L1 0 L-11 7 Z" fill="${c}"/></g>`;
+    // La bille.
+    billes += `<g filter="url(#halo)" opacity="0">${visible(C, de, a, 0.003)}
+      <circle r="11" fill="${c}" opacity="0.25"><animateMotion dur="${C}s" repeatCount="indefinite" path="${d}" keyPoints="0;0;1;1" keyTimes="0;${de};${a};1" calcMode="linear"/></circle>
+      <circle r="6.5" fill="${c}"><animateMotion dur="${C}s" repeatCount="indefinite" path="${d}" keyPoints="0;0;1;1" keyTimes="0;${de};${a};1" calcMode="linear"/></circle></g>`;
+    // Le numéro dans sa pastille, et l'étiquette posée sur la flèche.
+    const [cx, cy] = bez(p, ou);
+    const larg = lignes.length ? Math.round(Math.max(...lignes.map((s) => O.tr(s).length)) * 6.9 + 44) : 28;
+    const haut = lignes.length > 1 ? 40 : 26;
+    const x0 = cx - larg / 2, y0 = cy - haut / 2;
+    etiquettes += `<g opacity="0">${visible(C, de + 0.01, FIN, 0.005)}
+      <rect x="${r1(x0)}" y="${r1(y0)}" width="${larg}" height="${haut}" rx="${lignes.length ? 10 : 14}" fill="${FOND}" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="${r1(x0 + 14)}" cy="${r1(cy)}" r="9.5" fill="${c}"/>
+      ${t(r1(x0 + 14), r1(cy + 4), n, { taille: 11.5, couleur: '#000000', police: MONO, poids: 800, ancre: 'middle' })}
+      ${lignes.map((s, i) => t(r1(x0 + 30), r1(cy + 4 + (i - (lignes.length - 1) / 2) * 15), s, { taille: 11.5, couleur: c, police: MONO, poids: 700 })).join('')}
+    </g>`;
+  }
+  corps += traits + etiquettes + billes;
 
-  svg('couches.svg', 1280, 820, corps,
-    'Les six couches de SmartBudget, traversées par une écriture. ecrans : lisent des providers, écrivent par des dépôts, jamais de SQL ; sur l’écran déplié, les pages deviennent des volets. providers : Riverpod, une écriture monte un numéro de version et tout ce qui lit la base se relit, d’un seul appel. domaine : du Dart pur, testé sans appareil, qui lit un libellé, reconnaît un virement interne, classe, détecte les récurrences et fait le bilan. donnees : le seul endroit où s’écrit du SQL, avec les dépôts, le schéma et ses migrations, la sauvegarde et le jeu d’essai. banque : Enable Banking, JWT signé, session, opérations, solde ; la clé privée n’est déchiffrée que le temps d’un appel. security : le trousseau, clé maîtresse dans le Keystore, dérivations HKDF, verrou ; rien ne lit un fichier en passant outre. Sur le téléphone, on associe au concert de 90 euros le virement de 45 euros de Camille Roux, et l’on touche Valider. L’écriture descend : l’écran appelle DepotLiens().rembourser, le dépôt écrit dans une transaction une part égale au plus petit des deux restes, dans une base SQLCipher que seule la clé tirée du Keystore par HKDF ouvre, et une ligne entre dans la table liens. La banque reste hors du trajet. Puis l’écran appelle rafraichir : versionProvider monte d’un cran, et la relecture remonte. DepotBilan relit le mois et ses liens, calculerBilan établit que le concert ne pèse plus que 45 euros et que les 45 euros reçus ne sont pas un revenu, les providers rendent leur nouvelle valeur, et la fiche du concert affiche 45 euros reçus. Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.');
+  // La légende, sous le téléphone.
+  const LY = PY + PH + 34;
+  corps += `<line x1="${PX + 4}" y1="${LY}" x2="${PX + 44}" y2="${LY}" stroke="${NEON}" stroke-width="3.5" stroke-linecap="round"/>
+    <path transform="translate(${PX + 48},${LY})" d="M-11 -7 L1 0 L-11 7 Z" fill="${NEON}"/>
+    ${t(PX + 62, LY + 4.5, 'l’écriture qui descend', { taille: 13, couleur: TITRE })}
+    <line x1="${PX + 4}" y1="${LY + 30}" x2="${PX + 44}" y2="${LY + 30}" stroke="${BLEU}" stroke-width="3.5" stroke-linecap="round"/>
+    <path transform="translate(${PX + 48},${LY + 30})" d="M-11 -7 L1 0 L-11 7 Z" fill="${BLEU}"/>
+    ${t(PX + 62, LY + 34.5, 'la relecture qui remonte', { taille: 13, couleur: TITRE })}
+    ${t(PX + 4, LY + 66, 'Les numéros suivent l’ordre du code.', { taille: 12, couleur: DISCRET })}`;
+
+  const H = yc - ECART + 58;
+  corps += t(640, H - 24, 'Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+
+  svg('couches.svg', 1280, H, corps,
+    'Les six couches de SmartBudget, traversées par une écriture, étape par étape. ecrans : lisent des providers, écrivent par des dépôts, jamais de SQL ; sur l’écran déplié, les pages deviennent des volets. providers : Riverpod, une écriture monte un numéro de version et tout ce qui lit la base se relit, d’un seul appel. domaine : du Dart pur, testé sans appareil, qui lit un libellé, reconnaît un virement interne, classe, détecte les récurrences et fait le bilan. donnees : le seul endroit où s’écrit du SQL, avec les dépôts, le schéma et ses migrations, la sauvegarde et le jeu d’essai. security : le trousseau, clé maîtresse dans le Keystore, dérivations HKDF, verrou ; rien ne lit un fichier en passant outre. smartbudget.db : SQLite chiffré par SQLCipher, schéma en version 6. banque : Enable Banking, JWT signé, session, opérations, solde ; la clé privée n’est déchiffrée que le temps d’un appel ; elle est hors de ce trajet. Sur le téléphone, on associe au concert de 90 euros le virement de 45 euros de Camille Roux. En vert, l’écriture qui descend : 1, toucher Valider ; 2, ecrans appelle DepotLiens().rembourser() dans donnees, sans passer par providers ni domaine, grisés ; 3, donnees tient de security la clé de la base ; 4, INSERT INTO liens dans smartbudget.db, dans une transaction. En bleu, la relecture qui remonte : 5, ecrans appelle rafraichir(ref), et la version de providers monte d’un cran ; 6, providers relit par DepotBilan.du, qui fait un SELECT dans smartbudget.db ; 7, donnees passe le mois à calculerBilan() dans domaine ; 8, providers rend la nouvelle valeur à ecrans, et la fiche du concert se redessine : 45 euros reçus. Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.');
 };
