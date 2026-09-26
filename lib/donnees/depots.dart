@@ -532,11 +532,14 @@ class DepotLiens {
     const ops = DepotOperations();
     final d = await ops.une(depenseId);
     if (d == null || d.entree) throw ArgumentError('Pas une dépense.');
+    // Lue avant la transaction : passer par la base pendant qu'elle est
+    // ouverte attendrait sa fin, qui attendrait cette lecture, et plus
+    // rien ne répondrait jusqu'au redémarrage.
+    final e = entreeId == null ? null : await ops.une(entreeId);
+    if (entreeId != null && (e == null || !e.entree)) throw ArgumentError('Pas une entrée d\'argent.');
     await db.transaction((t) async {
       await t.delete('liens', where: 'depense_id = ?', whereArgs: [depenseId]);
-      if (entreeId == null) return;
-      final e = await ops.une(entreeId);
-      if (e == null || !e.entree) throw ArgumentError('Pas une entrée d\'argent.');
+      if (entreeId == null || e == null) return;
       final deja = (await t.query('liens', where: 'entree_id = ?', whereArgs: [entreeId]))
           .fold<int>(0, (s, r) => s + (r['montant_centimes']! as int));
       final part = [-d.montantCentimes, e.montantCentimes - deja].reduce((a, b) => a < b ? a : b);
