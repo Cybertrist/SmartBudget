@@ -20,23 +20,24 @@ It came from a simple wish: stop spending without looking, and stop dipping into
 <img src="docs/en/sections/s00.png" alt="00 Contents" width="100%">
 
 <p align="center">
-<a href="#fonctionnalites"><img src="docs/en/sommaire/01.png" alt="01 Features" width="210"></a>
-<a href="#ecrans"><img src="docs/en/sommaire/02.png" alt="02 The screens" width="210"></a>
-<a href="#installer"><img src="docs/en/sommaire/03.png" alt="03 Install" width="210"></a>
-<a href="#relier"><img src="docs/en/sommaire/04.png" alt="04 Linking the bank" width="210"></a>
+<a href="#fonctionnalites"><img src="docs/en/sommaire/01.png" alt="01 Features" width="31%"></a>
+<a href="#ecrans"><img src="docs/en/sommaire/02.png" alt="02 The screens" width="31%"></a>
+<a href="#installer"><img src="docs/en/sommaire/03.png" alt="03 Install" width="31%"></a>
 <br>
-<a href="#quotidien"><img src="docs/en/sommaire/05.png" alt="05 Day to day" width="210"></a>
-<a href="#lecture"><img src="docs/en/sommaire/06.png" alt="06 Reading a transaction" width="210"></a>
-<a href="#mouvements"><img src="docs/en/sommaire/07.png" alt="07 Transfers and savings" width="210"></a>
-<a href="#alerte"><img src="docs/en/sommaire/08.png" alt="08 The alert" width="210"></a>
+<a href="#relier"><img src="docs/en/sommaire/04.png" alt="04 Linking the bank" width="31%"></a>
+<a href="#quotidien"><img src="docs/en/sommaire/05.png" alt="05 Day to day" width="31%"></a>
+<a href="#lecture"><img src="docs/en/sommaire/06.png" alt="06 Reading a transaction" width="31%"></a>
 <br>
-<a href="#deplie"><img src="docs/en/sommaire/09.png" alt="09 The unfolded screen" width="210"></a>
-<a href="#chiffrement"><img src="docs/en/sommaire/10.png" alt="10 Encryption" width="210"></a>
-<a href="#confidentialite"><img src="docs/en/sommaire/11.png" alt="11 Privacy" width="210"></a>
-<a href="#architecture"><img src="docs/en/sommaire/12.png" alt="12 Architecture" width="210"></a>
+<a href="#mouvements"><img src="docs/en/sommaire/07.png" alt="07 Transfers and savings" width="31%"></a>
+<a href="#alerte"><img src="docs/en/sommaire/08.png" alt="08 The alert" width="31%"></a>
+<a href="#deplie"><img src="docs/en/sommaire/09.png" alt="09 The unfolded screen" width="31%"></a>
 <br>
-<a href="#tests"><img src="docs/en/sommaire/13.png" alt="13 Tests" width="210"></a>
-<a href="#licence"><img src="docs/en/sommaire/14.png" alt="14 Licence" width="210"></a>
+<a href="#chiffrement"><img src="docs/en/sommaire/10.png" alt="10 Encryption" width="31%"></a>
+<a href="#confidentialite"><img src="docs/en/sommaire/11.png" alt="11 Privacy" width="31%"></a>
+<a href="#architecture"><img src="docs/en/sommaire/12.png" alt="12 Architecture" width="31%"></a>
+<br>
+<a href="#tests"><img src="docs/en/sommaire/13.png" alt="13 Tests" width="31%"></a>
+<a href="#licence"><img src="docs/en/sommaire/14.png" alt="14 Licence" width="31%"></a>
 </p>
 
 <a id="fonctionnalites"></a>

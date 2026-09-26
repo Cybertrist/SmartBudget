@@ -20,23 +20,24 @@ Elle est née d'une envie simple : arrêter de dépenser sans regarder, et de pi
 <img src="docs/sections/s00.png" alt="00 Sommaire" width="100%">
 
 <p align="center">
-<a href="#fonctionnalites"><img src="docs/sommaire/01.png" alt="01 Fonctionnalités" width="210"></a>
-<a href="#ecrans"><img src="docs/sommaire/02.png" alt="02 Les écrans" width="210"></a>
-<a href="#installer"><img src="docs/sommaire/03.png" alt="03 Installer" width="210"></a>
-<a href="#relier"><img src="docs/sommaire/04.png" alt="04 Relier la banque" width="210"></a>
+<a href="#fonctionnalites"><img src="docs/sommaire/01.png" alt="01 Fonctionnalités" width="31%"></a>
+<a href="#ecrans"><img src="docs/sommaire/02.png" alt="02 Les écrans" width="31%"></a>
+<a href="#installer"><img src="docs/sommaire/03.png" alt="03 Installer" width="31%"></a>
 <br>
-<a href="#quotidien"><img src="docs/sommaire/05.png" alt="05 Au quotidien" width="210"></a>
-<a href="#lecture"><img src="docs/sommaire/06.png" alt="06 Lecture d'une opération" width="210"></a>
-<a href="#mouvements"><img src="docs/sommaire/07.png" alt="07 Virements et épargne" width="210"></a>
-<a href="#alerte"><img src="docs/sommaire/08.png" alt="08 L'alerte" width="210"></a>
+<a href="#relier"><img src="docs/sommaire/04.png" alt="04 Relier la banque" width="31%"></a>
+<a href="#quotidien"><img src="docs/sommaire/05.png" alt="05 Au quotidien" width="31%"></a>
+<a href="#lecture"><img src="docs/sommaire/06.png" alt="06 Lecture d'une opération" width="31%"></a>
 <br>
-<a href="#deplie"><img src="docs/sommaire/09.png" alt="09 L'écran déplié" width="210"></a>
-<a href="#chiffrement"><img src="docs/sommaire/10.png" alt="10 Chiffrement" width="210"></a>
-<a href="#confidentialite"><img src="docs/sommaire/11.png" alt="11 Confidentialité" width="210"></a>
-<a href="#architecture"><img src="docs/sommaire/12.png" alt="12 Architecture" width="210"></a>
+<a href="#mouvements"><img src="docs/sommaire/07.png" alt="07 Virements et épargne" width="31%"></a>
+<a href="#alerte"><img src="docs/sommaire/08.png" alt="08 L'alerte" width="31%"></a>
+<a href="#deplie"><img src="docs/sommaire/09.png" alt="09 L'écran déplié" width="31%"></a>
 <br>
-<a href="#tests"><img src="docs/sommaire/13.png" alt="13 Les tests" width="210"></a>
-<a href="#licence"><img src="docs/sommaire/14.png" alt="14 Licence" width="210"></a>
+<a href="#chiffrement"><img src="docs/sommaire/10.png" alt="10 Chiffrement" width="31%"></a>
+<a href="#confidentialite"><img src="docs/sommaire/11.png" alt="11 Confidentialité" width="31%"></a>
+<a href="#architecture"><img src="docs/sommaire/12.png" alt="12 Architecture" width="31%"></a>
+<br>
+<a href="#tests"><img src="docs/sommaire/13.png" alt="13 Les tests" width="31%"></a>
+<a href="#licence"><img src="docs/sommaire/14.png" alt="14 Licence" width="31%"></a>
 </p>
 
 <a id="fonctionnalites"></a>
