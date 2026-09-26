@@ -66,9 +66,9 @@ pied; } > "$D/html/s$1.html"
 rendre "s$1.html" "$DOCS/sections/s$1.png"
 }
 n=1
-for titre in "Fonctionnalités" "Les écrans" "Installer" "Relier la banque" "Les notifications" "Comment une opération est lue" \
-             "Virements, remboursements, espèces" "L'écran déplié" "La pile" "Architecture" \
-             "Le chiffrement" "Modèle de confidentialité" "Les tests" "Licence et auteur"; do
+for titre in "Fonctionnalités" "Les écrans" "Installer" "Relier la banque" "Au quotidien" "Comment une opération est lue" \
+             "Virements, remboursements, épargne" "L'alerte de compte en négatif" "L'écran déplié" \
+             "Chiffrement et sauvegarde" "Modèle de confidentialité" "Architecture" "Les tests" "Licence et auteur"; do
   bandeau "$(printf '%02d' $n)" "$titre"; n=$((n+1))
 done
 
