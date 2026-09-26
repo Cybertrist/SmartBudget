@@ -37,7 +37,8 @@ It came from a simple wish: stop spending without looking, and stop dipping into
 <a href="#architecture"><img src="docs/en/sommaire/12.png" alt="12 Architecture" width="31%"></a>
 <br>
 <a href="#tests"><img src="docs/en/sommaire/13.png" alt="13 Tests" width="31%"></a>
-<a href="#licence"><img src="docs/en/sommaire/14.png" alt="14 Licence" width="31%"></a>
+<a href="#versions"><img src="docs/en/sommaire/14.png" alt="14 Versions" width="31%"></a>
+<a href="#licence"><img src="docs/en/sommaire/15.png" alt="15 Licence" width="31%"></a>
 </p>
 
 <a id="fonctionnalites"></a>
@@ -286,8 +287,20 @@ flutter test                                   # the pure logic
 flutter test integration_test -d emulator-5554 # the encrypted database, on an emulator
 ```
 
+<a id="versions"></a>
+<img src="docs/en/sections/s14.png" alt="14 Versions" width="100%">
+
+Each version installs over the previous one without losing anything. The details, with the SHA-256 fingerprints, are on each Release page.
+
+- **[1.2.2](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.2.2)**, 26 September 2026: the full audit. Linking a refund no longer freezes the app, it locks again after going to the background, syncing keeps the links of pending transactions, learned rules no longer run wild on a cheque. Net amounts everywhere, correct recurrences for past months, the whole transaction page on the unfolded screen. 73 tests.
+- **[1.2.0](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.2.0)**, 25 September: choosing your bank among all of Enable Banking's, a guide page to get the key, pending transactions shown at once, a sync every time the app opens.
+- **[1.1.0](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.1.0)**, 24 September: the demo, a second app with four months of made-up transactions, next to the real one.
+- **[1.0.3](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.3)**, 24 September: the overdraft alert, every six hours, even with the app closed.
+- **[1.0.2](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.2)** and **[1.0.1](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.1)**: the outings and leisure icons, and the right version number in the settings.
+- **[1.0.0](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.0)**, 24 September: the first version, linked to Crédit Mutuel de Bretagne, with automatic categorising, internal transfers, refunds, recurrences, the unfolded screen and an encrypted database.
+
 <a id="licence"></a>
-<img src="docs/en/sections/s14.png" alt="14 Licence and author" width="100%">
+<img src="docs/en/sections/s15.png" alt="15 Licence and author" width="100%">
 
 The code is released under the [MIT](LICENSE) licence: free to read, reuse and modify, as long as the copyright notice stays. The Figtree font is under the SIL Open Font licence, the Material Symbols icons under Apache 2.0.
 

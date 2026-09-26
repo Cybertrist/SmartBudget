@@ -37,7 +37,8 @@ Elle est née d'une envie simple : arrêter de dépenser sans regarder, et de pi
 <a href="#architecture"><img src="docs/sommaire/12.png" alt="12 Architecture" width="31%"></a>
 <br>
 <a href="#tests"><img src="docs/sommaire/13.png" alt="13 Les tests" width="31%"></a>
-<a href="#licence"><img src="docs/sommaire/14.png" alt="14 Licence" width="31%"></a>
+<a href="#versions"><img src="docs/sommaire/14.png" alt="14 Les versions" width="31%"></a>
+<a href="#licence"><img src="docs/sommaire/15.png" alt="15 Licence" width="31%"></a>
 </p>
 
 <a id="fonctionnalites"></a>
@@ -286,8 +287,20 @@ flutter test                                   # la logique pure
 flutter test integration_test -d emulator-5554 # la base chiffrée, sur un émulateur
 ```
 
+<a id="versions"></a>
+<img src="docs/sections/s14.png" alt="14 Les versions" width="100%">
+
+Chaque version s'installe par-dessus la précédente sans rien perdre. Le détail, avec les empreintes SHA-256, est sur la page de chaque Release.
+
+- **[1.2.2](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.2.2)**, 26 septembre 2026 : l'audit complet. Lier un remboursement ne gèle plus l'application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, les règles apprises ne s'emballent plus sur un chèque. Montants nets partout, récurrences justes sur les mois passés, fiche d'opération entière sur l'écran déplié. 73 tests.
+- **[1.2.0](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.2.0)**, 25 septembre : choisir sa banque parmi toutes celles d'Enable Banking, une page guide pour obtenir la clé, les opérations en attente affichées tout de suite, la synchronisation à chaque ouverture.
+- **[1.1.0](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.1.0)**, 24 septembre : la démo, une seconde application avec quatre mois d'opérations inventées, à côté de la vraie.
+- **[1.0.3](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.3)**, 24 septembre : l'alerte de compte en négatif, toutes les six heures, même application fermée.
+- **[1.0.2](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.2)** et **[1.0.1](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.1)** : les icônes des sorties et loisirs, et le bon numéro de version dans les réglages.
+- **[1.0.0](https://github.com/Cybertrist/SmartBudget/releases/tag/v1.0.0)**, 24 septembre : la première version, reliée au Crédit Mutuel de Bretagne, classement automatique, virements internes, remboursements, récurrences, écran déplié et base chiffrée.
+
 <a id="licence"></a>
-<img src="docs/sections/s14.png" alt="14 Licence et auteur" width="100%">
+<img src="docs/sections/s15.png" alt="15 Licence et auteur" width="100%">
 
 Le code est publié sous licence [MIT](LICENSE) : libre de le lire, de le reprendre et de le modifier, à condition de garder la mention de copyright. La police Figtree est sous licence SIL Open Font, les icônes Material Symbols sous licence Apache 2.0.
 
