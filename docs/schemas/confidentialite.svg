@@ -1,0 +1,393 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 975" width="1280" height="975" role="img" aria-label="Le modèle de confidentialité. Au centre, le téléphone ; le seul fil qui en sort va vers Enable Banking, puis vers la banque, en lecture seule, pour un accès de 180 jours ; rien ne part vers un serveur, un compte, de l’analytique ou de la publicité. Un regard curieux essaie chaque porte, et elles tiennent. Aucun serveur à moi : l’application ne parle qu’à Enable Banking, pour lire le compte. La base est chiffrée par SQLCipher ; sa clé vit dans le Keystore et n’est chargée qu’après l’empreinte, hors la veille du solde. La clé bancaire est chiffrée deux fois, en AES-GCM par une clé dérivée, dans une base elle-même chiffrée. La DSP2 ne donne que la lecture : aucun virement ne peut partir de l’application, et l’accès expire au bout de 180 jours. L’écran est protégé : captures bloquées, aperçu du multitâche masqué, sauvegarde Android refusée. Puis, honnêtement, ce qui reste ouvert. Enable Banking voit passer les opérations le temps de les transmettre : c’est l’agrégateur agréé qui lit la banque. L’application ouverte montre tout : l’empreinte protège l’accès, pas ton épaule. Une sauvegarde voyage et vaut ce que vaut sa phrase ; sans la phrase, elle est perdue, pour tout le monde. Perdre le téléphone, c’est perdre les données qui n’ont pas été sauvegardées : la clé ne se recopie nulle part. La veille du solde se passe d’empreinte : toutes les six heures, la clé est chargée le temps de lire le solde, et l’alerte montre le montant sur l’écran verrouillé. L’empreinte se coupe dans les réglages ; les données restent chiffrées, mais s’ouvrent sans preuve.">
+<title>Le modèle de confidentialité. Au centre, le téléphone ; le seul fil qui en sort va vers Enable Banking, puis vers la banque, en lecture seule, pour un accès de 180 jours ; rien ne part vers un serveur, un compte, de l’analytique ou de la publicité. Un regard curieux essaie chaque porte, et elles tiennent. Aucun serveur à moi : l’application ne parle qu’à Enable Banking, pour lire le compte. La base est chiffrée par SQLCipher ; sa clé vit dans le Keystore et n’est chargée qu’après l’empreinte, hors la veille du solde. La clé bancaire est chiffrée deux fois, en AES-GCM par une clé dérivée, dans une base elle-même chiffrée. La DSP2 ne donne que la lecture : aucun virement ne peut partir de l’application, et l’accès expire au bout de 180 jours. L’écran est protégé : captures bloquées, aperçu du multitâche masqué, sauvegarde Android refusée. Puis, honnêtement, ce qui reste ouvert. Enable Banking voit passer les opérations le temps de les transmettre : c’est l’agrégateur agréé qui lit la banque. L’application ouverte montre tout : l’empreinte protège l’accès, pas ton épaule. Une sauvegarde voyage et vaut ce que vaut sa phrase ; sans la phrase, elle est perdue, pour tout le monde. Perdre le téléphone, c’est perdre les données qui n’ont pas été sauvegardées : la clé ne se recopie nulle part. La veille du solde se passe d’empreinte : toutes les six heures, la clé est chargée le temps de lire le solde, et l’alerte montre le montant sur l’écran verrouillé. L’empreinte se coupe dans les réglages ; les données restent chiffrées, mais s’ouvrent sans preuve.</title>
+<defs>
+  <filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <pattern id="grille" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#1ED760" stroke-opacity="0.05"/>
+  </pattern>
+  <pattern id="hachures" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#161D27"/><line x1="0" y1="0" x2="0" y2="10" stroke="#2A3542" stroke-width="4"/>
+  </pattern>
+  <radialGradient id="lueur" cx="50%" cy="0%" r="80%">
+    <stop offset="0" stop-color="#1ED760" stop-opacity="0.10"/><stop offset="1" stop-color="#1ED760" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="1280" height="975" rx="16" fill="#0D1117"/>
+<rect width="1280" height="975" rx="16" fill="url(#grille)"/>
+<rect width="1280" height="975" rx="16" fill="url(#lueur)"/>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">CONFIDENTIALITÉ</text><text x="254" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >Un regard curieux essaie chaque porte : celles qui tiennent, puis celles qui restent ouvertes.</text><g><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.712;0.732;0.7759999999999999;0.7959999999999999;1" values="1;1;0.1;0.1;1;1"/><rect x="540" y="100" width="200" height="322" rx="34" fill="#07090C" stroke="#2F3A47" stroke-width="2"/>
+    <clipPath id="ecranConf"><rect x="550" y="112" width="180" height="298" rx="24"/></clipPath>
+    <rect x="550" y="112" width="180" height="298" rx="24" fill="#121212"/>
+    <rect x="612" y="105" width="56" height="5" rx="2.5" fill="#1B222C"/>
+    <g clip-path="url(#ecranConf)">
+      <g><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.556;0.56;0.981;0.985;1" values="1;1;0;0;1;1"/><text x="640" y="156" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle">Smart <tspan fill="#50F48D">Budget</tspan></text>
+    <circle cx="640" cy="262" r="38" fill="#1ED760" fill-opacity="0.08" stroke="#1ED760" stroke-opacity="0.45"/>
+    <g transform="translate(612,234) scale(2)"><path d="M6 10 A9 9 0 0 1 22 10 M8 23 A12 12 0 0 1 7 16 A7 7 0 0 1 21 16 C21 19 20 21 19 23 M11 24 A10 10 0 0 1 10 16 A4 4 0 0 1 18 16 C18 19 17 21 15 24 M14 16 V20" fill="none" stroke="#1ED760" stroke-width="1.8" stroke-linecap="round"/></g>
+    <text x="640" y="334" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#B3B3B3" text-anchor="middle" >Pose ton doigt</text>
+    <text x="640" y="352" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#B3B3B3" text-anchor="middle" >pour ouvrir</text></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.552;0.556;0.712;0.716;0.914;0.918;0.985;0.989;1" values="0;0;1;1;0;0;1;1;0;0"/><text x="564" y="152" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF">Smart <tspan fill="#50F48D">Budget</tspan></text>
+    <text x="564" y="184" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="600" fill="#B3B3B3" text-anchor="start" >Sur tes comptes</text>
+    <text x="564" y="214" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="800" fill="#FFFFFF" text-anchor="start" >4 125,33 €</text>
+    <rect x="556" y="234" width="168" height="86" rx="12" fill="#1C1C1C"/>
+    <rect x="562" y="244" width="24" height="24" rx="7" fill="#1ED760" fill-opacity="0.16" stroke="#1ED760" stroke-opacity="0.5"/>
+    <rect x="567" y="251" width="14" height="10" rx="2" fill="none" stroke="#1ED760" stroke-width="1.6"/><path d="M567 254.5 h14" stroke="#1ED760" stroke-width="1.8"/>
+    <text x="594" y="254" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Compte courant</text>
+    <text x="594" y="268" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" >1 065,33 €</text>
+    <line x1="564" y1="278" x2="716" y2="278" stroke="#2A2A2A"/>
+    <rect x="562" y="286" width="24" height="24" rx="7" fill="#3CE0FF" fill-opacity="0.16" stroke="#3CE0FF" stroke-opacity="0.5"/>
+    <text x="574" y="303" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="800" fill="#3CE0FF" text-anchor="middle" >€</text>
+    <text x="594" y="296" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Livret A</text>
+    <text x="594" y="310" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" >3 060,00 €</text>
+    <rect x="556" y="330" width="168" height="66" rx="12" fill="#1C1C1C"/>
+    <text x="566" y="352" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.4">BUDGET</text>
+    <text x="566" y="374" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#1ED760" text-anchor="start" >247,41 €</text>
+    <rect x="566" y="384" width="148" height="5" rx="2.5" fill="#2A2A2A"/>
+    <rect x="566" y="384" width="123.58" height="5" rx="2.5" fill="#1ED760"/></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.786;0.79;0.864;0.868;1" values="0;0;1;1;0;0"/><text x="640" y="182" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="36" font-weight="300" fill="#FFFFFF" text-anchor="middle" >06:02</text>
+    <text x="640" y="204" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#7A7A7A" text-anchor="middle" >Écran verrouillé</text>
+    <rect x="558" y="228" width="164" height="92" rx="14" fill="#1A2230" stroke="#FF6B7A" stroke-opacity="0.5"/>
+    <circle cx="578" cy="248" r="9" fill="#FF6B7A" fill-opacity="0.18" stroke="#FF6B7A"/>
+    <path d="M574 252 v-3 M578 252 v-6 M582 252 v-9" stroke="#FF6B7A" stroke-width="2" stroke-linecap="round"/>
+    <text x="594" y="252" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9" font-weight="400" fill="#7A7A7A" text-anchor="start" >Smart Budget · maintenant</text>
+    <text x="568" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="start" >Compte courant en négatif</text>
+    <text x="568" y="296" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >Ton compte courant</text>
+    <text x="568" y="311" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >est à -42,10 €.</text>
+    <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.806;0.81;0.864;0.868;1" values="0;0;1;1;0;0"/>
+      <circle cx="640" cy="350" r="16" fill="none" stroke="#FFC857" stroke-opacity="0.7" stroke-dasharray="3 4"/>
+      <g transform="translate(626,336)"><circle cx="9" cy="14" r="5" fill="none" stroke="#FFC857" stroke-width="2"/><path d="M14 14 H26 M22 14 V18 M25 14 V17" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/></g>
+      <text x="640" y="384" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" font-weight="700" fill="#FFC857" text-anchor="middle" >clé chargée</text>
+      <text x="640" y="398" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" font-weight="700" fill="#FFC857" text-anchor="middle" >sans empreinte</text>
+    </g></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.864;0.868;0.918;0.922;1" values="0;0;1;1;0;0"/><text x="564" y="156" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+    <rect x="556" y="182" width="168" height="110" rx="12" fill="#1C1C1C"/>
+    <text x="566" y="204" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.4">SÉCURITÉ</text>
+    <text x="566" y="236" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text>
+    <line x1="566" y1="254" x2="714" y2="254" stroke="#2A2A2A"/>
+    <text x="566" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text>
+    <text x="714" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+    <g transform="translate(0,232)">
+      <rect x="690" y="-9" width="28" height="18" rx="9" fill="#1ED760"><animate attributeName="fill" dur="54s" repeatCount="indefinite" keyTimes="0;0.886;0.89;1" values="#1ED760;#1ED760;#3A3A3A;#3A3A3A"/></rect>
+    </g>
+    <circle cx="709" cy="232" r="6" fill="#000000">
+      <animate attributeName="cx" dur="54s" repeatCount="indefinite" keyTimes="0;0.886;0.89;1" values="709;709;699;699"/>
+      <animate attributeName="fill" dur="54s" repeatCount="indefinite" keyTimes="0;0.886;0.89;1" values="#000000;#000000;#9A9A9A;#9A9A9A"/></circle>
+    <circle cx="704" cy="232" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+      <animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.884;0.886;0.908;1" values="0;0;0.8;0;0"/>
+      <animate attributeName="r" dur="54s" repeatCount="indefinite" keyTimes="0;0.884;0.908;1" values="10;10;28;28"/></circle>
+    <rect x="556" y="308" width="168" height="60" rx="12" fill="#FFC857" fill-opacity="0.08" stroke="#FFC857" stroke-opacity="0.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.89;0.894;0.918;0.922;1" values="0;0;1;1;0;0"/></rect>
+    <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.89;0.894;0.918;0.922;1" values="0;0;1;1;0;0"/>
+      <text x="640" y="334" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#FFC857" text-anchor="middle" >Plus de preuve</text>
+      <text x="640" y="352" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#FFC857" text-anchor="middle" >à l’ouverture</text>
+    </g></g>
+    </g>
+    <line x1="530" y1="150" x2="540" y2="150" stroke="#2F3A47" stroke-width="2"/>
+      <rect x="494" y="132" width="36" height="36" rx="10" fill="#131A24" stroke="#1F2833"/>
+      <g transform="translate(498,136)"><rect x="4" y="3" width="20" height="22" rx="3" fill="none" stroke="#5C6A7A" stroke-width="2"/><circle cx="14" cy="14" r="4" fill="none" stroke="#5C6A7A" stroke-width="2"/><path d="M9 3 L11 0 H17 L19 3" fill="none" stroke="#5C6A7A" stroke-width="2" stroke-linejoin="round"/></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.42600000000000005;0.43000000000000005;0.985;0.989;1" values="0;0;1;1;0;0"/>
+        <rect x="494" y="132" width="36" height="36" rx="10" fill="#10251A" stroke="#1ED760"/>
+        <g transform="translate(498,136)"><rect x="4" y="3" width="20" height="22" rx="3" fill="none" stroke="#1ED760" stroke-width="2"/><circle cx="14" cy="14" r="4" fill="none" stroke="#1ED760" stroke-width="2"/><path d="M9 3 L11 0 H17 L19 3" fill="none" stroke="#1ED760" stroke-width="2" stroke-linejoin="round"/></g>
+        <circle cx="496" cy="134" r="7" fill="#1ED760"/>
+        <path d="M492.5 134 l2.5 2.5 l4.5 -5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <circle cx="512" cy="150" r="18" fill="none" stroke="#1ED760" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.43000000000000005;0.43200000000000005;0.46;1" values="0;0;0.9;0;0"/>
+        <animate attributeName="r" dur="54s" repeatCount="indefinite" keyTimes="0;0.43000000000000005;0.46;1" values="18;18;40;40"/></circle><line x1="530" y1="206" x2="540" y2="206" stroke="#2F3A47" stroke-width="2"/>
+      <rect x="494" y="188" width="36" height="36" rx="10" fill="#131A24" stroke="#1F2833"/>
+      <g transform="translate(498,192)"><ellipse cx="14" cy="6" rx="10" ry="4" fill="none" stroke="#5C6A7A" stroke-width="2"/><path d="M4 6 V22 A10 4 0 0 0 24 22 V6 M4 14 A10 4 0 0 0 24 14" fill="none" stroke="#5C6A7A" stroke-width="2"/></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.11399999999999999;0.118;0.985;0.989;1" values="0;0;1;1;0;0"/>
+        <rect x="494" y="188" width="36" height="36" rx="10" fill="#10251A" stroke="#1ED760"/>
+        <g transform="translate(498,192)"><ellipse cx="14" cy="6" rx="10" ry="4" fill="none" stroke="#1ED760" stroke-width="2"/><path d="M4 6 V22 A10 4 0 0 0 24 22 V6 M4 14 A10 4 0 0 0 24 14" fill="none" stroke="#1ED760" stroke-width="2"/></g>
+        <circle cx="496" cy="190" r="7" fill="#1ED760"/>
+        <path d="M492.5 190 l2.5 2.5 l4.5 -5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <circle cx="512" cy="206" r="18" fill="none" stroke="#1ED760" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.118;0.12;0.148;1" values="0;0;0.9;0;0"/>
+        <animate attributeName="r" dur="54s" repeatCount="indefinite" keyTimes="0;0.118;0.148;1" values="18;18;40;40"/></circle><line x1="530" y1="262" x2="540" y2="262" stroke="#2F3A47" stroke-width="2"/>
+      <rect x="494" y="244" width="36" height="36" rx="10" fill="#131A24" stroke="#1F2833"/>
+      <g transform="translate(498,248)"><circle cx="9" cy="14" r="5" fill="none" stroke="#5C6A7A" stroke-width="2"/><path d="M14 14 H26 M22 14 V18 M25 14 V17" stroke="#5C6A7A" stroke-width="2" stroke-linecap="round"/></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.192;0.196;0.985;0.989;1" values="0;0;1;1;0;0"/>
+        <rect x="494" y="244" width="36" height="36" rx="10" fill="#10251A" stroke="#1ED760"/>
+        <g transform="translate(498,248)"><circle cx="9" cy="14" r="5" fill="none" stroke="#1ED760" stroke-width="2"/><path d="M14 14 H26 M22 14 V18 M25 14 V17" stroke="#1ED760" stroke-width="2" stroke-linecap="round"/></g>
+        <circle cx="496" cy="246" r="7" fill="#1ED760"/>
+        <path d="M492.5 246 l2.5 2.5 l4.5 -5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <circle cx="512" cy="262" r="18" fill="none" stroke="#1ED760" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.196;0.198;0.226;1" values="0;0;0.9;0;0"/>
+        <animate attributeName="r" dur="54s" repeatCount="indefinite" keyTimes="0;0.196;0.226;1" values="18;18;40;40"/></circle><line x1="530" y1="318" x2="540" y2="318" stroke="#2F3A47" stroke-width="2"/>
+      <rect x="494" y="300" width="36" height="36" rx="10" fill="#131A24" stroke="#1F2833"/>
+      <g transform="translate(498,304)"><rect x="5" y="12" width="18" height="14" rx="3" fill="none" stroke="#5C6A7A" stroke-width="2"/><path d="M9 12 V8 A5 5 0 0 1 19 8 V12" fill="none" stroke="#5C6A7A" stroke-width="2"/></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.27;0.274;0.985;0.989;1" values="0;0;1;1;0;0"/>
+        <rect x="494" y="300" width="36" height="36" rx="10" fill="#10251A" stroke="#1ED760"/>
+        <g transform="translate(498,304)"><rect x="5" y="12" width="18" height="14" rx="3" fill="none" stroke="#1ED760" stroke-width="2"/><path d="M9 12 V8 A5 5 0 0 1 19 8 V12" fill="none" stroke="#1ED760" stroke-width="2"/></g>
+        <circle cx="496" cy="302" r="7" fill="#1ED760"/>
+        <path d="M492.5 302 l2.5 2.5 l4.5 -5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <circle cx="512" cy="318" r="18" fill="none" stroke="#1ED760" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.274;0.276;0.304;1" values="0;0;0.9;0;0"/>
+        <animate attributeName="r" dur="54s" repeatCount="indefinite" keyTimes="0;0.274;0.304;1" values="18;18;40;40"/></circle><line x1="530" y1="374" x2="540" y2="374" stroke="#2F3A47" stroke-width="2"/>
+      <rect x="494" y="356" width="36" height="36" rx="10" fill="#131A24" stroke="#1F2833"/>
+      <g transform="translate(498,360)"><path d="M3 10 H23 M18 5 L23 10 L18 15 M25 19 H5 M10 14 L5 19 L10 24" fill="none" stroke="#5C6A7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.348;0.352;0.985;0.989;1" values="0;0;1;1;0;0"/>
+        <rect x="494" y="356" width="36" height="36" rx="10" fill="#10251A" stroke="#1ED760"/>
+        <g transform="translate(498,360)"><path d="M3 10 H23 M18 5 L23 10 L18 15 M25 19 H5 M10 14 L5 19 L10 24" fill="none" stroke="#1ED760" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+        <circle cx="496" cy="358" r="7" fill="#1ED760"/>
+        <path d="M492.5 358 l2.5 2.5 l4.5 -5" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <circle cx="512" cy="374" r="18" fill="none" stroke="#1ED760" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.352;0.354;0.382;1" values="0;0;0.9;0;0"/>
+        <animate attributeName="r" dur="54s" repeatCount="indefinite" keyTimes="0;0.352;0.382;1" values="18;18;40;40"/></circle><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.806;0.81;0.864;0.868;1" values="0;0;1;1;0;0"/>
+    <rect x="494" y="244" width="36" height="36" rx="10" fill="#261F0E" stroke="#FFC857" filter="url(#halo)"/>
+    <g transform="translate(498,248)"><circle cx="9" cy="14" r="5" fill="none" stroke="#FFC857" stroke-width="2"/><path d="M14 14 H26 M22 14 V18 M25 14 V17" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/></g>
+    <circle cx="496" cy="246" r="7" fill="#FFC857"/>
+    <path d="M496 242.5 v3.5 M496 249 v0.5" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+  </g></g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.728;0.732;0.7759999999999999;0.7799999999999999;1" values="0;0;1;1;0;0"/>
+    <rect x="540" y="100" width="200" height="322" rx="34" fill="none" stroke="#FFC857" stroke-width="2" stroke-dasharray="8 8"/>
+    <text x="640" y="257" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="64" font-weight="300" fill="#FFC857" text-anchor="middle" >?</text>
+    <text x="640" y="295" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >la clé est partie</text>
+    <text x="640" y="313" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >avec lui</text>
+  </g><g><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.712;0.732;0.7759999999999999;0.7959999999999999;1" values="1;1;0.15;0.15;1;1"/><path d="M740 150 C820 150 820 136 900 136" fill="none" stroke="#3CE0FF" stroke-width="2" stroke-dasharray="6 7">
+  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><path d="M1060 168 V250" fill="none" stroke="#8FA3B8" stroke-width="2" stroke-dasharray="6 7">
+  <animate attributeName="stroke-dashoffset" from="26" to="0" dur="1.2s" repeatCount="indefinite"/></path><g filter="url(#halo)">
+  <circle r="9" fill="#1ED760" opacity="0.22">
+    <animateMotion dur="5s" repeatCount="indefinite" path="M740 150 C820 150 820 136 900 136 H1060 V282" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/>
+  </circle>
+  <circle r="4" fill="#1ED760">
+    <animateMotion dur="5s" repeatCount="indefinite" path="M740 150 C820 150 820 136 900 136 H1060 V282" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/>
+  </circle>
+</g><g filter="url(#halo)">
+  <circle r="9" fill="#3CE0FF" opacity="0.22">
+    <animateMotion dur="5s" repeatCount="indefinite" path="M1060 282 V136 H900 C820 136 820 150 740 150" keyPoints="0;0;1" keyTimes="0;0.5;1" calcMode="linear"/>
+  </circle>
+  <circle r="4" fill="#3CE0FF">
+    <animateMotion dur="5s" repeatCount="indefinite" path="M1060 282 V136 H900 C820 136 820 150 740 150" keyPoints="0;0;1" keyTimes="0;0.5;1" calcMode="linear"/>
+  </circle>
+</g></g><text x="815" y="122" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#3CE0FF" text-anchor="middle" >le seul fil</text><g>
+  <rect x="900" y="104" width="320" height="64" rx="13" fill="#131A24" stroke="#1F2833"/>
+  
+  <rect x="900" y="118" width="3" height="36" rx="1.5" fill="#3CE0FF"/>
+  <g transform="translate(918,122)"><path d="M8 22 H22 A5 5 0 0 0 21 12 A7 7 0 0 0 8 13 A4.5 4.5 0 0 0 8 22 Z" fill="none" stroke="#3CE0FF" stroke-width="2"/></g>
+  <text x="958" y="133" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Enable Banking</text>
+  <text x="958" y="153" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >l’agrégateur agréé, accès DSP2</text>
+</g><g>
+  <rect x="900" y="250" width="320" height="64" rx="13" fill="#131A24" stroke="#1F2833"/>
+  
+  <rect x="900" y="264" width="3" height="36" rx="1.5" fill="#8FA3B8"/>
+  <g transform="translate(918,268)"><path d="M2 11 L14 3 L26 11 Z M5 13 H23 M7 14 V23 M12 14 V23 M16 14 V23 M21 14 V23 M3 25 H25" fill="none" stroke="#8FA3B8" stroke-width="2" stroke-linejoin="round"/></g>
+  <text x="958" y="279" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Ta banque</text>
+  <text x="958" y="299" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >le compte courant</text>
+</g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.484;0.488;0.5519999999999999;0.5559999999999999;1" values="0;0;1;1;0;0"/>
+    <rect x="900" y="104" width="320" height="64" rx="13" fill="none" stroke="#FFC857" stroke-width="1.5" filter="url(#halo)"/>
+    <rect x="1142" y="124" width="64" height="24" rx="12" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+    <g transform="translate(1174,136)"><path d="M-14 0 Q0 -10 14 0 Q0 10 -14 0 Z" fill="none" stroke="#FFC857" stroke-width="1.8"/><circle r="3.6" fill="#FFC857"/></g>
+  </g><text x="1074" y="198" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#F0F4F8" text-anchor="start" >lecture seule</text><text x="1074" y="218" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >accès : 180 jours</text><rect x="1074" y="228" width="130" height="5" rx="2.5" fill="#1D2530"/>
+    <rect x="1074" y="228" width="130" height="5" rx="2.5" fill="#3CE0FF"><animate attributeName="width" dur="54s" repeatCount="indefinite" keyTimes="0;0.342;0.386;0.396;0.406;1" values="130;130;0;0;130;130"/></rect><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.38;0.384;0.396;0.4;1" values="0;0;1;1;0;0"/><text x="1210" y="233" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10.5" font-weight="700" fill="#FF6B7A" text-anchor="start" >expiré</text></g><g opacity="0" filter="url(#halo)"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.33;0.334;0.362;0.366;1" values="0;0;1;1;0;0"/>
+    <circle r="6" fill="#FF6B7A"><animateMotion dur="54s" repeatCount="indefinite" path="M740 150 C820 150 820 136 900 136" keyPoints="0;0;0.5;0.5" keyTimes="0;0.334;0.352;1" calcMode="linear"/></circle>
+  </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.348;0.352;0.396;0.4;1" values="0;0;1;1;0;0"/>
+    <circle cx="820" cy="143" r="12" fill="#0D1117" stroke="#FF6B7A" stroke-width="2"/>
+    <path d="M815 138 l10 10 M825 138 l-10 10" stroke="#FF6B7A" stroke-width="2.4" stroke-linecap="round"/>
+    <text x="820" y="176" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FF6B7A" text-anchor="middle" >aucun virement</text>
+  </g><path d="M740 388 H880" stroke="#2F3A47" stroke-width="2" stroke-dasharray="3 6"/><text x="812" y="376" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#5C6A7A" text-anchor="middle" >rien d’autre</text><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.036000000000000004;0.04;0.985;0.989;1" values="0;0;1;1;0;0"/>
+    <circle cx="858" cy="388" r="10" fill="#0D1117" stroke="#1ED760" stroke-width="2"/>
+    <path d="M854 384 l8 8 M862 384 l-8 8" stroke="#1ED760" stroke-width="2.2" stroke-linecap="round"/>
+  </g><rect x="900" y="372" width="74" height="32" rx="16" fill="#131A24" stroke="#1F2833"/>
+      <text x="937" y="392.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#8B99A8" text-anchor="middle" >serveur</text>
+      <line x1="910" y1="388.5" x2="910" y2="388.5" stroke="#1ED760" stroke-width="1.8">
+        <animate attributeName="x2" dur="54s" repeatCount="indefinite" keyTimes="0;0.04;0.055;0.985;0.99;1" values="910;910;964;964;910;910"/></line><rect x="982" y="372" width="74" height="32" rx="16" fill="#131A24" stroke="#1F2833"/>
+      <text x="1019" y="392.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#8B99A8" text-anchor="middle" >compte</text>
+      <line x1="992" y1="388.5" x2="992" y2="388.5" stroke="#1ED760" stroke-width="1.8">
+        <animate attributeName="x2" dur="54s" repeatCount="indefinite" keyTimes="0;0.046;0.061;0.985;0.99;1" values="992;992;1046;1046;992;992"/></line><rect x="1064" y="372" width="74" height="32" rx="16" fill="#131A24" stroke="#1F2833"/>
+      <text x="1101" y="392.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#8B99A8" text-anchor="middle" >analytique</text>
+      <line x1="1074" y1="388.5" x2="1074" y2="388.5" stroke="#1ED760" stroke-width="1.8">
+        <animate attributeName="x2" dur="54s" repeatCount="indefinite" keyTimes="0;0.052000000000000005;0.067;0.985;0.99;1" values="1074;1074;1128;1128;1074;1074"/></line><rect x="1146" y="372" width="74" height="32" rx="16" fill="#131A24" stroke="#1F2833"/>
+      <text x="1183" y="392.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#8B99A8" text-anchor="middle" >publicité</text>
+      <line x1="1156" y1="388.5" x2="1156" y2="388.5" stroke="#1ED760" stroke-width="1.8">
+        <animate attributeName="x2" dur="54s" repeatCount="indefinite" keyTimes="0;0.058;0.07300000000000001;0.985;0.99;1" values="1156;1156;1210;1210;1156;1156"/></line><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.796;0.8;0.864;0.868;1" values="0;0;1;1;0;0"/>
+    <rect x="754" y="228" width="136" height="34" rx="17" fill="#FFC857" fill-opacity="0.12" stroke="#FFC857" stroke-opacity="0.7"/>
+    <g transform="translate(760,231)"><circle cx="14" cy="14" r="11" fill="none" stroke="#FFC857" stroke-width="2"/><path d="M14 8 V14 L18 17" fill="none" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/></g>
+    <text x="794" y="250" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#FFC857" text-anchor="start" >toutes les 6 h</text>
+  </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.63;0.634;0.708;0.712;1" values="0;0;1;1;0;0"/>
+    <animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" keyTimes="0;0.634;0.656;1" values="330 0;330 0;0 0;0 0" calcMode="spline" keySplines="0 0 1 1;0.3 0 0.2 1;0 0 1 1"/>
+    <rect x="150" y="322" width="210" height="60" rx="12" fill="#131A24" stroke="#FFC857" stroke-opacity="0.7"/>
+    <g transform="translate(164,338)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#FFC857" stroke-width="2" stroke-linejoin="round"/></g>
+    <text x="202" y="348" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >smartbudget.sbx</text>
+    <text x="202" y="367" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="400" fill="#FFC857" text-anchor="start" >phrase : ••••••••</text>
+  </g><g><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.478;0.488;0.5519999999999999;0.556;0.712;0.722;0.7859999999999999;0.79;1" values="1;1;0.3;0.3;1;1;0.3;0.3;1;1"/>
+    <animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" keyTimes="0;0.088;0.104;0.166;0.182;0.244;0.26;0.322;0.338;0.4;0.41600000000000004;0.478;0.494;0.556;0.5720000000000001;0.634;0.65;0.712;0.728;0.79;0.806;0.868;0.884;0.985;1" values="800 432;800 432;440 206;440 206;440 262;440 262;440 318;440 318;440 374;440 374;440 150;440 150;440 150;440 150;505 84;505 84;405 352;405 352;440 262;440 262;505 84;505 84;505 84;505 84;800 432" calcMode="spline" keySplines="0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1;0.45 0 0.25 1"/>
+    <g filter="url(#halo)">
+      <path d="M-22 0 Q0 -17 22 0 Q0 17 -22 0 Z" fill="#0D1117" stroke="#FF8FD1" stroke-width="2.2"/>
+      <circle r="7.5" fill="none" stroke="#FF8FD1" stroke-width="2"/>
+      <circle r="3.5" fill="#FF8FD1"/>
+    </g>
+  </g><line x1="466" y1="150" x2="490" y2="150" stroke="#FF8FD1" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.41200000000000003;0.41600000000000004;0.43000000000000005;0.43400000000000005;1" values="0;0;1;1;0;0"/></line><line x1="466" y1="206" x2="490" y2="206" stroke="#FF8FD1" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.09999999999999999;0.104;0.118;0.122;1" values="0;0;1;1;0;0"/></line><line x1="466" y1="262" x2="490" y2="262" stroke="#FF8FD1" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.178;0.182;0.196;0.2;1" values="0;0;1;1;0;0"/></line><line x1="466" y1="318" x2="490" y2="318" stroke="#FF8FD1" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.256;0.26;0.274;0.278;1" values="0;0;1;1;0;0"/></line><line x1="466" y1="374" x2="490" y2="374" stroke="#FF8FD1" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.334;0.338;0.352;0.356;1" values="0;0;1;1;0;0"/></line><path d="M522 96 L560 122" stroke="#FFC857" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.5700000000000001;0.5740000000000001;0.63;0.634;1" values="0;0;1;1;0;0"/></path><path d="M522 96 L560 122" stroke="#FFC857" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.804;0.808;0.864;0.868;1" values="0;0;1;1;0;0"/></path><path d="M522 96 L560 122" stroke="#FFC857" stroke-width="2" stroke-dasharray="4 4" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.882;0.886;0.942;0.946;1" values="0;0;1;1;0;0"/></path><rect x="60" y="112" width="336" height="178" rx="14" fill="#131A24" stroke="#1F2833"/><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.006;0.01;0.08399999999999999;0.088;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#1ED760" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#1ED760"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">IL ESSAIE</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >1 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Trouver un serveur qui garde tout</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Il n’y en a pas : l’application ne parle</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >qu’à Enable Banking, pour lire le compte.</text>
+      <rect x="82" y="246" width="124" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.7"/>
+      <text x="144" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#1ED760" text-anchor="middle" >porte fermée</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.08399999999999999;0.088;0.16199999999999998;0.16599999999999998;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#1ED760" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#1ED760"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">IL ESSAIE</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >2 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Lire le fichier de la base</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Du bruit : SQLCipher chiffre la base entière,</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >et sa clé n’est pas posée à côté.</text>
+      <rect x="82" y="246" width="124" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.7"/>
+      <text x="144" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#1ED760" text-anchor="middle" >porte fermée</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.162;0.166;0.24;0.244;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#1ED760" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#1ED760"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">IL ESSAIE</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >3 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Prendre la clé en mémoire</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Elle n’y est pas : le Keystore ne la donne</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >qu’après l’empreinte.</text>
+      <rect x="82" y="246" width="124" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.7"/>
+      <text x="144" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#1ED760" text-anchor="middle" >porte fermée</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.24;0.244;0.318;0.322;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#1ED760" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#1ED760"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">IL ESSAIE</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >4 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Voler la clé bancaire</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Chiffrée en AES-GCM par une clé dérivée,</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >dans une base elle-même chiffrée.</text>
+      <rect x="82" y="246" width="124" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.7"/>
+      <text x="144" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#1ED760" text-anchor="middle" >porte fermée</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.318;0.322;0.396;0.4;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#1ED760" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#1ED760"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">IL ESSAIE</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >5 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Faire partir un virement</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Impossible : la DSP2 ne donne que la lecture,</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >et l’accès expire au bout de 180 jours.</text>
+      <rect x="82" y="246" width="124" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.7"/>
+      <text x="144" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#1ED760" text-anchor="middle" >porte fermée</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.396;0.4;0.47400000000000003;0.47800000000000004;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#1ED760" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#1ED760"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">IL ESSAIE</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >6 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Capturer l’écran</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Capture noire, aperçu du multitâche masqué,</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >sauvegarde Android refusée.</text>
+      <rect x="82" y="246" width="124" height="28" rx="14" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-opacity="0.7"/>
+      <text x="144" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#1ED760" text-anchor="middle" >porte fermée</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.474;0.478;0.5519999999999999;0.5559999999999999;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#FFC857" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#FFC857"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">CE QUI RESTE OUVERT</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >1 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Regarder passer les opérations</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Enable Banking les voit, le temps de les</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >transmettre : c’est lui qui lit la banque.</text>
+      <rect x="82" y="246" width="138" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+      <text x="151" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >porte ouverte</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.552;0.556;0.63;0.634;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#FFC857" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#FFC857"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">CE QUI RESTE OUVERT</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >2 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Regarder par-dessus l’épaule</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >L’application ouverte montre tout :</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >l’empreinte protège l’accès, pas ton épaule.</text>
+      <rect x="82" y="246" width="138" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+      <text x="151" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >porte ouverte</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.63;0.634;0.708;0.712;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#FFC857" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#FFC857"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">CE QUI RESTE OUVERT</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >3 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Deviner la phrase d’une sauvegarde</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Le fichier voyage, et vaut ce que vaut sa</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >phrase. Sans elle, il est perdu pour tous.</text>
+      <rect x="82" y="246" width="138" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+      <text x="151" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >porte ouverte</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.708;0.712;0.7859999999999999;0.7899999999999999;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#FFC857" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#FFC857"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">CE QUI RESTE OUVERT</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >4 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Le téléphone est perdu</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Ce qui n’a pas été sauvegardé l’est aussi :</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >la clé ne se recopie nulle part.</text>
+      <rect x="82" y="246" width="138" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+      <text x="151" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >porte ouverte</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.786;0.79;0.864;0.868;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#FFC857" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#FFC857"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">CE QUI RESTE OUVERT</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >5 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Lire l’écran verrouillé</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Toutes les six heures, la veille charge la clé</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >sans empreinte ; l’alerte montre le montant.</text>
+      <rect x="82" y="246" width="138" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+      <text x="151" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >porte ouverte</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.864;0.868;0.942;0.946;1" values="0;0;1;1;0;0"/>
+      <rect x="60" y="112" width="336" height="178" rx="14" fill="none" stroke="#FFC857" stroke-opacity="0.7"/>
+      <rect x="60" y="128" width="3" height="146" rx="1.5" fill="#FFC857"/>
+      <text x="82" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FF8FD1" text-anchor="start" letter-spacing="2">CE QUI RESTE OUVERT</text>
+      <text x="376" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#5C6A7A" text-anchor="end" >6 / 6</text>
+      <text x="82" y="172" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#F0F4F8" text-anchor="start" >Ouvrir sans empreinte</text>
+      <text x="82" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >Coupée dans les réglages, elle ne protège</text><text x="82" y="219" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8B99A8" text-anchor="start" >plus : les données s’ouvrent sans preuve.</text>
+      <rect x="82" y="246" width="138" height="28" rx="14" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-opacity="0.7"/>
+      <text x="151" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFC857" text-anchor="middle" >porte ouverte</text>
+    </g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.942;0.946;1" values="0;0;1;1"/>
+    <text x="228" y="195" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" font-weight="700" fill="#1ED760" text-anchor="middle" >6 portes fermées</text>
+    <text x="228" y="219" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" font-weight="700" fill="#FFC857" text-anchor="middle" >6 restées ouvertes</text>
+  </g><g transform="translate(60,468)"><path d="M11 1 L20 5 V11 C20 17 16 21 11 23 C6 21 2 17 2 11 V5 Z" fill="#1ED760" fill-opacity="0.14" stroke="#1ED760" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 12 l3 3 l5 -6" fill="none" stroke="#1ED760" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="92" y="486" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="17" font-weight="800" fill="#1ED760" text-anchor="start" >Ce qui est vrai</text><rect x="60" y="506" width="568" height="86.6" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="60" y="506" width="568" height="86.6" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.006;0.01;0.08399999999999999;0.088;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="60" y="518" width="3" height="62.599999999999994" rx="1.5" fill="#1ED760"/>
+        <circle cx="86" cy="530.3" r="5" fill="#1ED760" fill-opacity="0.25" stroke="#1ED760"/>
+        <text x="104" y="535.3" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >Aucun serveur à moi.</text>
+        <text x="104" y="554.3" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >L’application ne parle qu’à Enable Banking, pour lire le compte.</text><text x="104" y="573.3" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Pas de compte, pas d’analytique, pas de publicité.</text><rect x="60" y="602.6" width="568" height="86.6" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="60" y="602.6" width="568" height="86.6" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.08399999999999999;0.088;0.24;0.244;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="60" y="614.6" width="3" height="62.599999999999994" rx="1.5" fill="#1ED760"/>
+        <circle cx="86" cy="626.9" r="5" fill="#1ED760" fill-opacity="0.25" stroke="#1ED760"/>
+        <text x="104" y="631.9" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >La base est chiffrée par SQLCipher.</text>
+        <text x="104" y="650.9" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Sa clé vit dans le Keystore et n’est chargée qu’après l’empreinte,</text><text x="104" y="669.9" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >hors la veille du solde.</text><rect x="60" y="699.2" width="568" height="67.6" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="60" y="699.2" width="568" height="67.6" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.24;0.244;0.318;0.322;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="60" y="711.2" width="3" height="43.599999999999994" rx="1.5" fill="#1ED760"/>
+        <circle cx="86" cy="723.5" r="5" fill="#1ED760" fill-opacity="0.25" stroke="#1ED760"/>
+        <text x="104" y="728.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >La clé bancaire est chiffrée deux fois</text>
+        <text x="104" y="747.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >En AES-GCM par une clé dérivée, dans une base elle-même chiffrée.</text><rect x="60" y="776.8000000000001" width="568" height="86.6" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="60" y="776.8000000000001" width="568" height="86.6" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.318;0.322;0.396;0.4;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="60" y="788.8000000000001" width="3" height="62.599999999999994" rx="1.5" fill="#1ED760"/>
+        <circle cx="86" cy="801.1" r="5" fill="#1ED760" fill-opacity="0.25" stroke="#1ED760"/>
+        <text x="104" y="806.1" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >La DSP2 ne donne que la lecture.</text>
+        <text x="104" y="825.1" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Aucun virement ne peut partir de l’application,</text><text x="104" y="844.1" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >et l’accès expire au bout de 180 jours.</text><rect x="60" y="873.4000000000001" width="568" height="67.6" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="60" y="873.4000000000001" width="568" height="67.6" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.396;0.4;0.47400000000000003;0.47800000000000004;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="60" y="885.4000000000001" width="3" height="43.599999999999994" rx="1.5" fill="#1ED760"/>
+        <circle cx="86" cy="897.7" r="5" fill="#1ED760" fill-opacity="0.25" stroke="#1ED760"/>
+        <text x="104" y="902.7" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >L’écran est protégé</text>
+        <text x="104" y="921.7" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Captures bloquées, aperçu du multitâche masqué, sauvegarde Android refusée.</text><g transform="translate(652,468)"><circle cx="11" cy="12" r="10" fill="#FFC857" fill-opacity="0.14" stroke="#FFC857" stroke-width="1.8"/><path d="M11 7 V13" stroke="#FFC857" stroke-width="2.2" stroke-linecap="round"/><circle cx="11" cy="17" r="1.4" fill="#FFC857"/></g>
+      <text x="684" y="486" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="17" font-weight="800" fill="#FFC857" text-anchor="start" >Ce qui ne l’est pas</text><rect x="652" y="506" width="568" height="61" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="652" y="506" width="568" height="61" rx="12" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.474;0.478;0.5519999999999999;0.5559999999999999;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="652" y="518" width="3" height="37" rx="1.5" fill="#FFC857"/>
+        <circle cx="678" cy="527" r="5" fill="#FFC857" fill-opacity="0.25" stroke="#FFC857"/>
+        <text x="696" y="532" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >Enable Banking voit passer les opérations</text>
+        <text x="696" y="551" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >le temps de les transmettre : c’est l’agrégateur agréé qui lit la banque.</text><rect x="652" y="577" width="568" height="61" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="652" y="577" width="568" height="61" rx="12" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.552;0.556;0.63;0.634;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="652" y="589" width="3" height="37" rx="1.5" fill="#FFC857"/>
+        <circle cx="678" cy="598" r="5" fill="#FFC857" fill-opacity="0.25" stroke="#FFC857"/>
+        <text x="696" y="603" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >L’application ouverte montre tout.</text>
+        <text x="696" y="622" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >L’empreinte protège l’accès, pas ton épaule.</text><rect x="652" y="648" width="568" height="61" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="652" y="648" width="568" height="61" rx="12" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.63;0.634;0.708;0.712;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="652" y="660" width="3" height="37" rx="1.5" fill="#FFC857"/>
+        <circle cx="678" cy="669" r="5" fill="#FFC857" fill-opacity="0.25" stroke="#FFC857"/>
+        <text x="696" y="674" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >Une sauvegarde voyage et vaut ce que vaut sa phrase.</text>
+        <text x="696" y="693" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Sans la phrase, elle est perdue, pour tout le monde.</text><rect x="652" y="719" width="568" height="61" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="652" y="719" width="568" height="61" rx="12" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.708;0.712;0.7859999999999999;0.7899999999999999;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="652" y="731" width="3" height="37" rx="1.5" fill="#FFC857"/>
+        <circle cx="678" cy="740" r="5" fill="#FFC857" fill-opacity="0.25" stroke="#FFC857"/>
+        <text x="696" y="745" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >Perdre le téléphone, c’est perdre les données</text>
+        <text x="696" y="764" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >qui n’ont pas été sauvegardées : la clé ne se recopie nulle part.</text><rect x="652" y="790" width="568" height="80" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="652" y="790" width="568" height="80" rx="12" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.786;0.79;0.864;0.868;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="652" y="802" width="3" height="56" rx="1.5" fill="#FFC857"/>
+        <circle cx="678" cy="811" r="5" fill="#FFC857" fill-opacity="0.25" stroke="#FFC857"/>
+        <text x="696" y="816" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >La veille du solde se passe d’empreinte</text>
+        <text x="696" y="835" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >Toutes les six heures, la clé est chargée le temps de lire le solde,</text><text x="696" y="854" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >et l’alerte montre le montant sur l’écran verrouillé.</text><rect x="652" y="880" width="568" height="61" rx="12" fill="#131A24" stroke="#1F2833"/>
+        <rect x="652" y="880" width="568" height="61" rx="12" fill="#FFC857" fill-opacity="0.06" stroke="#FFC857" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" keyTimes="0;0.864;0.868;0.942;0.946;1" values="0;0;1;1;0;0"/></rect>
+        <rect x="652" y="892" width="3" height="37" rx="1.5" fill="#FFC857"/>
+        <circle cx="678" cy="901" r="5" fill="#FFC857" fill-opacity="0.25" stroke="#FFC857"/>
+        <text x="696" y="906" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >L’empreinte se coupe</text>
+        <text x="696" y="925" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="400" fill="#8B99A8" text-anchor="start" >dans les réglages ; les données restent chiffrées, mais s’ouvrent sans preuve.</text>
+</svg>

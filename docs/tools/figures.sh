@@ -1,9 +1,10 @@
 #!/bin/bash
 # Toutes les figures fixes du README : la bannière, les bandeaux de
-# section, les fonctionnalités, les planches de captures, la pile, les
-# couches, le modèle de données, les tests, la confidentialité, la palette
-# et le bouton de téléchargement. C'est le seul fichier à ouvrir pour
-# changer un texte.
+# section, les fonctionnalités, la palette et le bouton de
+# téléchargement. Les tests, la pile, les couches, le modèle de données
+# et la confidentialité sont devenus des schémas animés, dans
+# docs/tools/schemas/. C'est le seul fichier à ouvrir pour changer un
+# texte des figures fixes.
 #
 #   bash docs/tools/figures.sh
 source "$(dirname "${BASH_SOURCE[0]}")/rendu.sh"
@@ -110,122 +111,6 @@ grille fonctionnalites 3 \
   "search|La recherche|Toutes les opérations, depuis la première : un nom, une note, un montant." \
   "lock|Chiffré sur le téléphone|SQLCipher, clé dans le Keystore, déverrouillée par l'empreinte. Captures et aperçu du multitâche bloqués." \
   "backup|La sauvegarde chiffrée|Un fichier AES-GCM, clé tirée d'une phrase par PBKDF2, qui se relit sur un autre téléphone."
-
-grille stack 3 \
-  "code|Flutter 3|L'application entière, en Dart, un seul code pour le téléphone et l'écran déplié." \
-  "database|sqflite_sqlcipher|SQLite chiffré par SQLCipher, schéma en version 6, migrations sans perte." \
-  "key|flutter_secure_storage|La clé maîtresse dans le Keystore Android, jamais sur le disque en clair." \
-  "enhanced_encryption|cryptography|HKDF pour dériver les clés, AES-GCM pour la clé bancaire et la sauvegarde, PBKDF2 pour la phrase." \
-  "fingerprint|local_auth|L'empreinte, qui charge la clé : sans elle, la base reste illisible." \
-  "account_tree|flutter_riverpod|L'état : une écriture fait relire tout ce qui en dépend, d'un seul appel." \
-  "route|go_router|La navigation, et la garde du verrou sur chaque page." \
-  "draw|pointycastle|La signature RS256 des requêtes à la banque, en Dart, octet pour octet celle d'OpenSSL." \
-  "schedule|workmanager|La veille du solde, toutes les six heures, même application fermée." \
-  "notifications|flutter_local_notifications|L'unique notification : le compte courant passé en négatif." \
-  "calendar_month|intl|Les dates et les montants à la française." \
-  "interests|material_symbols_icons|Cinq cents icônes au choix, arrondies comme l'interface."
-
-grille tests 3 \
-  "rule|Libellés|Le marchand sort du bruit de la banque, et sa clé ne change pas d'un mois à l'autre." \
-  "sync_alt|Virements internes|Vers le livret, depuis le livret, un livret au nom inhabituel, et un virement à quelqu'un qui n'en est pas un." \
-  "autorenew|Récurrences|Un abonnement mensuel reconnu avec sa prochaine date, des courses irrégulières qui n'en sont pas." \
-  "category|Classement|Le dictionnaire, les corrections apprises et suivies, et une synchronisation relancée qui ne double rien." \
-  "calculate|Bilan|Remboursements répartis, remboursement marchand, dépense en espèces retirée des retraits." \
-  "account_balance_wallet|Portefeuille|50 € comptés, un retrait de 20 €, 12 € au marché : il en reste 58." \
-  "backup|Sauvegarde|Tout revient avec la bonne phrase ; une phrase fausse ne touche à rien." \
-  "draw|Signature|Le JWT signé en Dart est, octet pour octet, celui d'OpenSSL." \
-  "link|Remboursements|Lier depuis la dépense ou depuis l'entrée, sans jamais dépasser, même avec deux écritures au même instant."   "sync|Synchronisations|Attentes qui passent, changent de montant ou sont levées, un an d'historique : rien ne double, rien ne se perd."   "timer|Jamais figée|Chaque test borne ses accès à la base dans le temps : un verrou mort ferait échouer la suite au lieu de la geler."   "android|Sur appareil|73 tests : 15 sur la logique pure, 58 sur un émulateur Android, où SQLCipher et le Keystore existent."
-
-# --------------------------------------------------------------- couches
-{ entete 1280; echo "$ICONES"; cat <<'HTML'
-<style>
-.w{padding:24px 56px;display:flex;flex-direction:column;gap:10px}
-.c{display:grid;grid-template-columns:220px 1fr;align-items:center;gap:22px;background:var(--carte);border:1px solid var(--bord);
-  border-radius:14px;padding:16px 20px;position:relative}
-.c:before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:2px;background:var(--a)}
-.n{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--a)}
-.n span{font-family:'Material Symbols Rounded';font-size:22px}
-p{font-family:'Space Grotesk',sans-serif;font-size:14px;line-height:1.5;color:var(--texte)}
-code{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#C3CCD7}
-.f{text-align:center;font-family:'Material Symbols Rounded';color:#2F3A47;font-size:20px;line-height:1;margin:-4px 0}
-</style></head><body><div class="w">
-<div class="c" style="--a:#50F48D"><div class="n"><span>dashboard</span>ecrans/</div><p>Lisent des providers, écrivent par des dépôts, jamais de SQL. Sur l'écran déplié, les pages deviennent des volets.</p></div>
-<div class="f">south</div>
-<div class="c" style="--a:#3CE0FF"><div class="n"><span>account_tree</span>providers/</div><p>Riverpod. Une écriture monte un numéro de version : tout ce qui lit la base se relit, d'un seul appel.</p></div>
-<div class="f">south</div>
-<div class="c" style="--a:#FFC857"><div class="n"><span>functions</span>domaine/</div><p>Du Dart pur, testé sans appareil : lire un libellé, reconnaître un virement interne, classer, détecter les récurrences, faire le bilan.</p></div>
-<div class="f">south</div>
-<div class="c" style="--a:#FF8FD1"><div class="n"><span>storage</span>donnees/</div><p>Le seul endroit où s'écrit du SQL : les dépôts, le schéma et ses migrations, la sauvegarde, le jeu d'essai.</p></div>
-<div class="f">south</div>
-<div class="c" style="--a:#1ED760"><div class="n"><span>account_balance</span>banque/</div><p>Enable Banking : JWT signé, session, opérations, solde. La clé privée n'est déchiffrée que le temps d'un appel.</p></div>
-<div class="f">south</div>
-<div class="c" style="--a:#B08CFF"><div class="n"><span>shield_lock</span>security/</div><p>Le trousseau : clé maîtresse dans le Keystore, dérivations HKDF, verrou. Rien ne lit un fichier en passant outre.</p></div>
-</div>
-HTML
-pied; } > "$D/html/couches.html"
-rendre couches.html "$DOCS/schemas/couches.png"
-
-# ---------------------------------------------------------------- modèle
-table () {
-  local nom="$1" ic="$2" coul="$3"; shift 3
-  printf '<div class="t" style="--a:%s"><div class="h"><span>%s</span>%s</div>' "$coul" "$ic" "$nom"
-  for ch in "$@"; do IFS=':' read -r a b <<< "$ch"; printf '<div class="r"><b>%s</b><i>%s</i></div>' "$a" "$b"; done
-  printf '</div>'
-}
-{ entete 1280; echo "$ICONES"; cat <<HTML
-<style>
-.w{padding:24px 56px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
-.t{background:var(--carte);border:1px solid var(--bord);border-radius:14px;overflow:hidden}
-.h{display:flex;align-items:center;gap:10px;padding:13px 16px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;
-  color:var(--a);border-bottom:1px solid var(--bord);background:linear-gradient(90deg,color-mix(in srgb,var(--a) 12%,transparent),transparent)}
-.h span{font-family:'Material Symbols Rounded';font-size:20px;font-weight:400}
-.r{display:flex;justify-content:space-between;gap:12px;padding:7px 16px;border-top:1px solid #1A222C}
-.r:first-of-type{border-top:0}
-.r b{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:500;color:#C3CCD7}
-.r i{font-style:normal;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--texte);text-align:right}
-</style></head><body><div class="w">
-$(table operations receipt_long '#1ED760' "libelle:tel que la banque l'écrit" "montant_centimes:un entier, jamais un flottant" "categorie_id:vers categories" "origine:main, règle, dictionnaire, interne" "interne:vers ou depuis l'épargne" "uid_banque:unique : rien ne se double" "nom · note:choisis à la main" "pointee · especes:vérifiée, payée en liquide" "mois_compte:rattachée à un autre mois")
-$(table categories category '#FFC857' "nom · icone · couleur:ce qui se voit" "parent_id:une sous-catégorie" "genre:dépense, revenu, épargne, interne" "nature:essentiel, plaisir, imprévu")
-$(table comptes account_balance_wallet '#3CE0FF' "nature:courant, livret, portefeuille" "solde_centimes:au dernier relevé" "motif:son nom dans les virements")
-$(table liens link '#FF8FD1' "entree_id:le remboursement" "depense_id:la dépense remboursée" "montant_centimes:la part qui lui revient")
-$(table regles school '#B08CFF' "motif:le marchand appris" "categorie_id:où il va désormais")
-$(table reglages tune '#8FA3B8' "cle · valeur:budget, début du mois" "banque_*:clé chiffrée, session" "repetition · nom:choix par marchand")
-</div>
-HTML
-pied; } > "$D/html/modele.html"
-rendre modele.html "$DOCS/schemas/modele.png"
-
-# ------------------------------------------------------- confidentialité
-{ entete 1280; echo "$ICONES"; cat <<'HTML'
-<style>
-.w{padding:24px 56px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.col{background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:18px 20px}
-h3{display:flex;align-items:center;gap:10px;font-family:Syne,sans-serif;font-size:19px;margin-bottom:10px;color:var(--a)}
-h3 span{font-family:'Material Symbols Rounded';font-size:24px}
-li{list-style:none;display:flex;gap:10px;padding:9px 0;border-top:1px solid #1A222C;font-family:'Space Grotesk',sans-serif;font-size:14px;line-height:1.5;color:var(--texte)}
-li:first-child{border-top:0}
-li:before{content:'';flex-shrink:0;width:6px;height:6px;border-radius:50%;margin-top:8px;background:var(--a)}
-b{color:#DDE4EC;font-weight:600}
-</style></head><body><div class="w">
-<div class="col" style="--a:#1ED760"><h3><span>verified_user</span>Ce qui est vrai</h3><ul>
-<li><span><b>Aucun serveur à moi.</b> L'application ne parle qu'à Enable Banking, pour lire le compte. Pas de compte, pas d'analytique, pas de publicité.</span></li>
-<li><span><b>La base est chiffrée</b> par SQLCipher ; sa clé vit dans le Keystore et n'est chargée qu'après l'empreinte, hors la veille du solde.</span></li>
-<li><span><b>La clé bancaire est chiffrée deux fois</b> : en AES-GCM par une clé dérivée, dans une base elle-même chiffrée.</span></li>
-<li><span><b>La DSP2 ne donne que la lecture.</b> Aucun virement ne peut partir de l'application, et l'accès expire au bout de 180 jours.</span></li>
-<li><span><b>L'écran est protégé</b> : captures bloquées, aperçu du multitâche masqué, sauvegarde Android refusée.</span></li>
-</ul></div>
-<div class="col" style="--a:#FFC857"><h3><span>info</span>Ce qui ne l'est pas</h3><ul>
-<li><span><b>Enable Banking voit passer les opérations</b> le temps de les transmettre : c'est l'agrégateur agréé qui lit la banque.</span></li>
-<li><span><b>L'application ouverte montre tout.</b> L'empreinte protège l'accès, pas ton épaule.</span></li>
-<li><span><b>Une sauvegarde voyage</b> et vaut ce que vaut sa phrase. Sans la phrase, elle est perdue, pour tout le monde.</span></li>
-<li><span><b>Perdre le téléphone, c'est perdre les données</b> qui n'ont pas été sauvegardées : la clé ne se recopie nulle part.</span></li>
-<li><span><b>La veille du solde se passe d'empreinte</b> : toutes les six heures, la clé est chargée le temps de lire le solde, et l'alerte montre le montant sur l'écran verrouillé.</span></li>
-<li><span><b>L'empreinte se coupe</b> dans les réglages ; les données restent chiffrées, mais s'ouvrent sans preuve.</span></li>
-</ul></div>
-</div>
-HTML
-pied; } > "$D/html/confidentialite.html"
-rendre confidentialite.html "$DOCS/schemas/confidentialite.png"
 
 # ---------------------------------------------------------------- palette
 pastille () { printf '<div class="p"><i style="background:%s"></i><b>%s</b><span>%s</span></div>' "$1" "$2" "$1"; }
