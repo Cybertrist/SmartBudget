@@ -8,7 +8,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smartbudget/domaine/bilan.dart';
 import 'package:smartbudget/domaine/classement.dart';
-import 'package:smartbudget/domaine/libelle.dart';
 import 'package:smartbudget/domaine/modeles.dart';
 import 'package:smartbudget/domaine/mois.dart';
 import 'package:smartbudget/domaine/recurrences.dart';

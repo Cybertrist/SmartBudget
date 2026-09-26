@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../config/format.dart';
+import '../config/layout.dart';
 import '../config/theme.dart';
 import '../domaine/classement.dart';
 import '../domaine/libelle.dart';
@@ -114,15 +115,306 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
       });
     }
 
+    final gauche = <Widget>[
+            // La note s'écrit dans une carte qui s'agrandit au centre :
+            // le clavier ne pousse plus la page hors de l'écran.
+            _CarteNote(
+              note: o.note,
+              onTap: () async {
+                final texte = await ecrireNote(context, titre: o.titre, initial: o.note ?? '');
+                if (texte == null) return;
+                await modifier(() => const DepotOperations().modifier(o.id, note: texte.trim().isEmpty ? null : texte.trim()));
+              },
+            ),
+            const SizedBox(height: 14),
+            Carte(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Surtitre('Classement'),
+                    _Ligne(
+                      icone: 'edit',
+                      libelle: 'Nom',
+                      valeur: o.titre,
+                      onTap: () async {
+                        final nom = await demanderTexte(
+                          context,
+                          titre: 'Renommer',
+                          aide: 'Toutes les opérations « ${joli(o.libelle)} » prendront ce nom, les prochaines aussi.',
+                          initial: o.titre,
+                          indice: joli(o.libelle),
+                        );
+                        if (nom != null) await modifier(() => const DepotOperations().renommer(o.id, nom));
+                      },
+                    ),
+                    _Ligne(
+                      icone: 'sync_alt',
+                      libelle: 'Mouvement',
+                      valeur: switch (o.interne) {
+                        null => o.entree ? 'Revenu' : 'Dépense',
+                        SensInterne.versEpargne => "Vers l'épargne",
+                        SensInterne.depuisEpargne => "Depuis l'épargne",
+                        SensInterne.entreComptes => 'Entre mes comptes',
+                      },
+                      couleur: o.interne == null ? null : AppColors.interne,
+                      onTap: choisirMouvement,
+                    ),
+                    if (o.interne == null) ...[
+                    _Ligne(
+                      icone: 'label',
+                      libelle: 'Catégorie',
+                      valeur: cat.parentId == null ? cat.nom : '${parent.nom} › ${cat.nom}',
+                      couleur: couleur,
+                      onTap: () async {
+                        final id = await choisirCategorie(context, ref);
+                        if (id == null) return;
+                        final suivies = await const DepotOperations().reclasser(o.id, id);
+                        rafraichir(ref);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(suivies > 0
+                                ? 'Reclassée, et ${pluriel(suivies, 'autre opération', 'autres opérations')} du même marchand avec elle.'
+                                : 'Reclassée. Les prochaines de ce marchand suivront.'),
+                          ));
+                        }
+                      },
+                    ),
+                    if (!o.entree)
+                      _Ligne(
+                        icone: 'favorite',
+                        libelle: 'Type',
+                        valeur: nature.libelle,
+                        couleur: couleurNature(nature),
+                        onTap: () async {
+                          final choix = await carteChoix<Nature>(
+                            context,
+                            builder: (ctx) => SafeArea(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  for (final n in Nature.values)
+                                    ListTile(
+                                      leading: Icon(iconeDe(iconeNature(n)), color: couleurNature(n), fill: 1),
+                                      title: Text(n.libelle, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                      trailing: n == nature ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                                      onTap: () => Navigator.pop(ctx, n),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                          if (choix != null) await modifier(() => const DepotOperations().modifier(o.id, nature: choix));
+                        },
+                      ),
+                    _Ligne(
+                      icone: 'calendar_month',
+                      libelle: 'Compte en',
+                      valeur: nomMoisSeul(moisCompte),
+                      onTap: () async {
+                        final choix = await carteChoix<Mois>(
+                          context,
+                          builder: (ctx) => SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                for (final m in [moisOp.precedent, moisOp, moisOp.suivant])
+                                  ListTile(
+                                    title: Text(nomMois(m)),
+                                    trailing: m == moisCompte ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                                    onTap: () => Navigator.pop(ctx, m),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                        if (choix != null) {
+                          await modifier(() => const DepotOperations().modifier(o.id, moisCompte: choix == moisOp ? null : choix));
+                        }
+                      },
+                    ),
+                    ],
+                  ],
+                ),
+              ),
+            if (o.interne != null) ...[
+              const SizedBox(height: 14),
+              _BlocInterne(sens: o.interne!),
+            ],
+    ];
+    final droite = <Widget>[
+            Carte(
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Surtitre('Suivi'),
+                  if (!o.entree && o.interne == null)
+                    _Ligne(
+                      icone: 'autorenew',
+                      libelle: 'Répétition',
+                      valeur: repetition?.frequence.libelle ?? 'Aucune',
+                      couleur: repetition == null ? null : AppColors.vert,
+                      onTap: () async {
+                        // Un enregistrement, pour distinguer « aucune » d'une feuille refermée.
+                        final choix = await carteChoix<(Frequence?,)>(
+                          context,
+                          builder: (ctx) => SafeArea(
+                            child: SingleChildScrollView(
+                              child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+                                  child: Text('Toutes les opérations « ${joli(cle)} » suivent ce choix.',
+                                      textAlign: TextAlign.center, style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
+                                ),
+                                for (final (f, texte) in [(null, 'Aucune'), for (final f in Frequence.values) (f, f.libelle)])
+                                  ListTile(
+                                    title: Text(texte, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                    trailing: f == repetition?.frequence ? Icon(iconeDe('check'), color: AppColors.vert) : null,
+                                    onTap: () => Navigator.pop(ctx, (f,)),
+                                  ),
+                              ],
+                            ),
+                            ),
+                          ),
+                        );
+                        if (choix != null) await modifier(() => const DepotOperations().choisirRepetition(cle, choix.$1));
+                      },
+                    ),
+                  // Une entrée qui rembourse une dépense n'est pas un revenu :
+                  // rangée dans « Remboursements », elle sort des entrées.
+                  if (o.entree && o.interne == null && remboursements != null)
+                    _Bascule(
+                      icone: 'currency_exchange',
+                      libelle: 'C\'est un remboursement',
+                      valeur: o.categorieId == remboursements.id,
+                      onChanged: (v) => modifier(() async {
+                        await const DepotOperations().reclasser(o.id, v ? remboursements.id : remboursements.parentId!, apprendre: false);
+                      }),
+                    ),
+                  // Un virement interne est déjà hors de l'analyse : la
+                  // bascule le montre, et ne change qu'avec le mouvement.
+                  _Bascule(
+                    icone: 'visibility_off',
+                    libelle: 'Masquer de l\'analyse',
+                    valeur: o.masquee || o.interne != null,
+                    onChanged: o.interne != null ? null : (v) => modifier(() => const DepotOperations().modifier(o.id, masquee: v)),
+                  ),
+                ],
+              ),
+            ),
+            if (o.origine == Origine.main || o.origine == Origine.regle) ...[
+              const SizedBox(height: 14),
+              _Info(
+                texte: o.especes
+                    ? 'Payée en espèces, saisie à la main.'
+                    : o.origine == Origine.main && motifAApprendre(o.libelle) == null
+                    ? 'Reclassée à la main. Un chèque ou un retrait n\'a pas de marchand : les suivants ne la suivront pas.'
+                    : o.origine == Origine.main
+                    ? 'Reclassée à la main. Les prochaines opérations « ${joli(cleMarchand(o.libelle))} » iront d\'elles-mêmes dans ${cat.nom}.'
+                    : 'Classée d\'après une de tes corrections précédentes.',
+              ),
+            ],
+            if (o.entree && o.interne == null) ...[
+              const SizedBox(height: 14),
+              _BlocRembourse(operation: o, liens: lies.where((l) => l.entreeId == o.id).toList()),
+            ],
+            if (!o.entree && o.interne == null) ...[
+              const SizedBox(height: 14),
+              Builder(builder: (context) {
+                final rembourse = lies.where((l) => l.depenseId == o.id).fold(0, (s, l) => s + l.montantCentimes);
+                return Carte(
+                  padding: const EdgeInsets.fromLTRB(18, 6, 18, 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _Ligne(
+                        icone: 'link',
+                        libelle: 'Remboursement',
+                        valeur: rembourse == 0 ? 'Aucun' : '${euros(rembourse)} reçus',
+                        couleur: rembourse == 0 ? null : AppColors.vert,
+                        onTap: () => context.push('/operation/${o.id}/rembourse'),
+                      ),
+                      if (rembourse > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text('Elle ne compte plus que pour ${euros(-o.montantCentimes - rembourse)}.',
+                              style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                        ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            if (o.uidBanque == null) ...[
+              const SizedBox(height: 14),
+              TextButton.icon(
+                onPressed: () async {
+                  final ok = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Supprimer cette dépense ?'),
+                      content: const Text('Elle a été saisie à la main : la banque ne la connaît pas.'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+                        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte))),
+                      ],
+                    ),
+                  );
+                  if (ok != true) return;
+                  await const DepotOperations().supprimerManuelle(o.id);
+                  rafraichir(ref);
+                  if (context.mounted) revenir(context);
+                },
+                icon: Icon(iconeDe('delete'), color: AppColors.alerte),
+                label: const Text('Supprimer la dépense', style: TextStyle(color: AppColors.alerte, fontWeight: FontWeight.w700)),
+              ),
+            ],
+            const SizedBox(height: 18),
+            // Pointer : tu confirmes que la catégorie est la bonne.
+            o.pointee
+                ? OutlinedButton.icon(
+                    onPressed: () => modifier(() => const DepotOperations().pointer(o.id, false)),
+                    icon: Icon(iconeDe('task_alt'), color: AppColors.vert),
+                    label: const Text('Pointée', style: TextStyle(color: AppColors.vert, fontWeight: FontWeight.w800)),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                      shape: const StadiumBorder(),
+                      side: BorderSide(color: AppColors.vert.withValues(alpha: 0.4)),
+                      backgroundColor: AppColors.vert.withValues(alpha: 0.08),
+                    ),
+                  )
+                : FilledButton.icon(
+                    onPressed: () => modifier(() => const DepotOperations().pointer(o.id, true)),
+                    icon: Icon(iconeDe('task_alt'), color: Colors.black),
+                    label: const Text('Pointer', style: TextStyle(fontWeight: FontWeight.w800)),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                      shape: const StadiumBorder(),
+                      backgroundColor: AppColors.vert,
+                      foregroundColor: Colors.black,
+                    ),
+                  ),
+    ];
+    final deuxColonnes = AppLayout.usesRail(context) && !dansUnVolet(context);
+
+    // Dans un volet, ou en pleine page sur l'écran déplié : l'en-tête
+    // serré, pour que tout tienne sans défiler.
+    final serre = dansUnVolet(context) || AppLayout.usesRail(context);
     return Scaffold(
       body: SafeArea(
         child: Contenu(
           padding: const EdgeInsets.only(bottom: 24),
+          // Ouverte en pleine page sur l'écran déplié, elle se resserre aussi :
+          // tout tient sans défiler.
+          ajuster: serre,
           // Dans un volet, le montant monte à côté du titre et l'en-tête
           // tient sur une ligne : la page n'est plus qu'un bloc serré.
           tete: EnTetePage(surtitre: cat.nom, titre: o.titre, montant: Montant(o.montantCentimes, taille: 24, signe: true)),
           children: [
-            if (dansUnVolet(context))
+            if (serre)
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
                 child: Row(
@@ -138,6 +430,10 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 12.5, height: 1.45, color: AppColors.texteDiscret, fontFeatures: chiffres)),
                     ),
+                    if (!dansUnVolet(context)) ...[
+                      const SizedBox(width: 12),
+                      Montant(o.montantCentimes, taille: 28, signe: true),
+                    ],
                   ],
                 ),
               )
@@ -164,289 +460,18 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // La note s'écrit dans une carte qui s'agrandit au centre :
-                  // le clavier ne pousse plus la page hors de l'écran.
-                  _CarteNote(
-                    note: o.note,
-                    onTap: () async {
-                      final texte = await ecrireNote(context, titre: o.titre, initial: o.note ?? '');
-                      if (texte == null) return;
-                      await modifier(() => const DepotOperations().modifier(o.id, note: texte.trim().isEmpty ? null : texte.trim()));
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  Carte(
-                      padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Surtitre('Classement'),
-                          _Ligne(
-                            icone: 'edit',
-                            libelle: 'Nom',
-                            valeur: o.titre,
-                            onTap: () async {
-                              final nom = await demanderTexte(
-                                context,
-                                titre: 'Renommer',
-                                aide: 'Toutes les opérations « ${joli(o.libelle)} » prendront ce nom, les prochaines aussi.',
-                                initial: o.titre,
-                                indice: joli(o.libelle),
-                              );
-                              if (nom != null) await modifier(() => const DepotOperations().renommer(o.id, nom));
-                            },
-                          ),
-                          _Ligne(
-                            icone: 'sync_alt',
-                            libelle: 'Mouvement',
-                            valeur: switch (o.interne) {
-                              null => o.entree ? 'Revenu' : 'Dépense',
-                              SensInterne.versEpargne => "Vers l'épargne",
-                              SensInterne.depuisEpargne => "Depuis l'épargne",
-                              SensInterne.entreComptes => 'Entre mes comptes',
-                            },
-                            couleur: o.interne == null ? null : AppColors.interne,
-                            onTap: choisirMouvement,
-                          ),
-                          if (o.interne == null) ...[
-                          _Ligne(
-                            icone: 'label',
-                            libelle: 'Catégorie',
-                            valeur: cat.parentId == null ? cat.nom : '${parent.nom} › ${cat.nom}',
-                            couleur: couleur,
-                            onTap: () async {
-                              final id = await choisirCategorie(context, ref);
-                              if (id == null) return;
-                              final suivies = await const DepotOperations().reclasser(o.id, id);
-                              rafraichir(ref);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  content: Text(suivies > 0
-                                      ? 'Reclassée, et ${pluriel(suivies, 'autre opération', 'autres opérations')} du même marchand avec elle.'
-                                      : 'Reclassée. Les prochaines de ce marchand suivront.'),
-                                ));
-                              }
-                            },
-                          ),
-                          if (!o.entree)
-                            _Ligne(
-                              icone: 'favorite',
-                              libelle: 'Type',
-                              valeur: nature.libelle,
-                              couleur: couleurNature(nature),
-                              onTap: () async {
-                                final choix = await carteChoix<Nature>(
-                                  context,
-                                  builder: (ctx) => SafeArea(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        for (final n in Nature.values)
-                                          ListTile(
-                                            leading: Icon(iconeDe(iconeNature(n)), color: couleurNature(n), fill: 1),
-                                            title: Text(n.libelle, style: const TextStyle(fontWeight: FontWeight.w700)),
-                                            trailing: n == nature ? Icon(iconeDe('check'), color: AppColors.vert) : null,
-                                            onTap: () => Navigator.pop(ctx, n),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                                if (choix != null) await modifier(() => const DepotOperations().modifier(o.id, nature: choix));
-                              },
-                            ),
-                          _Ligne(
-                            icone: 'calendar_month',
-                            libelle: 'Compte en',
-                            valeur: nomMoisSeul(moisCompte),
-                            onTap: () async {
-                              final choix = await carteChoix<Mois>(
-                                context,
-                                builder: (ctx) => SafeArea(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      for (final m in [moisOp.precedent, moisOp, moisOp.suivant])
-                                        ListTile(
-                                          title: Text(nomMois(m)),
-                                          trailing: m == moisCompte ? Icon(iconeDe('check'), color: AppColors.vert) : null,
-                                          onTap: () => Navigator.pop(ctx, m),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                              if (choix != null) {
-                                await modifier(() => const DepotOperations().modifier(o.id, moisCompte: choix == moisOp ? null : choix));
-                              }
-                            },
-                          ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  if (o.interne != null) ...[
-                    const SizedBox(height: 14),
-                    _BlocInterne(sens: o.interne!),
-                  ],
-                  const SizedBox(height: 14),
-                  Carte(
-                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+              // En pleine page sur l'écran déplié, deux colonnes : le
+              // classement à gauche, le suivi à droite, et rien ne défile.
+              child: deuxColonnes
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Surtitre('Suivi'),
-                        if (!o.entree && o.interne == null)
-                          _Ligne(
-                            icone: 'autorenew',
-                            libelle: 'Répétition',
-                            valeur: repetition?.frequence.libelle ?? 'Aucune',
-                            couleur: repetition == null ? null : AppColors.vert,
-                            onTap: () async {
-                              // Un enregistrement, pour distinguer « aucune » d'une feuille refermée.
-                              final choix = await carteChoix<(Frequence?,)>(
-                                context,
-                                builder: (ctx) => SafeArea(
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
-                                        child: Text('Toutes les opérations « ${joli(cle)} » suivent ce choix.',
-                                            textAlign: TextAlign.center, style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
-                                      ),
-                                      for (final (f, texte) in [(null, 'Aucune'), for (final f in Frequence.values) (f, f.libelle)])
-                                        ListTile(
-                                          title: Text(texte, style: const TextStyle(fontWeight: FontWeight.w700)),
-                                          trailing: f == repetition?.frequence ? Icon(iconeDe('check'), color: AppColors.vert) : null,
-                                          onTap: () => Navigator.pop(ctx, (f,)),
-                                        ),
-                                    ],
-                                  ),
-                                  ),
-                                ),
-                              );
-                              if (choix != null) await modifier(() => const DepotOperations().choisirRepetition(cle, choix.$1));
-                            },
-                          ),
-                        // Une entrée qui rembourse une dépense n'est pas un revenu :
-                        // rangée dans « Remboursements », elle sort des entrées.
-                        if (o.entree && o.interne == null && remboursements != null)
-                          _Bascule(
-                            icone: 'currency_exchange',
-                            libelle: 'C\'est un remboursement',
-                            valeur: o.categorieId == remboursements.id,
-                            onChanged: (v) => modifier(() async {
-                              await const DepotOperations().reclasser(o.id, v ? remboursements.id : remboursements.parentId!, apprendre: false);
-                            }),
-                          ),
-                        // Un virement interne est déjà hors de l'analyse : la
-                        // bascule le montre, et ne change qu'avec le mouvement.
-                        _Bascule(
-                          icone: 'visibility_off',
-                          libelle: 'Masquer de l\'analyse',
-                          valeur: o.masquee || o.interne != null,
-                          onChanged: o.interne != null ? null : (v) => modifier(() => const DepotOperations().modifier(o.id, masquee: v)),
-                        ),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: gauche)),
+                        const SizedBox(width: 16),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: droite)),
                       ],
-                    ),
-                  ),
-                  if (o.origine == Origine.main || o.origine == Origine.regle) ...[
-                    const SizedBox(height: 14),
-                    _Info(
-                      texte: o.origine == Origine.main && motifAApprendre(o.libelle) == null
-                          ? 'Reclassée à la main. Un chèque ou un retrait n\'a pas de marchand : les suivants ne la suivront pas.'
-                          : o.origine == Origine.main
-                          ? 'Reclassée à la main. Les prochaines opérations « ${joli(cleMarchand(o.libelle))} » iront d\'elles-mêmes dans ${cat.nom}.'
-                          : 'Classée d\'après une de tes corrections précédentes.',
-                    ),
-                  ],
-                  if (o.entree && o.interne == null) ...[
-                    const SizedBox(height: 14),
-                    _BlocRembourse(operation: o, liens: lies.where((l) => l.entreeId == o.id).toList()),
-                  ],
-                  if (!o.entree && o.interne == null) ...[
-                    const SizedBox(height: 14),
-                    Builder(builder: (context) {
-                      final rembourse = lies.where((l) => l.depenseId == o.id).fold(0, (s, l) => s + l.montantCentimes);
-                      return Carte(
-                        padding: const EdgeInsets.fromLTRB(18, 6, 18, 6),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _Ligne(
-                              icone: 'link',
-                              libelle: 'Remboursement',
-                              valeur: rembourse == 0 ? 'Aucun' : '${euros(rembourse)} reçus',
-                              couleur: rembourse == 0 ? null : AppColors.vert,
-                              onTap: () => context.push('/operation/${o.id}/rembourse'),
-                            ),
-                            if (rembourse > 0)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: Text('Elle ne compte plus que pour ${euros(-o.montantCentimes - rembourse)}.',
-                                    style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
-                              ),
-                          ],
-                        ),
-                      );
-                    }),
-                  ],
-                  if (o.uidBanque == null) ...[
-                    const SizedBox(height: 14),
-                    TextButton.icon(
-                      onPressed: () async {
-                        final ok = await showDialog<bool>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text('Supprimer cette dépense ?'),
-                            content: const Text('Elle a été saisie à la main : la banque ne la connaît pas.'),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
-                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte))),
-                            ],
-                          ),
-                        );
-                        if (ok != true) return;
-                        await const DepotOperations().supprimerManuelle(o.id);
-                        rafraichir(ref);
-                        if (context.mounted) revenir(context);
-                      },
-                      icon: Icon(iconeDe('delete'), color: AppColors.alerte),
-                      label: const Text('Supprimer la dépense', style: TextStyle(color: AppColors.alerte, fontWeight: FontWeight.w700)),
-                    ),
-                  ],
-                  const SizedBox(height: 18),
-                  // Pointer : tu confirmes que la catégorie est la bonne.
-                  o.pointee
-                      ? OutlinedButton.icon(
-                          onPressed: () => modifier(() => const DepotOperations().pointer(o.id, false)),
-                          icon: Icon(iconeDe('task_alt'), color: AppColors.vert),
-                          label: const Text('Pointée', style: TextStyle(color: AppColors.vert, fontWeight: FontWeight.w800)),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
-                            shape: const StadiumBorder(),
-                            side: BorderSide(color: AppColors.vert.withValues(alpha: 0.4)),
-                            backgroundColor: AppColors.vert.withValues(alpha: 0.08),
-                          ),
-                        )
-                      : FilledButton.icon(
-                          onPressed: () => modifier(() => const DepotOperations().pointer(o.id, true)),
-                          icon: Icon(iconeDe('task_alt'), color: Colors.black),
-                          label: const Text('Pointer', style: TextStyle(fontWeight: FontWeight.w800)),
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
-                            shape: const StadiumBorder(),
-                            backgroundColor: AppColors.vert,
-                            foregroundColor: Colors.black,
-                          ),
-                        ),
-                ],
-              ),
+                    )
+                  : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...gauche, const SizedBox(height: 14), ...droite]),
             ),
           ],
         ),
@@ -724,7 +749,7 @@ class _EtatLier extends ConsumerState<EcranLier> {
         }
         _parts.clear();
         for (final l in liens.where((l) => l.entreeId == entree.id)) {
-          _parts[l.depenseId] = TextEditingController(text: euros(l.montantCentimes).replaceAll(' €', ''));
+          _parts[l.depenseId] = TextEditingController(text: euros(l.montantCentimes).replaceAll(RegExp(r'\s*€'), ''));
         }
       });
     } catch (e) {
@@ -823,7 +848,7 @@ class _EtatLier extends ConsumerState<EcranLier> {
                                           final reste = entree.montantCentimes - _reparti;
                                           final libre = -d.montantCentimes - ailleurs;
                                           final part = reste.clamp(0, libre < 0 ? 0 : libre);
-                                          _parts[d.id] = TextEditingController(text: euros(part).replaceAll(' €', ''));
+                                          _parts[d.id] = TextEditingController(text: euros(part).replaceAll(RegExp(r'\s*€'), ''));
                                         } else {
                                           _parts.remove(d.id)?.dispose();
                                         }

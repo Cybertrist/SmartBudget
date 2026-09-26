@@ -33,6 +33,19 @@ class EcranEpargne extends ConsumerWidget {
     if (!comptes.hasValue || !bilan.hasValue || !ops.hasValue) return const Center(child: CircularProgressIndicator());
     final livrets = comptes.value!.where((c) => c.nature == NatureCompte.livret).toList();
     final total = livrets.fold<int>(0, (s, c) => s + c.soldeCentimes);
+    // Des parts arrondies qui font 100 : le reste va aux plus grosses
+    // décimales, pas 60 + 31 + 10.
+    final parts = <int, int>{};
+    if (total > 0) {
+      final exactes = {for (final l in livrets) l.id: l.soldeCentimes * 100 / total};
+      exactes.forEach((id, v) => parts[id] = v.floor());
+      final reste = 100 - parts.values.fold(0, (a, b) => a + b);
+      double decimale(int id) => exactes[id]! - exactes[id]!.floor();
+      final ordre = exactes.keys.toList()..sort((x, y) => decimale(y).compareTo(decimale(x)));
+      for (final id in ordre.take(reste.clamp(0, ordre.length).toInt())) {
+        parts[id] = parts[id]! + 1;
+      }
+    }
     final b = bilan.value!;
     final mouvements = ops.value!.where((o) => o.interne != null && o.interne != SensInterne.entreComptes).toList();
 
@@ -114,7 +127,7 @@ class EcranEpargne extends ConsumerWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(l.nom, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                                        Text(total == 0 ? '' : '${(l.soldeCentimes * 100 / total).round()} % de l\'épargne',
+                                        Text(total == 0 ? '' : '${parts[l.id]} % de l\'épargne',
                                             style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
                                       ],
                                     ),
@@ -185,18 +198,27 @@ class _Chiffre extends StatelessWidget {
 }
 
 /// Un virement interne dans une liste : d'où, vers où, le libellé brut.
-class LigneVirement extends StatelessWidget {
+class LigneVirement extends ConsumerWidget {
   const LigneVirement({super.key, required this.operation});
 
   final Operation operation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final o = operation;
     final v = reconnaitreInterne(o.libelle);
+    final livrets = ref.watch(comptesProvider).value ?? const <Compte>[];
     final pioche = o.interne == SensInterne.depuisEpargne;
     final couleur = pioche ? AppColors.alerte : (o.interne == SensInterne.versEpargne ? AppColors.vert : AppColors.interne);
-    String nom(String compte) => compte == 'CARTE BANCAIRE' ? 'Compte courant' : joli(compte);
+    // Le livret sous le nom que tu lui as donné : « Livret CMB », pas
+    // « Livret Cmb » tiré du libellé.
+    String nom(String compte) {
+      if (compte == 'CARTE BANCAIRE') return 'Compte courant';
+      for (final l in livrets) {
+        if (l.nature == NatureCompte.livret && compte.contains(normaliser(l.motif ?? l.nom))) return l.nom;
+      }
+      return joli(compte);
+    }
     return InkWell(
       onTap: () => ouvrirPage(context, '/operation/${o.id}'),
       child: Container(
@@ -235,7 +257,7 @@ class LigneVirement extends StatelessWidget {
                 ],
               ),
             ),
-            Montant(o.montantCentimes.abs(), taille: 15, couleur: couleur, signe: true),
+            Montant(pioche ? -o.montantCentimes.abs() : o.montantCentimes.abs(), taille: 15, couleur: couleur, signe: true),
           ],
         ),
       ),

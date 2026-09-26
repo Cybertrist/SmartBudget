@@ -231,6 +231,48 @@ void main() {
       expect(() => _liens.repartir(cheque.id, {train.id: 6000}), throwsArgumentError);
     });
 
+    test('lier depuis la dépense répond, et garde les autres liens', () async {
+      final compte = await _comptes.courant();
+      await _ops.importer(compte.id, [
+        _op('2026-09-15', 'PAIEMENT PAR CARTE X4057 AMAZON 14/09', -300),
+        _op('2026-09-14', 'REM 2 CHQ BORNE PONT L ABB', 200),
+        _op('2026-09-20', 'VIR SEPA RECU DE M DUPONT', 250),
+      ]);
+      final achat = await _cherche('PAIEMENT PAR CARTE X4057 AMAZON 14/09');
+      final cheque = await _cherche('REM 2 CHQ BORNE PONT L ABB');
+      final virement = await _cherche('VIR SEPA RECU DE M DUPONT');
+      // Un chèque reçu la veille de l'achat : il doit être proposé.
+      expect((await _ops.remboursementsPossibles(achat)).map((e) => e.$1.id), contains(cheque.id));
+      // Avant, le verrou mort : la lecture hors transaction ne revenait jamais.
+      await _liens.rembourser(achat.id, nouvelle: cheque.id).timeout(const Duration(seconds: 5));
+      await _liens.rembourser(achat.id, nouvelle: virement.id).timeout(const Duration(seconds: 5));
+      final liens = await _liens.concernant([achat.id]);
+      // 200 du chèque, et les 100 qui restent de l'achat du virement.
+      expect({for (final l in liens) l.entreeId: l.montantCentimes}, {cheque.id: 20000, virement.id: 10000});
+      // Déjà entièrement remboursé : plus rien à lier.
+      expect(() => _liens.repartir(virement.id, {achat.id: 20000}), throwsArgumentError);
+      // La base répond encore.
+      expect(await _ops.chercher('AMAZON').timeout(const Duration(seconds: 5)), isNotEmpty);
+    });
+
+    test('une opération en attente garde son identifiant et ses liens', () async {
+      final compte = await _comptes.courant();
+      final attente = OperationBrute(uidBanque: 'attente-1', le: DateTime(2026, 9, 14), libelle: 'REM 2 CHQ BORNE', montantCentimes: 50000, enAttente: true);
+      await _ops.importer(compte.id, [_op('2026-09-15', 'PAIEMENT PAR CARTE X4057 AMAZON 14/09', -300), attente]);
+      final achat = await _cherche('PAIEMENT PAR CARTE X4057 AMAZON 14/09');
+      final cheque = await _cherche('REM 2 CHQ BORNE');
+      await _liens.repartir(cheque.id, {achat.id: 28000});
+      // Une synchro sans la liste des opérations en attente : rien ne s'efface.
+      await _ops.importer(compte.id, [], attenteLue: false);
+      expect((await _ops.une(cheque.id))?.enAttente, isTrue);
+      // La même, encore en attente, puis comptabilisée : même identifiant.
+      await _ops.importer(compte.id, [attente]);
+      await _ops.importer(compte.id, [_op('2026-09-16', 'REM 2 CHQ BORNE', 500)]);
+      final apres = await _ops.une(cheque.id);
+      expect(apres?.enAttente, isFalse);
+      expect(await _liens.concernant([cheque.id]), hasLength(1));
+    });
+
     test('le mois qui commence le jour de paie', () async {
       await _reglages.ecrire('debut_mois', '28');
       final compte = await _comptes.courant();

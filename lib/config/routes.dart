@@ -77,7 +77,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/operation/:id',
-      builder: (_, e) => _Pleine(EcranOperation(id: int.parse(e.pathParameters['id']!))),
+      builder: (_, e) => _Pleine(EcranOperation(id: int.parse(e.pathParameters['id']!)), large: true),
     ),
     GoRoute(
       path: '/operation/:id/lier',
@@ -163,16 +163,19 @@ class _VoletsAnalyse extends StatelessWidget {
 /// la largeur d'une colonne, centrée, au lieu de s'étirer d'un bord à
 /// l'autre.
 class _Pleine extends StatelessWidget {
-  const _Pleine(this.page);
+  const _Pleine(this.page, {this.large = false});
 
   final Widget page;
+
+  /// Une page en deux colonnes sur l'écran déplié : la fiche d'opération.
+  final bool large;
 
   @override
   Widget build(BuildContext context) {
     if (!AppLayout.isExpanded(context)) return page;
     return ColoredBox(
       color: AppColors.fond,
-      child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 640), child: page)),
+      child: Center(child: ConstrainedBox(constraints: BoxConstraints(maxWidth: large ? 1080 : 640), child: page)),
     );
   }
 }

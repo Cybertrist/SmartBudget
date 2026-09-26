@@ -10,7 +10,6 @@ import '../donnees/depots.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
 import 'categorie.dart';
-import 'dialogues.dart';
 
 /// Une dépense payée en espèces : la banque ne la voit pas, on la saisit.
 /// Elle se retranche des retraits au distributeur du mois, pour que le même
