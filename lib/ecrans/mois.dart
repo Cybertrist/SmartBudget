@@ -437,10 +437,12 @@ class _CarteRepartition extends StatelessWidget {
     final lignes = [
       ('Essentiel', 'essentiel', bilan.essentiel),
       ('Plaisir', 'plaisir', bilan.plaisir),
-      ('Épargne', 'epargne', bilan.misDeCote),
+      // Le net du mois, comme l'écran Épargne : mis de côté moins pioché.
+      ('Épargne', 'epargne', bilan.misDeCote - bilan.pioche),
       ('Imprévu', 'imprevu', bilan.imprevu),
     ];
     final total = lignes.fold<int>(0, (s, l) => s + (l.$3 > 0 ? l.$3 : 0));
+    final parts = pourcentages([for (final l in lignes) l.$3]);
     return Carte(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -470,7 +472,7 @@ class _CarteRepartition extends StatelessWidget {
                       children: [
                         Text(l.$1, style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600)),
                         if (total > 0)
-                          Text('${(l.$3.clamp(0, total) * 100 / total).round()} %', style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
+                          Text('${parts[lignes.indexOf(l)]} %', style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
                       ],
                     ),
                   ),

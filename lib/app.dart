@@ -77,7 +77,10 @@ class _SmartBudgetAppState extends ConsumerState<SmartBudgetApp>
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
-        if (verrou.isUnlocked) verrou.pausedAt = DateTime.now();
+        // Le premier départ seulement : en revenant, Android repasse par
+        // « hidden » juste avant « resumed », et réécrire l'heure ici
+        // remettait le chrono à zéro. L'appli ne se reverrouillait jamais.
+        if (verrou.isUnlocked) verrou.pausedAt ??= DateTime.now();
         _inactivite?.cancel();
       case AppLifecycleState.resumed:
         final parti = verrou.pausedAt;

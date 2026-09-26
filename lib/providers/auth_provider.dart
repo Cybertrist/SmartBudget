@@ -34,6 +34,16 @@ class AuthService {
         ),
       );
     } on PlatformException catch (e) {
+      // Un téléphone sans aucun verrou d'écran ne peut pas prouver qui le
+      // tient : l'empreinte de SmartBudget n'y protège rien, et sans cette
+      // issue on restait enfermé dehors.
+      if (!await appareilVerrouille()) {
+        return const ResultatOuverture.echec(
+          'Ce téléphone n\'a ni code ni empreinte : SmartBudget ne peut pas vérifier que c\'est toi. '
+          'Ajoute un verrou dans les réglages Android, ou ouvre sans empreinte.',
+          sansVerrou: true,
+        );
+      }
       return ResultatOuverture.echec(_expliquer(e));
     } catch (e) {
       return ResultatOuverture.echec('Erreur inattendue : $e');
@@ -47,6 +57,16 @@ class AuthService {
     await _remplirDemo();
     EtatVerrou.instance.setUnlocked(true);
     return const ResultatOuverture.succes();
+  }
+
+  /// Le téléphone a-t-il un code, un schéma ou une empreinte ? Sans rien
+  /// de tout cela, Android ne sait authentifier personne.
+  Future<bool> appareilVerrouille() async {
+    try {
+      return await _auth.isDeviceSupported();
+    } catch (_) {
+      return true;
+    }
   }
 
   String _expliquer(PlatformException e) {
@@ -97,13 +117,18 @@ class AuthService {
 class ResultatOuverture {
   const ResultatOuverture.succes()
       : raison = null,
-        annule = false;
-  const ResultatOuverture.echec(this.raison) : annule = false;
+        annule = false,
+        sansVerrou = false;
+  const ResultatOuverture.echec(this.raison, {this.sansVerrou = false}) : annule = false;
   const ResultatOuverture.annule()
       : raison = null,
-        annule = true;
+        annule = true,
+        sansVerrou = false;
 
   final bool annule;
+
+  /// Le téléphone n'a aucun verrou : on peut ouvrir sans empreinte.
+  final bool sansVerrou;
   final String? raison;
 
   bool get ouvert => raison == null && !annule;

@@ -83,6 +83,15 @@ final operationsPeriodeProvider = FutureProvider<List<Operation>>((ref) async {
   return tous;
 });
 
+/// Ce que pèse chaque opération de la période une fois ses remboursements
+/// répartis, comme dans le bilan : une dépense remboursée de 98 € sur 98 €
+/// pèse 0, le chèque qui la rembourse aussi.
+final poidsPeriodeProvider = FutureProvider<Map<int, int>>((ref) async {
+  final ops = await ref.watch(operationsPeriodeProvider.future);
+  final liens = await const DepotLiens().concernant(ops.map((o) => o.id));
+  return poidsNets(ops, liens);
+});
+
 /// La période en toutes lettres : « septembre 2026 », « 3 mois jusqu'à
 /// septembre », « 12 mois jusqu'à septembre ».
 final libellePeriodeProvider = Provider<String>((ref) {

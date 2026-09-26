@@ -81,7 +81,8 @@ class _LigneAVerifier extends ConsumerWidget {
     Future<void> classer() async {
       final id = await choisirCategorie(context, ref);
       if (id == null) return;
-      await const DepotOperations().reclasser(o.id, id);
+      if (!context.mounted) return;
+      await _agir(context, () => const DepotOperations().reclasser(o.id, id));
       rafraichir(ref);
     }
 
@@ -107,7 +108,8 @@ class _LigneAVerifier extends ConsumerWidget {
         ),
       );
       if (sens == null) return;
-      await const DepotOperations().marquerInterne(o.id, sens);
+      if (!context.mounted) return;
+      await _agir(context, () => const DepotOperations().marquerInterne(o.id, sens));
       rafraichir(ref);
     }
 
@@ -155,7 +157,7 @@ class _LigneAVerifier extends ConsumerWidget {
                     icone: 'check',
                     couleur: AppColors.texteSecondaire,
                     onTap: () async {
-                      await const DepotOperations().valider(o.id);
+                      await _agir(context, () => const DepotOperations().valider(o.id));
                       rafraichir(ref);
                     },
                   ),
@@ -200,4 +202,14 @@ class _Action extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// Une action d'À vérifier : une erreur s'affiche au lieu de passer en
+/// silence.
+Future<void> _agir(BuildContext context, Future<void> Function() f) async {
+  try {
+    await f();
+  } catch (e) {
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Échec : $e')));
+  }
 }

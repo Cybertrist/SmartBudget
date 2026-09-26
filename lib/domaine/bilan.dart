@@ -86,7 +86,8 @@ Bilan calculerBilan({
   for (final l in liens) {
     final entree = parId[l.entreeId];
     final depense = parId[l.depenseId];
-    if (interne(entree) || interne(depense)) continue;
+    // Une entrée masquée ne compte nulle part : elle ne rembourse rien.
+    if (interne(entree) || interne(depense) || (entree?.masquee ?? false)) continue;
     var m = l.montantCentimes;
     if (depense != null) {
       final libre = -depense.montantCentimes - (recu[depense.id] ?? 0);
@@ -185,6 +186,29 @@ void _ajouter(Bilan b, Categorie top, Categorie cat, int montant, Operation o) {
     b.parSous.update(cat.id, (v) => v + montant, ifAbsent: () => montant);
     b.operationsParSous.update(cat.id, (v) => v + 1, ifAbsent: () => 1);
   }
+}
+
+/// Le poids net de chaque opération de [operations], remboursements
+/// répartis, avec les mêmes règles que le bilan.
+Map<int, int> poidsNets(List<Operation> operations, List<Lien> liens) {
+  final parId = {for (final o in operations) o.id: o};
+  final poids = <int, int>{for (final o in operations) o.id: o.montantCentimes};
+  final recu = <int, int>{};
+  bool interne(Operation? o) => o != null && o.interne != null;
+  for (final l in liens) {
+    final entree = parId[l.entreeId];
+    final depense = parId[l.depenseId];
+    if (interne(entree) || interne(depense) || (entree?.masquee ?? false)) continue;
+    var m = l.montantCentimes;
+    if (depense != null) {
+      final libre = -depense.montantCentimes - (recu[depense.id] ?? 0);
+      m = m.clamp(0, libre < 0 ? 0 : libre);
+      recu[depense.id] = (recu[depense.id] ?? 0) + m;
+    }
+    if (entree != null) poids[entree.id] = poids[entree.id]! - m;
+    if (depense != null) poids[depense.id] = poids[depense.id]! + m;
+  }
+  return poids;
 }
 
 /// La sous-catégorie des remboursements : de l'argent qui revient, pas un

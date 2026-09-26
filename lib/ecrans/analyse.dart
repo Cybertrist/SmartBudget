@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../config/format.dart';
 import '../config/theme.dart';
 import '../domaine/bilan.dart';
+import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
-import '../domaine/mois.dart';
 import '../domaine/recurrences.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
@@ -486,18 +486,52 @@ class _Recurrences extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final r = ref.watch(recurrencesProvider);
     final mois = ref.watch(moisProvider);
-    if (!r.hasValue) return const Padding(padding: EdgeInsets.all(60), child: Center(child: CircularProgressIndicator()));
+    final ops = ref.watch(operationsMoisProvider(mois));
+    if (!r.hasValue || !ops.hasValue) return const Padding(padding: EdgeInsets.all(60), child: Center(child: CircularProgressIndicator()));
     final maintenant = DateTime.now();
+    final aujourdhui = DateTime(maintenant.year, maintenant.month, maintenant.day);
     final liste = r.value!;
     final debut = ref.watch(debutMoisProvider).value ?? 1;
-    bool dansMois(DateTime d) => Mois.de(d, debut: debut) == mois;
-    final payees = liste.where((x) => dansMois(x.derniere)).toList();
-    final retard = liste.where((x) => x.enRetard(maintenant) && !dansMois(x.derniere)).toList();
-    final aVenir = liste.where((x) => !x.enRetard(maintenant) && !dansMois(x.derniere) && dansMois(x.prochaine)).toList();
-    final paye = payees.fold<int>(0, (s, x) => s - x.montantCentimes);
-    final attendu = paye - [...retard, ...aVenir].fold<int>(0, (s, x) => s + x.montantCentimes);
+    final (de, a) = mois.bornes(debut: debut);
+    final enCours = mois == ref.watch(moisCourantProvider);
 
-    Widget bloc(String titre, List<Recurrence> l, Color couleur, String Function(Recurrence) etat, String icone) => Padding(
+    // Payée : une opération de ce marchand compte dans le mois affiché, à
+    // sa date ou rattachée à la main par « Compte en ».
+    final passages = <String, List<Operation>>{};
+    for (final o in ops.value!) {
+      if (o.montantCentimes >= 0 || o.interne != null) continue;
+      passages.putIfAbsent(cleMarchand(o.libelle), () => []).add(o);
+    }
+    // Les passages attendus dans le mois après le dernier connu : en retard
+    // une fois la grâce passée, sinon à venir. Une récurrence de chaque
+    // semaine en attend plusieurs.
+    List<DateTime> attendus(Recurrence x) {
+      final l = <DateTime>[];
+      for (var d = x.prochaine; d.isBefore(a) && l.length < 6; d = suivante(d, x.frequence)) {
+        if (!d.isBefore(de)) l.add(d);
+      }
+      return l;
+    }
+
+    final payees = liste.where((x) => passages.containsKey(x.cle)).toList()
+      ..sort((x, y) => passages[x.cle]!.first.le.compareTo(passages[y.cle]!.first.le));
+    final retard = <(Recurrence, DateTime)>[];
+    final aVenir = <(Recurrence, DateTime)>[];
+    for (final x in liste) {
+      for (final d in attendus(x)) {
+        if (d.add(const Duration(days: 4)).isBefore(aujourdhui)) {
+          retard.add((x, d));
+        } else if (!d.isBefore(aujourdhui)) {
+          aVenir.add((x, d));
+        }
+      }
+    }
+    final paye = [for (final x in payees) ...passages[x.cle]!].fold<int>(0, (s, o) => s - o.montantCentimes);
+    final attendu = paye - [...retard, ...aVenir].fold<int>(0, (s, e) => s + e.$1.montantCentimes);
+    final periode = enCours ? 'ce mois-ci' : 'en ${nomMoisSeul(mois).toLowerCase()}';
+    int jours(DateTime d) => DateTime.utc(d.year, d.month, d.day).difference(DateTime.utc(aujourdhui.year, aujourdhui.month, aujourdhui.day)).inDays;
+
+    Widget bloc(String titre, List<(Recurrence, int, String)> l, Color couleur, String icone) => Padding(
           padding: const EdgeInsets.only(top: 14),
           child: Carte(
             padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
@@ -508,7 +542,7 @@ class _Recurrences extends ConsumerWidget {
                 for (var i = 0; i < l.length; i++)
                   // Toucher une récurrence ouvre sa dernière opération.
                   InkWell(
-                    onTap: l[i].derniereId == null ? null : () => ouvrirPage(context, '/operation/${l[i].derniereId}'),
+                    onTap: l[i].$1.derniereId == null ? null : () => ouvrirPage(context, '/operation/${l[i].$1.derniereId}'),
                     child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: i > 0 ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
@@ -520,23 +554,23 @@ class _Recurrences extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(l[i].libelle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                              Text(l[i].$1.libelle, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                               const SizedBox(height: 2),
-                              Text(l[i].frequence.libelle, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                              Text(l[i].$1.frequence.libelle, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
                             ],
                           ),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Montant(l[i].montantCentimes, taille: 15),
+                            Montant(l[i].$2, taille: 15),
                             const SizedBox(height: 3),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(iconeDe(icone), size: 13, color: couleur),
                                 const SizedBox(width: 4),
-                                Text(etat(l[i]), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: couleur)),
+                                Text(l[i].$3, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: couleur)),
                               ],
                             ),
                           ],
@@ -560,9 +594,9 @@ class _Recurrences extends ConsumerWidget {
           Carte(
             child: Column(
               children: [
-                Montant(-paye, taille: 38),
+                Montant(paye, taille: 38),
                 const SizedBox(height: 6),
-                Text('payés sur ${euros(attendu)} attendus ce mois-ci',
+                Text('payés sur ${euros(attendu)} attendus $periode',
                     style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
                 const SizedBox(height: 14),
                 Jauge(part: attendu == 0 ? 0 : paye / attendu),
@@ -576,11 +610,23 @@ class _Recurrences extends ConsumerWidget {
                   textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire, height: 1.5)),
             ),
           if (blocs && retard.isNotEmpty)
-            bloc('En retard', retard, AppColors.alerte, (x) => 'attendu il y a ${-x.dansJours(DateTime.now())} j', 'schedule'),
+            bloc('En retard', [for (final (x, d) in retard) (x, x.montantCentimes, 'attendu il y a ${-jours(d)} j')], AppColors.alerte, 'schedule'),
           if (blocs && aVenir.isNotEmpty)
-            bloc('À venir', aVenir, AppColors.attention, (x) => 'dans ${x.dansJours(DateTime.now())} j', 'calendar_month'),
+            bloc('À venir', [for (final (x, d) in aVenir) (x, x.montantCentimes, jours(d) == 0 ? 'aujourd\'hui' : 'dans ${jours(d)} j')], AppColors.attention,
+                'calendar_month'),
           if (blocs && payees.isNotEmpty)
-            bloc('Payées', payees, AppColors.vert, (x) => 'le ${x.derniere.day}', 'check'),
+            bloc(
+                'Payées',
+                [
+                  for (final x in payees)
+                    (
+                      x,
+                      passages[x.cle]!.fold<int>(0, (s, o) => s + o.montantCentimes),
+                      'le ${passages[x.cle]!.map((o) => o.le.day).join(', ')}',
+                    ),
+                ],
+                AppColors.vert,
+                'check'),
         ],
       ),
     );

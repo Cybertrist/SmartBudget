@@ -54,7 +54,11 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
     if (!categories.hasValue) return const Center(child: CircularProgressIndicator());
     final cats = categories.value!;
     final genre = widget.genre;
-    if (ops.hasValue) _derniers = genre == null ? ops.value! : ops.value!.where((o) => compteDans(genre, o, cats)).toList();
+    final poids = genre == null ? const <int, int>{} : (ref.watch(poidsPeriodeProvider).value ?? const <int, int>{});
+    int net(Operation o) => poids[o.id] ?? o.montantCentimes;
+    if (ops.hasValue) {
+      _derniers = genre == null ? ops.value! : ops.value!.where((o) => compteDans(genre, o, cats) && net(o) != 0).toList();
+    }
 
     final jours = <DateTime, List<Operation>>{};
     for (final o in _derniers) {
@@ -144,7 +148,7 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
                   child: Row(
                     children: [
                       Expanded(child: Text(jour(e.key), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire))),
-                      Montant(e.value.where((o) => o.interne == null).fold(0, (s, o) => s + o.montantCentimes), taille: 13, couleur: AppColors.texteDiscret, signe: true),
+                      Montant(e.value.where((o) => o.interne == null).fold(0, (s, o) => s + net(o)), taille: 13, couleur: AppColors.texteDiscret, signe: true),
                     ],
                   ),
                 ),
@@ -160,7 +164,7 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
                             final o = e.value[i];
                             final c = cats[o.categorieId]!;
                             final p = c.parentId == null ? c : cats[c.parentId]!;
-                            return LigneOperation(operation: o, icone: c.icone ?? p.icone, couleur: Color(p.couleur), separateur: i > 0);
+                            return LigneOperation(operation: o, icone: c.icone ?? p.icone, couleur: Color(p.couleur), separateur: i > 0, net: genre == null ? null : net(o));
                           }),
                     ],
                   ),

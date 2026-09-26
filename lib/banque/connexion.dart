@@ -258,10 +258,14 @@ class ConnexionBanque {
     if (!e.relie) throw const ErreurBanque('Le compte n\'est pas relié, ou l\'accès a expiré : reconnecte-le.');
     final client = await _client();
     final depuis = e.derniere?.subtract(const Duration(days: 7)) ?? DateTime.now().subtract(const Duration(days: 365));
-    final operations = await client.operations(e.compte!, depuis);
+    // Les attentes, depuis la plus ancienne encore connue : la banque doit
+    // toutes les redonner, sinon celles qu'elle a levées resteraient.
+    final ancienne = (await const DepotOperations().plusAncienneEnAttente())?.subtract(const Duration(days: 1));
+    final depuisAttente = ancienne != null && ancienne.isBefore(depuis) ? ancienne : depuis;
+    final operations = await client.operations(e.compte!, depuis, depuisAttente: depuisAttente);
     final courant = await const DepotComptes().courant();
     final nouvelles = await const DepotOperations()
-        .importer(courant.id, operations, attenteLue: client.attenteLue, depuis: depuis);
+        .importer(courant.id, operations, attenteLue: client.attenteLue, depuis: depuisAttente);
     final solde = await client.solde(e.compte!);
     if (solde != null) await _retenirSolde(courant.id, solde);
     await _reglages.ecrire(_derniere, DateTime.now().toIso8601String());

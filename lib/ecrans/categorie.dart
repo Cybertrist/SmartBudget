@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../config/format.dart';
 import '../config/icones_symbols.dart';
 import '../config/theme.dart';
+import '../domaine/bilan.dart';
 import '../domaine/modeles.dart';
 import '../donnees/depots.dart';
 import '../providers/donnees.dart';
@@ -135,9 +136,11 @@ class EcranCategorie extends ConsumerWidget {
     final total = b.parCategorie[id] ?? 0;
     final pleines = sous.where((s) => (b.parSous[s.id] ?? 0) > 0).toList();
     final vides = sous.where((s) => (b.parSous[s.id] ?? 0) == 0).toList()..sort((a, c) => a.ordre.compareTo(c.ordre));
-    final direct = total - pleines.fold<int>(0, (s, x) => s + (b.parSous[x.id] ?? 0));
+    // Les remboursements ont leur sous-catégorie mais ne comptent pas dans
+    // le total des revenus.
+    final direct = total - pleines.where((x) => !estRemboursement(x, cat)).fold<int>(0, (s, x) => s + (b.parSous[x.id] ?? 0));
     final revenu = cat.genre == Genre.revenu;
-    final part = revenu ? (b.entrees == 0 ? 0 : total * 100 ~/ b.entrees) : (b.sorties == 0 ? 0 : total * 100 ~/ b.sorties);
+    final part = revenu ? (b.entrees == 0 ? 0 : (total * 100 / b.entrees).round()) : (b.sorties == 0 ? 0 : (total * 100 / b.sorties).round());
     final volet = dansUnVolet(context);
 
     return Scaffold(
@@ -350,6 +353,8 @@ class EcranSousCategorie extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ops = ref.watch(operationsPeriodeProvider);
+    final poids = ref.watch(poidsPeriodeProvider).value ?? const <int, int>{};
+    int net(Operation o) => poids[o.id] ?? o.montantCentimes;
     final periode = ref.watch(libellePeriodeProvider);
     final categories = ref.watch(categoriesProvider);
     if (!ops.hasValue || !categories.hasValue) return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -358,7 +363,7 @@ class EcranSousCategorie extends ConsumerWidget {
     final parent = cat.parentId == null ? cat : categories.value![cat.parentId]!;
     final couleur = Color(parent.couleur);
     final liste = ops.value!.where((o) => o.categorieId == id).toList();
-    final total = liste.where((o) => !o.masquee).fold<int>(0, (s, o) => s + o.montantCentimes);
+    final total = liste.where((o) => !o.masquee).fold<int>(0, (s, o) => s + net(o));
 
     final jours = <DateTime, List<Operation>>{};
     for (final o in liste) {
@@ -401,7 +406,7 @@ class EcranSousCategorie extends ConsumerWidget {
                           child: Row(
                             children: [
                               Expanded(child: Text(jour(e.key), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire))),
-                              Montant(e.value.fold(0, (s, o) => s + o.montantCentimes), taille: 13, couleur: AppColors.texteDiscret),
+                              Montant(e.value.where((o) => !o.masquee).fold(0, (s, o) => s + net(o)), taille: 13, couleur: AppColors.texteDiscret),
                             ],
                           ),
                         ),
@@ -410,7 +415,7 @@ class EcranSousCategorie extends ConsumerWidget {
                           child: Column(
                             children: [
                               for (var i = 0; i < e.value.length; i++)
-                                LigneOperation(operation: e.value[i], icone: cat.icone ?? parent.icone, couleur: couleur, separateur: i > 0),
+                                LigneOperation(operation: e.value[i], icone: cat.icone ?? parent.icone, couleur: couleur, separateur: i > 0, net: net(e.value[i])),
                             ],
                           ),
                         ),
@@ -428,12 +433,15 @@ class EcranSousCategorie extends ConsumerWidget {
 
 /// Une opération dans une liste.
 class LigneOperation extends StatelessWidget {
-  const LigneOperation({super.key, required this.operation, required this.icone, required this.couleur, this.separateur = false});
+  const LigneOperation({super.key, required this.operation, required this.icone, required this.couleur, this.separateur = false, this.net});
 
   final Operation operation;
   final String? icone;
   final Color couleur;
   final bool separateur;
+
+  /// Ce que l'opération pèse une fois remboursée, s'il diffère.
+  final int? net;
 
   @override
   Widget build(BuildContext context) {
@@ -469,7 +477,20 @@ class LigneOperation extends StatelessWidget {
                 ],
               ),
             ),
-            Montant(o.montantCentimes, taille: 15.5, signe: true, couleur: o.masquee ? AppColors.texteDiscret : null),
+            // Un peu d'air entre un nom tronqué et son montant.
+            const SizedBox(width: 12),
+            if (net != null && net != o.montantCentimes)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Montant(net!, taille: 15.5, signe: true),
+                  const SizedBox(height: 2),
+                  Text(net == 0 ? (o.entree ? 'toute répartie' : 'remboursée') : 'sur ${euros(o.montantCentimes)}',
+                      style: const TextStyle(fontSize: 12, color: AppColors.vert)),
+                ],
+              )
+            else
+              Montant(o.montantCentimes, taille: 15.5, signe: true, couleur: o.masquee ? AppColors.texteDiscret : null),
           ],
         ),
       ),

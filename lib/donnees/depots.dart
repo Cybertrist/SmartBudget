@@ -180,20 +180,28 @@ class DepotOperations {
   /// les opérations qu'elles avaient rangées. Rend leur nombre.
   Future<int> reparerRegles() async {
     final db = await _db;
+    // Les clés tirées d'un chèque ou d'un retrait (« N », « VANNES ») : une
+    // règle sur elles n'a jamais désigné un marchand.
+    final sansMarchandCles = {
+      for (final r in await db.query('operations', columns: ['libelle']))
+        if (sansMarchand(r['libelle']! as String)) cleMarchand(r['libelle']! as String),
+    };
     final mauvaises = [
       for (final r in await db.query('regles'))
-        if (!motifValable(r['motif']! as String)) r['motif']! as String,
+        if (!motifValable(r['motif']! as String) || sansMarchandCles.contains(r['motif'])) r['motif']! as String,
     ];
     if (mauvaises.isEmpty) return 0;
     for (final m in mauvaises) {
       await db.delete('regles', where: 'motif = ?', whereArgs: [m]);
     }
     final classeur = await _classeur();
-    final touchees = await db.query('operations', columns: ['id', 'libelle', 'montant_centimes'], where: "origine = 'regle'");
+    final touchees = await db.query('operations',
+        columns: ['id', 'libelle', 'montant_centimes', 'categorie_id'], where: "origine = 'regle'");
     var n = 0;
     await db.transaction((t) async {
       for (final o in touchees) {
         final c = classeur.classer(o['libelle']! as String, o['montant_centimes']! as int);
+        if (c.categorieId == o['categorie_id'] && c.origine == Origine.regle) continue;
         await t.update('operations', {'categorie_id': c.categorieId, 'origine': c.origine.name, 'interne': c.interne?.name},
             where: 'id = ?', whereArgs: [o['id']]);
         n++;
@@ -202,15 +210,22 @@ class DepotOperations {
     return n;
   }
 
-  Future<Classeur> _classeur() async {
-    final db = await _db;
-    final regles = (await db.query('regles'))
+  /// La catégorie que le classement automatique donnerait à [o].
+  Future<int?> categorieProposee(Operation o) async {
+    final id = (await _classeur()).classer(o.libelle, o.montantCentimes).categorieId;
+    return id == 0 ? null : id;
+  }
+
+  /// Le classeur, ses règles lues par [t] quand on en donne un : dans une
+  /// transaction, une règle apprise juste avant compte déjà.
+  Future<Classeur> _classeur({DatabaseExecutor? t, int? Function(String, String)? idDe, Iterable<String>? livretsConnus}) async {
+    final regles = (await (t ?? await _db).query('regles'))
         .map((l) => Regle(l['motif']! as String, l['categorie_id']! as int))
         .toList();
     return Classeur(
-      idDe: await _categories.resolveur(),
+      idDe: idDe ?? await _categories.resolveur(),
       regles: regles,
-      livretsConnus: await _comptes.motifsLivrets(),
+      livretsConnus: livretsConnus ?? await _comptes.motifsLivrets(),
     );
   }
 
@@ -220,45 +235,71 @@ class DepotOperations {
   ///
   /// Une opération en attente est mise à jour sur place par celle qui lui
   /// correspond : la même encore en attente, ou la même une fois
-  /// comptabilisée (même montant, à une semaine près). Elle garde son
+  /// comptabilisée, du même marchand, au même montant à une semaine près,
+  /// ou à un montant voisin (un pourboire) à un mois près. Elle garde son
   /// identifiant, donc ses liens de remboursement, les pages ouvertes sur
   /// elle, et ce qui a été fait à la main (catégorie, nom, note, mois).
-  /// Celles que la banque ne donne plus s'effacent, pourvu qu'elle ait bien
-  /// donné la liste de celles en attente ([attenteLue]) et qu'elles soient
-  /// dans la période lue (après [depuis]).
+  ///
+  /// Celles que la banque ne donne plus s'effacent, seulement si elle a
+  /// bien donné toute la liste de celles en attente ([attenteLue]), lue
+  /// depuis [depuis] : une liste partielle ne doit rien effacer.
   Future<int> importer(int compteId, List<OperationBrute> brutes, {bool attenteLue = true, DateTime? depuis}) async {
     final db = await _db;
-    final classeur = await _classeur();
+    // Ce qui ne peut pas se lire dans la transaction : les catégories et
+    // les livrets, qui ne bougent pas pendant un import.
+    final idDe = await _categories.resolveur();
+    final motifsLivrets = await _comptes.motifsLivrets();
     final livrets = (await db.query('comptes', where: "nature = 'livret'")).map(Compte.lire).toList();
     var nouvelles = 0;
     await db.transaction((t) async {
+      final classeur = await _classeur(t: t, idDe: idDe, livretsConnus: motifsLivrets);
       // Les noms choisis pour des marchands, que les nouvelles reprennent.
       final noms = {
         for (final r in await t.query('reglages', where: 'cle LIKE ?', whereArgs: ['$_nomMarchand%']))
           if (r['valeur'] != null) (r['cle']! as String).substring(_nomMarchand.length): r['valeur']! as String,
       };
+      // Toutes les opérations déjà comptabilisées, d'une seule lecture :
+      // une requête par opération rendait le premier import très lent.
+      final connues = {
+        for (final r in await t.query('operations', columns: ['uid_banque'], where: 'uid_banque IS NOT NULL AND en_attente = 0'))
+          r['uid_banque']! as String,
+      };
       final enAttente = [
         ...await t.query('operations', where: 'compte_id = ? AND en_attente = 1', whereArgs: [compteId]),
       ];
-      // Celles que la banque donne encore en attente : une comptabilisée du
-      // même montant ne doit pas leur prendre la place.
+      // Celles que la banque donne encore en attente : une comptabilisée ne
+      // doit pas leur prendre la place.
       final encoreEnAttente = {for (final b in brutes) if (b.enAttente) b.uidBanque};
+      int jours(Map<String, Object?> a, OperationBrute b) => DateTime.parse(a['le']! as String).difference(b.le).inDays.abs();
+      bool memeMarchand(Map<String, Object?> a, OperationBrute b) {
+        final x = cleMarchand(a['libelle']! as String), y = cleMarchand(b.libelle);
+        if (x == y) return true;
+        final mots = {for (final m in x.split(' ')) if (m.length >= 4) m};
+        return y.split(' ').any(mots.contains);
+      }
+
       // L'ancienne en attente qui correspond à [b], retirée de la liste.
+      // Sans la liste complète de la banque, seul l'identifiant fait foi.
       Map<String, Object?>? reprise(OperationBrute b) {
         var i = enAttente.indexWhere((a) => a['uid_banque'] == b.uidBanque);
-        if (i < 0 && !b.enAttente) {
-          i = enAttente.indexWhere((a) =>
-              !encoreEnAttente.contains(a['uid_banque']) &&
-              a['montant_centimes'] == b.montantCentimes &&
-              DateTime.parse(a['le']! as String).difference(b.le).inDays.abs() <= 7);
+        if (i < 0 && !b.enAttente && attenteLue) {
+          bool libre(Map<String, Object?> a) => !encoreEnAttente.contains(a['uid_banque']) && memeMarchand(a, b);
+          i = enAttente.indexWhere((a) => libre(a) && a['montant_centimes'] == b.montantCentimes && jours(a, b) <= 7);
+          if (i < 0) {
+            // Un pourboire ajouté, une caution levée plus tard : même
+            // marchand, montant à 20 % près, dans le mois.
+            i = enAttente.indexWhere((a) {
+              final m = a['montant_centimes']! as int;
+              return libre(a) && m.sign == b.montantCentimes.sign && (m - b.montantCentimes).abs() * 5 <= m.abs() && jours(a, b) <= 30;
+            });
+          }
         }
         return i < 0 ? null : enAttente.removeAt(i);
       }
 
+      final lot = t.batch();
       for (final b in brutes) {
-        final existe = await t.query('operations',
-            columns: ['id'], where: 'uid_banque = ? AND en_attente = 0', whereArgs: [b.uidBanque], limit: 1);
-        if (existe.isNotEmpty) continue;
+        if (connues.contains(b.uidBanque)) continue;
         final c = classeur.classer(b.libelle, b.montantCentimes);
         final a = reprise(b);
         final aLaMain = a != null && a['origine'] == Origine.main.name;
@@ -276,12 +317,13 @@ class DepotOperations {
           'en_attente': b.enAttente ? 1 : 0,
         };
         if (a == null) {
-          await t.insert('operations', {...champs, 'compte_id': compteId});
+          lot.insert('operations', {...champs, 'compte_id': compteId});
           nouvelles++;
         } else {
           // Déjà vue en attente la fois d'avant : rien de neuf à annoncer.
-          await t.update('operations', champs, where: 'id = ?', whereArgs: [a['id']]);
+          lot.update('operations', champs, where: 'id = ?', whereArgs: [a['id']]);
         }
+        if (!b.enAttente) connues.add(b.uidBanque);
         // Un virement vers ou depuis un livret suivi fait vivre son solde,
         // s'il est postérieur au solde saisi. Pas tant qu'il est en attente :
         // il compterait deux fois.
@@ -290,20 +332,30 @@ class DepotOperations {
         for (final l in livrets) {
           final motif = normaliser(l.motif ?? l.nom);
           if (l.soldeLe != null && !b.le.isAfter(l.soldeLe!)) continue;
-          if (v.destination.contains(motif)) {
-            await t.rawUpdate('UPDATE comptes SET solde_centimes = solde_centimes + ? WHERE id = ?', [b.montantCentimes.abs(), l.id]);
-          } else if (v.source.contains(motif)) {
-            await t.rawUpdate('UPDATE comptes SET solde_centimes = solde_centimes - ? WHERE id = ?', [b.montantCentimes.abs(), l.id]);
+          // Au mot entier : un virement vers le LDDS ne crédite pas le LDD.
+          if (contient(v.destination, motif, motEntier: true)) {
+            lot.rawUpdate('UPDATE comptes SET solde_centimes = solde_centimes + ? WHERE id = ?', [b.montantCentimes.abs(), l.id]);
+          } else if (contient(v.source, motif, motEntier: true)) {
+            lot.rawUpdate('UPDATE comptes SET solde_centimes = solde_centimes - ? WHERE id = ?', [b.montantCentimes.abs(), l.id]);
           }
         }
       }
       // Celles que la banque ne donne plus : annulées, ou déjà prises.
       for (final a in attenteLue ? enAttente : const <Map<String, Object?>>[]) {
         if (depuis != null && DateTime.parse(a['le']! as String).isBefore(depuis)) continue;
-        await t.delete('operations', where: 'id = ?', whereArgs: [a['id']]);
+        lot.delete('operations', where: 'id = ?', whereArgs: [a['id']]);
       }
+      await lot.commit(noResult: true);
     });
     return nouvelles;
+  }
+
+  /// La plus ancienne opération encore en attente : la banque doit donner
+  /// les attentes au moins depuis elle, sinon elle ne s'effacerait jamais.
+  Future<DateTime?> plusAncienneEnAttente() async {
+    final r = await (await _db).rawQuery('SELECT MIN(le) AS le FROM operations WHERE en_attente = 1');
+    final le = r.first['le'] as String?;
+    return le == null ? null : DateTime.parse(le);
   }
 
   Future<Operation?> une(int id) async {
@@ -358,7 +410,7 @@ class DepotOperations {
       final autres = await t.query('operations',
           columns: ['id', 'libelle'], where: "origine != 'main' AND interne IS NULL AND id != ?", whereArgs: [id]);
       for (final a in autres) {
-        if (contient(normaliser(a['libelle']! as String), motif)) {
+        if (contient(normaliser(a['libelle']! as String), motif, motEntier: true)) {
           await t.update('operations', {'categorie_id': categorieId, 'origine': Origine.regle.name},
               where: 'id = ?', whereArgs: [a['id']]);
           suivies++;
@@ -605,24 +657,30 @@ class DepotLiens {
   /// Refuse une répartition qui dépasse l'entrée ou l'une des dépenses.
   Future<void> repartir(int entreeId, Map<int, int> parDepense) async {
     final db = await _db;
-    const ops = DepotOperations();
-    final entree = await ops.une(entreeId);
-    if (entree == null || !entree.entree) throw ArgumentError('Pas une entrée d\'argent.');
-    final total = parDepense.values.fold(0, (a, b) => a + b);
-    if (total > entree.montantCentimes) {
-      throw ArgumentError('La répartition dépasse le montant reçu.');
-    }
-    for (final e in parDepense.entries) {
-      final d = await ops.une(e.key);
-      if (d == null || d.entree) throw ArgumentError('Pas une dépense.');
-      final ailleurs = await _ailleurs(db, depense: e.key, sauf: entreeId);
-      if (e.value <= 0 || e.value + ailleurs > -d.montantCentimes) {
-        throw ArgumentError(ailleurs > 0
-            ? '« ${d.titre} » est déjà remboursée ailleurs : il n\'en reste que ${euros(-d.montantCentimes - ailleurs)}.'
-            : 'La part de « ${d.titre} » dépasse la dépense.');
-      }
-    }
+    // Tout se lit et se vérifie dans la transaction, par [t] : un lien
+    // posé au même moment ailleurs ne peut plus faire dépasser la dépense.
     await db.transaction((t) async {
+      Future<Operation?> une(int id) async {
+        final l = await t.query('operations', where: 'id = ?', whereArgs: [id]);
+        return l.isEmpty ? null : Operation.lire(l.first);
+      }
+
+      final entree = await une(entreeId);
+      if (entree == null || !entree.entree) throw ArgumentError('Pas une entrée d\'argent.');
+      final total = parDepense.values.fold(0, (a, b) => a + b);
+      if (total > entree.montantCentimes) {
+        throw ArgumentError('La répartition dépasse le montant reçu.');
+      }
+      for (final e in parDepense.entries) {
+        final d = await une(e.key);
+        if (d == null || d.entree) throw ArgumentError('Pas une dépense.');
+        final ailleurs = await _ailleurs(t, depense: e.key, sauf: entreeId);
+        if (e.value <= 0 || e.value + ailleurs > -d.montantCentimes) {
+          throw ArgumentError(ailleurs > 0
+              ? '« ${d.titre} » est déjà remboursée ailleurs : il n\'en reste que ${euros(-d.montantCentimes - ailleurs)}.'
+              : 'La part de « ${d.titre} » dépasse la dépense.');
+        }
+      }
       await t.delete('liens', where: 'entree_id = ?', whereArgs: [entreeId]);
       for (final e in parDepense.entries) {
         await t.insert('liens', {'entree_id': entreeId, 'depense_id': e.key, 'montant_centimes': e.value});

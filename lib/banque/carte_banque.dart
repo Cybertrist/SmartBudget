@@ -89,19 +89,26 @@ class CarteBanque extends ConsumerWidget {
         ),
     };
 
+    // Ce qui survit à la carte : le conteneur des providers, le messager et
+    // le navigateur racine.
+    final conteneur = ProviderScope.containerOf(context);
+    final messager = ScaffoldMessenger.of(context);
+    final racine = Navigator.of(context, rootNavigator: true).context;
+
     Future<void> agir(Future<void> Function() f) async {
       try {
         await EtatVerrou.instance.retenir(f);
-        rafraichir(ref);
+        conteneur.read(versionProvider.notifier).state++;
       } on ErreurBanque catch (x) {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(x.message)));
+        messager.showSnackBar(SnackBar(content: Text(x.message)));
       }
     }
 
     // La clé s'obtient sur le portail d'Enable Banking ; une fois
     // importée, la liaison du compte s'enchaîne.
     Future<void> connecter(Banque b) async {
-      if (await obtenirCle(context, b)) await agir(const ConnexionBanque().autoriser);
+      if (!racine.mounted) return;
+      if (await obtenirCle(racine, b)) await agir(const ConnexionBanque().autoriser);
     }
 
     Future<void> connecterChoisie() async {
@@ -114,7 +121,7 @@ class CarteBanque extends ConsumerWidget {
       if (b == null) return;
       await agir(() => const ConnexionBanque().choisirBanque(b));
       // Sans clé encore, la connexion commence aussitôt.
-      if (!e.cle && context.mounted) await connecter(b);
+      if (!e.cle) await connecter(b);
     }
 
     return Carte(

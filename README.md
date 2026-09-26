@@ -71,11 +71,11 @@ Les APK ne sont pas sur le Play Store : Android demande, une fois, d'autoriser l
 <summary><b>Vérifier le fichier téléchargé, ou construire soi-même</b></summary>
 
 ```
-# SHA-256 de SmartBudget.apk, version 1.2.0
-7e4a133a989944b24b058f3d174a1fe7a892df414e8d3e538378804c70b9f1a6
+# SHA-256 de SmartBudget.apk, version 1.2.2
+d092105c6358c638511c8a523c14ba83c742eab4642de714a0057a9361cbd3bc
 
-# SHA-256 de SmartBudget-demo.apk, version 1.2.0
-a9ffca9d9110dc4398d7cdcde7930f12487f3f367fcea07e5cfa19a23f71022f
+# SHA-256 de SmartBudget-demo.apk, version 1.2.2
+6e8f27b80c94ccfdabd9ac5c17953464320647d72e801f27b9fea0c6265d60b8
 
 # SHA-256 du certificat de signature, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -271,7 +271,7 @@ Les montants sont des entiers, en centimes : jamais un flottant ne touche à l'a
 <a id="tests"></a>
 <img src="docs/sections/s13.png" alt="13 Les tests" width="100%">
 
-<img src="docs/schemas/tests.png" alt="Les tests : libellés, virements internes, récurrences, classement et dédoublonnage, bilan avec remboursements et espèces, portefeuille, sauvegarde chiffrée, signature RS256 identique à OpenSSL, alerte de compte en négatif. Les 24 tests tournent sur un émulateur Android." width="100%">
+<img src="docs/schemas/tests.png" alt="Les tests : libellés, virements internes, récurrences, classement et dédoublonnage, bilan avec remboursements et espèces, portefeuille, sauvegarde chiffrée, signature RS256 identique à OpenSSL, alerte de compte en négatif, remboursements liés sans jamais dépasser, synchronisations successives sans doublon ni perte, et aucun accès à la base qui puisse geler. 73 tests : 15 sur la logique pure, 58 sur un émulateur Android." width="100%">
 
 SQLCipher et le Keystore n'existent que sur un appareil : les tests d'intégration tournent sur un émulateur, jamais sur le téléphone qui porte les vrais comptes, car ils effacent la base.
 

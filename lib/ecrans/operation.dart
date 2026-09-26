@@ -291,7 +291,12 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                       libelle: 'C\'est un remboursement',
                       valeur: o.categorieId == remboursements.id,
                       onChanged: (v) => modifier(() async {
-                        await const DepotOperations().reclasser(o.id, v ? remboursements.id : remboursements.parentId!, apprendre: false);
+                        final proposee = v ? null : await const DepotOperations().categorieProposee(o);
+                        await const DepotOperations().reclasser(
+                          o.id,
+                          v ? remboursements.id : (proposee == null || proposee == remboursements.id ? remboursements.parentId! : proposee),
+                          apprendre: false,
+                        );
                       }),
                     ),
                   // Un virement interne est déjà hors de l'analyse : la
@@ -493,7 +498,7 @@ class _Ligne extends StatelessWidget {
   Widget build(BuildContext context) => InkWell(
         onTap: onTap,
         child: SizedBox(
-          height: 56,
+          height: dansUnVolet(context) ? 44 : 56,
           child: Row(
             children: [
               _PetiteIcone(icone),
@@ -538,7 +543,8 @@ class _Bascule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 56,
+        // Plus basse dans un volet : la fiche tient d'un coup sur le Fold.
+        height: dansUnVolet(context) ? 44 : 56,
         child: Row(
           children: [
             _PetiteIcone(icone),
@@ -759,6 +765,19 @@ class _EtatLier extends ConsumerState<EcranLier> {
 
   int get _reparti => _parts.values.fold(0, (s, c) => s + (lireEuros(c.text) ?? 0));
 
+  /// Ce qu'une dépense peut encore recevoir de cette entrée.
+  int _libre(Operation d, int ailleurs) => -d.montantCentimes - ailleurs;
+
+  /// Une part cochée qui ne peut pas s'enregistrer : illisible, nulle, ou
+  /// plus grande que ce qui reste de la dépense. Enregistrer l'aurait
+  /// retirée sans rien dire.
+  bool _partFausse(Operation d, int ailleurs) {
+    final c = _parts[d.id];
+    if (c == null) return false;
+    final v = lireEuros(c.text);
+    return v == null || v <= 0 || v > _libre(d, ailleurs);
+  }
+
   Future<void> _enregistrer(Operation entree) async {
     if (_enCours) return;
     setState(() => _enCours = true);
@@ -780,6 +799,7 @@ class _EtatLier extends ConsumerState<EcranLier> {
     final depenses = _depenses;
     final reparti = _reparti;
     final trop = entree != null && reparti > entree.montantCentimes;
+    final faussess = depenses == null ? 0 : depenses.where((e) => _partFausse(e.$1, e.$2)).length;
 
     return Scaffold(
       body: SafeArea(
@@ -836,23 +856,30 @@ class _EtatLier extends ConsumerState<EcranLier> {
                                     textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire)),
                               ),
                             for (final (d, ailleurs) in depenses)
-                              Container(
+                              Builder(builder: (context) {
+                                final coche = _parts.containsKey(d.id);
+                                // Déjà entièrement remboursée par d'autres entrées : rien à lier.
+                                final pleine = !coche && _libre(d, ailleurs) <= 0;
+                                void basculer(bool? v) => setState(() {
+                                      if (v == true) {
+                                        final reste = entree.montantCentimes - _reparti;
+                                        final libre = _libre(d, ailleurs);
+                                        final part = reste.clamp(0, libre < 0 ? 0 : libre);
+                                        _parts[d.id] = TextEditingController(text: euros(part).replaceAll(RegExp(r'\s*€'), ''));
+                                      } else {
+                                        _parts.remove(d.id)?.dispose();
+                                      }
+                                    });
+                                return InkWell(
+                                onTap: pleine ? null : () => basculer(!coche),
+                                child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
                                 child: Row(
                                   children: [
                                     Checkbox(
-                                      value: _parts.containsKey(d.id),
-                                      onChanged: (v) => setState(() {
-                                        if (v == true) {
-                                          final reste = entree.montantCentimes - _reparti;
-                                          final libre = -d.montantCentimes - ailleurs;
-                                          final part = reste.clamp(0, libre < 0 ? 0 : libre);
-                                          _parts[d.id] = TextEditingController(text: euros(part).replaceAll(RegExp(r'\s*€'), ''));
-                                        } else {
-                                          _parts.remove(d.id)?.dispose();
-                                        }
-                                      }),
+                                      value: coche,
+                                      onChanged: pleine ? null : basculer,
                                     ),
                                     Expanded(
                                       child: Column(
@@ -861,11 +888,14 @@ class _EtatLier extends ConsumerState<EcranLier> {
                                           Text(d.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
                                           Text(
                                             '${jourCourt(d.le)} · ${euros(d.montantCentimes)}'
-                                            '${ailleurs > 0 ? ' · ${euros(ailleurs)} déjà remboursés' : ''}',
+                                            '${pleine ? ' · déjà entièrement remboursée' : ailleurs > 0 ? ' · ${euros(ailleurs)} déjà remboursés' : ''}',
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret),
                                           ),
+                                          if (_partFausse(d, ailleurs))
+                                            Text('Part à corriger : au plus ${euros(_libre(d, ailleurs))}',
+                                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.alerte)),
                                         ],
                                       ),
                                     ),
@@ -877,20 +907,33 @@ class _EtatLier extends ConsumerState<EcranLier> {
                                           onChanged: (_) => setState(() {}),
                                           textAlign: TextAlign.right,
                                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                          decoration: const InputDecoration(suffixText: '€', isDense: true),
+                                          decoration: InputDecoration(
+                                            suffixText: '€',
+                                            isDense: true,
+                                            errorText: _partFausse(d, ailleurs) ? '' : null,
+                                            errorStyle: const TextStyle(height: 0, fontSize: 0),
+                                          ),
                                         ),
                                       ),
                                   ],
                                 ),
                               ),
+                                );
+                              }),
                           ],
                         ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
               child: FilledButton(
-                onPressed: entree == null || trop || _enCours ? null : () => _enregistrer(entree),
-                child: Text(_parts.isEmpty ? 'Enregistrer' : 'Lier ${pluriel(_parts.length, 'dépense')}'),
+                onPressed: entree == null || trop || faussess > 0 || _enCours ? null : () => _enregistrer(entree),
+                child: Text(trop
+                    ? 'Plus que le montant reçu'
+                    : faussess > 0
+                        ? 'Une part à corriger'
+                        : _parts.isEmpty
+                            ? 'Enregistrer'
+                            : 'Lier ${pluriel(_parts.length, 'dépense')}'),
               ),
             ),
           ],

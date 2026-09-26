@@ -267,7 +267,7 @@ void main() {
       expect((await _ops.une(cheque.id))?.enAttente, isTrue);
       // La même, encore en attente, puis comptabilisée : même identifiant.
       await _ops.importer(compte.id, [attente]);
-      await _ops.importer(compte.id, [_op('2026-09-16', 'REM 2 CHQ BORNE', 500)]);
+      await _ops.importer(compte.id, [_op('2026-09-16', 'REM 2 CHQ BORNE', 500)], attenteLue: true);
       final apres = await _ops.une(cheque.id);
       expect(apres?.enAttente, isFalse);
       expect(await _liens.concernant([cheque.id]), hasLength(1));

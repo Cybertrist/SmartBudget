@@ -71,11 +71,11 @@ The APKs are not on the Play Store: Android asks, once, to allow installs from t
 <summary><b>Check the downloaded file, or build it yourself</b></summary>
 
 ```
-# SHA-256 of SmartBudget.apk, version 1.2.0
-7e4a133a989944b24b058f3d174a1fe7a892df414e8d3e538378804c70b9f1a6
+# SHA-256 of SmartBudget.apk, version 1.2.2
+d092105c6358c638511c8a523c14ba83c742eab4642de714a0057a9361cbd3bc
 
-# SHA-256 of SmartBudget-demo.apk, version 1.2.0
-a9ffca9d9110dc4398d7cdcde7930f12487f3f367fcea07e5cfa19a23f71022f
+# SHA-256 of SmartBudget-demo.apk, version 1.2.2
+6e8f27b80c94ccfdabd9ac5c17953464320647d72e801f27b9fea0c6265d60b8
 
 # SHA-256 of the signing certificate, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -271,7 +271,7 @@ Amounts are integers, in cents: a float never touches money. The domain knows ne
 <a id="tests"></a>
 <img src="docs/en/sections/s13.png" alt="13 Tests" width="100%">
 
-<img src="docs/en/schemas/tests.png" alt="The tests: labels, internal transfers, recurrences, categorising and de-duplication, balance with refunds and cash, wallet, encrypted backup, RS256 signature identical to OpenSSL, overdrawn alert. The 24 tests run on an Android emulator." width="100%">
+<img src="docs/en/schemas/tests.png" alt="The tests: labels, internal transfers, recurrences, categorising and de-duplication, balance with refunds and cash, wallet, encrypted backup, RS256 signature identical to OpenSSL, overdrawn alert, linked refunds that never go over, successive syncs with nothing doubled or lost, and no database access that could freeze. 73 tests: 15 on pure logic, 58 on an Android emulator." width="100%">
 
 SQLCipher and the Keystore only exist on a device: the integration tests run on an emulator, never on the phone holding the real accounts, since they erase the database.
 

@@ -162,7 +162,9 @@ class EnableBanking {
   /// puis celles en attente, un paiement par carte du jour que le solde
   /// compte déjà. Une banque qui ne donne pas les secondes rend les
   /// premières seules.
-  Future<List<OperationBrute>> operations(String compte, DateTime depuis) async {
+  /// Les attentes se lisent depuis [depuisAttente] s'il est plus ancien :
+  /// une caution d'hôtel de plus d'une semaine doit revenir dans la liste.
+  Future<List<OperationBrute>> operations(String compte, DateTime depuis, {DateTime? depuisAttente}) async {
     attenteLue = false;
     final lues = await _page(compte, depuis, 'BOOK');
     // Sans référence de la banque, deux cafés au même prix le même jour
@@ -179,7 +181,7 @@ class EnableBanking {
       // Deux cafés au même prix le même jour ont la même empreinte : la
       // seconde prend un numéro.
       final vues = <String, int>{};
-      for (final o in await _page(compte, depuis, 'PDNG')) {
+      for (final o in await _page(compte, depuisAttente != null && depuisAttente.isBefore(depuis) ? depuisAttente : depuis, 'PDNG')) {
         final n = vues[o.uidBanque] = (vues[o.uidBanque] ?? 0) + 1;
         sortie.add(n == 1
             ? o

@@ -36,5 +36,24 @@ int? lireEuros(String texte) {
   t = t.replaceAll(',', '.');
   if (!RegExp(r'^[+-]?(\d+(\.\d{0,2})?|\.\d{1,2})$').hasMatch(t)) return null;
   final v = double.tryParse(t);
-  return v == null || !v.isFinite ? null : (v * 100).round();
+  if (v == null || !v.isFinite || v.abs() > 10000000) return null;
+  return (v * 100).round();
+}
+
+/// Des pourcentages arrondis qui font 100 : le reste va aux plus grosses
+/// décimales, pas 61 + 27 + 13.
+List<int> pourcentages(List<int> valeurs) {
+  final total = valeurs.fold<int>(0, (s, v) => s + (v > 0 ? v : 0));
+  if (total == 0) return [for (final _ in valeurs) 0];
+  final exactes = [for (final v in valeurs) (v > 0 ? v : 0) * 100 / total];
+  final parts = [for (final e in exactes) e.floor()];
+  var reste = 100 - parts.fold<int>(0, (s, p) => s + p);
+  final ordre = [for (var i = 0; i < valeurs.length; i++) i]
+    ..sort((a, b) => (exactes[b] - parts[b]).compareTo(exactes[a] - parts[a]));
+  for (final i in ordre) {
+    if (reste <= 0) break;
+    parts[i]++;
+    reste--;
+  }
+  return parts;
 }

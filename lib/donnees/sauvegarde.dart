@@ -55,6 +55,10 @@ class Sauvegarde {
       'version': await _version(db),
       'cree_le': DateTime.now().toIso8601String(),
       'tables': tables,
+      // Les compteurs d'identifiants : sans eux, une opération neuve
+      // reprendrait après la restauration l'identifiant d'une effacée, et
+      // le repère du portefeuille la manquerait.
+      'sequences': {for (final r in await db.query('sqlite_sequence')) r['name']! as String: r['seq']},
     }));
 
     final octets = await Isolate.run(() => _chiffrer(phrase, clair));
@@ -110,6 +114,13 @@ class Sauvegarde {
           l.removeWhere((cle, _) => !colonnes.contains(cle));
           await t.insert(nom, l);
         }
+      }
+      final sequences = (contenu['sequences'] as Map<String, dynamic>?) ?? const {};
+      for (final e in sequences.entries) {
+        if (!_tables.contains(e.key) || e.value is! int) continue;
+        await t.rawUpdate('UPDATE sqlite_sequence SET seq = MAX(seq, ?) WHERE name = ?', [e.value, e.key]);
+        await t.rawInsert('INSERT INTO sqlite_sequence (name, seq) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM sqlite_sequence WHERE name = ?)',
+            [e.key, e.value, e.key]);
       }
     });
   }

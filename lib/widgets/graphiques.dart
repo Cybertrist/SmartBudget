@@ -39,7 +39,7 @@ class SelecteurMois extends ConsumerWidget {
           ),
           IconButton(
             tooltip: 'Mois suivant',
-            onPressed: mois.compareTo(courant) >= 0 ? null : () => aller(mois.suivant),
+            onPressed: mois.compareTo(courant.suivant) >= 0 ? null : () => aller(mois.suivant),
             icon: Icon(iconeDe('chevron_right'), color: AppColors.texteSecondaire),
           ),
         ],

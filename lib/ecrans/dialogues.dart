@@ -34,6 +34,7 @@ Future<T?> carteSaisie<T>(
   required Widget Function(BuildContext ctx, void Function() valider) champ,
   required T? Function() resultat,
   Widget? gauche,
+  String bouton = 'Enregistrer',
 }) {
   return showGeneralDialog<T>(
     context: context,
@@ -54,11 +55,15 @@ Future<T?> carteSaisie<T>(
         if (r != null) Navigator.pop(ctx, r);
       }
 
-      return SafeArea(
+      // La zone qui défile s'arrête au-dessus du clavier : sur l'écran
+      // déplié, une longue carte passait dessous, boutons compris.
+      return Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+        child: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            padding: EdgeInsets.fromLTRB(20, MediaQuery.viewInsetsOf(ctx).bottom > 0 ? 6 : 24, 20, 8),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: Material(
@@ -96,7 +101,7 @@ Future<T?> carteSaisie<T>(
                               foregroundColor: Colors.black,
                               textStyle: const TextStyle(fontWeight: FontWeight.w800),
                             ),
-                            child: const Text('Enregistrer'),
+                            child: Text(bouton),
                           ),
                         ],
                       ),
@@ -107,6 +112,7 @@ Future<T?> carteSaisie<T>(
             ),
           ),
         ),
+      ),
       );
     },
   );
@@ -159,6 +165,7 @@ Future<String?> demanderTexte(BuildContext context, {required String titre, Stri
     aide: aide,
     resultat: () => champ.text,
     champ: (_, valider) => TextField(
+      maxLength: 60,
       controller: champ,
       autofocus: true,
       textCapitalization: TextCapitalization.sentences,

@@ -134,7 +134,7 @@ grille tests 3 \
   "account_balance_wallet|Portefeuille|50 € comptés, un retrait de 20 €, 12 € au marché : il en reste 58." \
   "backup|Sauvegarde|Tout revient avec la bonne phrase ; une phrase fausse ne touche à rien." \
   "draw|Signature|Le JWT signé en Dart est, octet pour octet, celui d'OpenSSL." \
-  "android|Sur appareil|Les 24 tests tournent sur un émulateur Android : SQLCipher et le Keystore n'existent que là."
+  "link|Remboursements|Lier depuis la dépense ou depuis l'entrée, sans jamais dépasser, même avec deux écritures au même instant."   "sync|Synchronisations|Attentes qui passent, changent de montant ou sont levées, un an d'historique : rien ne double, rien ne se perd."   "timer|Jamais figée|Chaque test borne ses accès à la base dans le temps : un verrou mort ferait échouer la suite au lieu de la geler."   "android|Sur appareil|73 tests : 15 sur la logique pure, 58 sur un émulateur Android, où SQLCipher et le Keystore existent."
 
 # --------------------------------------------------------------- couches
 { entete 1280; echo "$ICONES"; cat <<'HTML'

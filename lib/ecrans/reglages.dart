@@ -141,6 +141,15 @@ class EcranReglages extends ConsumerWidget {
                 );
                 if (ok != true) return;
               }
+              // Sans code ni empreinte sur le téléphone, l'activer enfermerait
+              // dehors à la prochaine ouverture.
+              if (v && !await ref.read(authServiceProvider).appareilVerrouille()) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Ajoute d\'abord un code ou une empreinte au téléphone, dans les réglages Android.')));
+                }
+                return;
+              }
               await ref.read(securiteProvider.notifier).verrou(v);
             }),
             if (securite.verrou)
@@ -186,7 +195,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.2.1';
+  static const _version = '1.2.2';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 
@@ -252,6 +261,7 @@ class EcranReglages extends ConsumerWidget {
     return carteSaisie<String>(
       context,
       titre: 'Phrase de la sauvegarde',
+      bouton: nouvelle ? 'Chiffrer' : 'Restaurer',
       aide: nouvelle
           ? 'Elle chiffre le fichier. Sans elle, personne ne peut le relire, toi non plus : note-la bien.'
           : 'Celle choisie au moment de l\'export.',

@@ -38,18 +38,33 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
     });
   }
 
+  bool _sansVerrou = false;
+
   Future<void> _ouvrir() async {
     if (_enCours) return;
     setState(() {
       _enCours = true;
       _erreur = null;
     });
+    // L'empreinte coupée dans les réglages : on ouvre sans rien demander,
+    // même si le bouton a été touché avant la fin du lancement.
+    if (!(await SecuriteNotifier.lire()).verrou) {
+      await ref.read(authServiceProvider).ouvrirSansVerrou();
+      return;
+    }
     final resultat = await ref.read(authServiceProvider).authenticate();
     if (!mounted) return;
     setState(() {
       _enCours = false;
       _erreur = resultat.raison;
+      _sansVerrou = resultat.sansVerrou;
     });
+  }
+
+  /// Sur un téléphone sans verrou : l'empreinte se coupe, et l'on ouvre.
+  Future<void> _ouvrirSansEmpreinte() async {
+    await ref.read(securiteProvider.notifier).verrou(false);
+    await ref.read(authServiceProvider).ouvrirSansVerrou();
   }
 
   @override
@@ -119,6 +134,10 @@ class _EcranVerrouillageState extends ConsumerState<EcranVerrouillage> {
                     label: Text(_enCours ? 'En attente…' : 'Ouvrir'),
                   ),
                 ),
+                if (_sansVerrou) ...[
+                  const SizedBox(height: 12),
+                  TextButton(onPressed: _enCours ? null : _ouvrirSansEmpreinte, child: const Text('Ouvrir sans empreinte')),
+                ],
                 const Spacer(flex: 3),
               ],
             ),
