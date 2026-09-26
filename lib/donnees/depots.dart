@@ -350,6 +350,30 @@ class DepotOperations {
     return nouvelles;
   }
 
+  /// Fait commencer le mois le jour où le salaire arrive, d'après les six
+  /// derniers mois, tant que le début n'a pas été choisi à la main. Rend
+  /// vrai s'il a changé.
+  Future<bool> ajusterDebutMois() async {
+    const reglages = DepotReglages();
+    if (!await reglages.debutMoisAuto()) return false;
+    final cats = await _categories.parId();
+    bool salaire(Operation o) {
+      final c = cats[o.categorieId];
+      final racine = c?.parentId == null ? c : cats[c!.parentId];
+      return racine?.nom == 'Salaire';
+    }
+
+    final depuis = DateTime.now().subtract(const Duration(days: 190));
+    final dates = [
+      for (final o in await entre(depuis, DateTime.now().add(const Duration(days: 1))))
+        if (o.montantCentimes > 0 && !o.masquee && o.interne == null && !o.enAttente && salaire(o)) o.le,
+    ];
+    final jour = jourDuSalaire(dates);
+    if (jour == null || jour == await reglages.debutMois()) return false;
+    await reglages.ecrire('debut_mois', '$jour');
+    return true;
+  }
+
   /// La plus ancienne opération encore en attente : la banque doit donner
   /// les attentes au moins depuis elle, sinon elle ne s'effacerait jamais.
   Future<DateTime?> plusAncienneEnAttente() async {
@@ -763,6 +787,10 @@ class DepotReglages {
     return {for (final r in l) if (r['valeur'] != null) r['cle']! as String: r['valeur']! as String};
   }
 
+  /// Le début du mois suit-il le salaire tout seul ? Oui, tant qu'on n'a
+  /// pas choisi un jour à la main.
+  Future<bool> debutMoisAuto() async => await lire('debut_mois_auto') != '0';
+
   /// Le jour où commence le mois budgétaire, 1 par défaut.
   Future<int> debutMois() async => int.tryParse(await lire('debut_mois') ?? '') ?? 1;
 }
@@ -790,12 +818,26 @@ class DepotBilan {
       if (o != null) autres.add(o);
     }
 
+    // Les retraits et les dépenses en espèces de quatre mois avant à deux
+    // mois après : un retrait de ce mois-ci peut être dépensé le suivant,
+    // et une dépense de ce mois-ci puiser dans un retrait d'avant.
+    final categories = await const DepotCategories().parId();
+    final (de, a) = mois.bornes(debut: debut);
+    final autour = (await ops.entre(de.subtract(const Duration(days: 124)), a.add(const Duration(days: 63))))
+        .where((o) => !o.masquee && o.montantCentimes < 0)
+        .toList();
+    final financement = financementEspeces(
+      [for (final o in autour) if (categories[o.categorieId]?.nom == "Retraits d'espèces") o],
+      [for (final o in autour) if (o.especes) o],
+    );
+
     return calculerBilan(
       mois: mois,
       operations: [...duMois, ...autres],
       liens: lies,
-      categories: await const DepotCategories().parId(),
+      categories: categories,
       debut: debut,
+      retraitsDepenses: financement,
     );
   }
 }

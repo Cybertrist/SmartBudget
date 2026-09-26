@@ -273,6 +273,25 @@ void main() {
       expect(await _liens.concernant([cheque.id]), hasLength(1));
     });
 
+    test('le mois suit le salaire tout seul, sauf choix à la main', () async {
+      final compte = await _comptes.courant();
+      final aujourdhui = DateTime.now();
+      String le(int moisAvant, int jour) =>
+          DateTime(aujourdhui.year, aujourdhui.month - moisAvant, jour).toIso8601String().substring(0, 10);
+      await _ops.importer(compte.id, [
+        _op(le(3, 27), 'VIR SEPA SALAIRE ACME 1', 1800),
+        _op(le(2, 26), 'VIR SEPA SALAIRE ACME 2', 1800),
+        _op(le(1, 27), 'VIR SEPA SALAIRE ACME 3', 1800),
+      ]);
+      expect(await _ops.ajusterDebutMois(), isTrue);
+      expect(await _reglages.debutMois(), 26);
+      // Choisi à la main : le salaire ne le déplace plus.
+      await _reglages.ecrire('debut_mois_auto', '0');
+      await _reglages.ecrire('debut_mois', '1');
+      expect(await _ops.ajusterDebutMois(), isFalse);
+      expect(await _reglages.debutMois(), 1);
+    });
+
     test('le mois qui commence le jour de paie', () async {
       await _reglages.ecrire('debut_mois', '28');
       final compte = await _comptes.courant();

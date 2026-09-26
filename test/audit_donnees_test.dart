@@ -206,4 +206,38 @@ void main() {
       }
     });
   });
+
+  group('jour du salaire', () {
+    DateTime d(int m, int j) => DateTime(2026, m, j);
+    test('un salaire du 28 ouvre le mois le 28', () => expect(jourDuSalaire([d(6, 28), d(7, 28), d(8, 28)]), 28));
+    test('versé avant un week-end, le plus tôt compte', () => expect(jourDuSalaire([d(6, 28), d(7, 26), d(8, 28)]), 26));
+    test('le 30 ou le 31 ouvre le mois le 28', () => expect(jourDuSalaire([d(6, 30), d(7, 31)]), 28));
+    test('un salaire en retard, le 2, reste la fin du mois précédent', () => expect(jourDuSalaire([d(6, 28), d(8, 2), d(8, 28)]), 28));
+    test('un salaire en début de mois', () => expect(jourDuSalaire([d(6, 3), d(7, 2), d(8, 3)]), 2));
+    test('un seul salaire ne suffit pas', () => expect(jourDuSalaire([d(8, 28)]), isNull));
+  });
+
+  group("espèces d'un mois sur l'autre", () {
+    Operation op(int id, String le, int c, {bool especes = false}) => Operation(
+          id: id, compteId: 1, uidBanque: 'u$id', le: DateTime.parse(le), libelle: 'X',
+          montantCentimes: c, categorieId: 1, origine: Origine.main, especes: especes);
+    test("un retrait de septembre finance le marché d'octobre", () {
+      final f = financementEspeces([op(1, '2026-09-25', -5000)], [op(2, '2026-10-02', -2000, especes: true)]);
+      expect(f, {1: 2000});
+    });
+    test("le plus ancien retrait d'abord, jamais au-delà de son montant", () {
+      final f = financementEspeces(
+        [op(1, '2026-09-01', -2000), op(2, '2026-09-10', -5000)],
+        [op(3, '2026-09-12', -3000, especes: true)],
+      );
+      expect(f, {1: 2000, 2: 1000});
+    });
+    test('un retrait postérieur ou de plus de deux mois ne finance rien', () {
+      final f = financementEspeces(
+        [op(1, '2026-06-01', -5000), op(2, '2026-09-20', -5000)],
+        [op(3, '2026-09-10', -1000, especes: true)],
+      );
+      expect(f, isEmpty);
+    });
+  });
 }

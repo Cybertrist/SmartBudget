@@ -23,9 +23,11 @@ import '../widgets/base.dart';
 import '../widgets/coque.dart';
 import 'dialogues.dart';
 
-final _debutProvider = FutureProvider<int>((ref) async {
+/// Le jour où commence le mois, et s'il suit le salaire tout seul.
+final _debutProvider = FutureProvider<(int, bool)>((ref) async {
   ref.watch(versionProvider);
-  return const DepotReglages().debutMois();
+  const reglages = DepotReglages();
+  return (await reglages.debutMois(), await reglages.debutMoisAuto());
 });
 
 class EcranReglages extends ConsumerWidget {
@@ -35,7 +37,7 @@ class EcranReglages extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final budget = ref.watch(budgetProvider).value ?? 0;
     final objectif = ref.watch(objectifEpargneProvider).value ?? 0;
-    final debut = ref.watch(_debutProvider).value ?? 1;
+    final (debut, debutAuto) = ref.watch(_debutProvider).value ?? (1, true);
     final securite = ref.watch(securiteProvider);
 
     Widget ligne(String icone, String libelle, String valeur, VoidCallback onTap, {Color? couleur}) => InkWell(
@@ -98,7 +100,8 @@ class EcranReglages extends ConsumerWidget {
                 () => fixerMontant(context, ref, cle: 'budget', titre: 'Budget du mois')),
             ligne('savings', 'Objectif d\'épargne', objectif == 0 ? 'Non fixé' : euros(objectif, centimesSiRond: false),
                 () => fixerMontant(context, ref, cle: 'objectif_epargne', titre: 'Objectif d\'épargne')),
-            ligne('calendar_month', 'Le mois commence le', debut == 1 ? '1er' : '$debut', () => _choisirDebut(context, ref, debut)),
+            ligne('calendar_month', 'Le mois commence le', '${debut == 1 ? '1er' : '$debut'}${debutAuto ? ' · salaire' : ''}',
+                () => _choisirDebut(context, ref, debut, debutAuto)),
           ]),
           const SizedBox(height: 14),
           Carte(
@@ -195,7 +198,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.2.2';
+  static const _version = '1.2.3';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 
@@ -220,11 +223,47 @@ class EcranReglages extends ConsumerWidget {
     if (d != null) await ref.read(securiteProvider.notifier).delai(d);
   }
 
-  Future<void> _choisirDebut(BuildContext context, WidgetRef ref, int actuel) async {
+  Future<void> _choisirDebut(BuildContext context, WidgetRef ref, int actuel, bool auto) async {
+    // 0 : le mois suit le salaire, repéré dans les opérations.
     final choix = await carteChoix<int>(
       context,
       builder: (ctx) => SafeArea(
-        child: GridView.count(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              child: Material(
+                color: auto ? AppColors.vert.withValues(alpha: 0.12) : AppColors.surfaceHaute,
+                borderRadius: BorderRadius.circular(16),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => Navigator.pop(ctx, 0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        Icon(iconeDe('payments'), color: AppColors.vert),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Le jour du salaire', style: TextStyle(fontWeight: FontWeight.w700)),
+                              SizedBox(height: 2),
+                              Text('Repéré tout seul dans tes opérations, et suivi quand il change.',
+                                  style: TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
+                            ],
+                          ),
+                        ),
+                        if (auto) Icon(iconeDe('check'), color: AppColors.vert),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            GridView.count(
           crossAxisCount: 7,
           shrinkWrap: true,
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -238,17 +277,26 @@ class EcranReglages extends ConsumerWidget {
                     width: 40,
                     height: 40,
                     alignment: Alignment.center,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: j == actuel ? AppColors.vert : null),
-                    child: Text('$j', style: TextStyle(fontWeight: FontWeight.w700, color: j == actuel ? Colors.black : AppColors.texte)),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: j == actuel && !auto ? AppColors.vert : null),
+                    child: Text('$j', style: TextStyle(fontWeight: FontWeight.w700, color: j == actuel && !auto ? Colors.black : AppColors.texte)),
                   ),
                 ),
               ),
           ],
         ),
+          ],
+        ),
       ),
     );
     if (choix == null) return;
-    await const DepotReglages().ecrire('debut_mois', '$choix');
+    const reglages = DepotReglages();
+    if (choix == 0) {
+      await reglages.ecrire('debut_mois_auto', null);
+      await const DepotOperations().ajusterDebutMois();
+    } else {
+      await reglages.ecrire('debut_mois_auto', '0');
+      await reglages.ecrire('debut_mois', '$choix');
+    }
     rafraichir(ref);
   }
 

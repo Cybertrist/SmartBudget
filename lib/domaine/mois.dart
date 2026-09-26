@@ -53,3 +53,21 @@ class Mois implements Comparable<Mois> {
   @override
   String toString() => cle;
 }
+
+/// Le jour où faire commencer le mois, d'après les dates où le salaire est
+/// arrivé : le plus tôt d'entre elles, pour que chaque salaire ouvre le
+/// mois qu'il finance, même versé avant un week-end. Un salaire du 29, 30
+/// ou 31 ouvre le mois le 28 ; un salaire versé en tout début de mois, le
+/// 1er ou le 2, compte comme la fin du précédent quand les autres tombent
+/// en fin de mois. Rien sans au moins deux salaires.
+int? jourDuSalaire(List<DateTime> dates) {
+  if (dates.length < 2) return null;
+  final jours = [for (final d in dates) d.day];
+  final finDeMois = jours.any((j) => j >= 20);
+  // En fin de mois, un salaire du 1er au 10 est un salaire en retard :
+  // il se range après le 31.
+  final ranges = [for (final j in jours) finDeMois && j <= 10 ? j + 31 : j]..sort();
+  final premier = ranges.first;
+  if (premier > 31) return 1;
+  return premier > 28 ? 28 : premier;
+}

@@ -75,6 +75,11 @@ class _EtatCoque extends ConsumerState<Coque> with WidgetsBindingObserver {
     final e = await const ConnexionBanque().etat();
     final vieille = e.derniere == null || DateTime.now().difference(e.derniere!) > const Duration(minutes: 10);
     if (e.relie && vieille && mounted) await synchroniser(context, ref, silencieux: true);
+    // Le mois commence le jour où le salaire arrive, relu après chaque
+    // synchronisation.
+    try {
+      if (await const DepotOperations().ajusterDebutMois() && mounted) rafraichir(ref);
+    } catch (_) {}
     if (e.relie && demarrage) {
       // La veille du solde tourne tant que le compte est relié ; la demande
       // de permission ne s'affiche qu'une fois, Android s'en souvient.

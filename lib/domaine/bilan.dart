@@ -62,6 +62,7 @@ Bilan calculerBilan({
   required List<Lien> liens,
   required Map<int, Categorie> categories,
   int debut = 1,
+  Map<int, int>? retraitsDepenses,
 }) {
   final bilan = Bilan(mois);
   final parId = {for (final o in operations) o.id: o};
@@ -146,7 +147,13 @@ Bilan calculerBilan({
     _ajouter(bilan, top, cat, d, o);
     final nature = o.nature ?? cat.nature;
     if (o.especes) especes += d;
-    if (cat.nom == "Retraits d'espèces" && d > 0) retraits.update((top, cat, nature), (v) => v + d, ifAbsent: () => d);
+    if (cat.nom == "Retraits d'espèces" && d > 0) {
+      // Avec [retraitsDepenses], chaque retrait sait ce qui en a été
+      // dépensé en espèces, ce mois-ci ou un autre ; sinon, on compense
+      // dans le mois seulement.
+      final x = retraitsDepenses == null ? d : (retraitsDepenses[o.id] ?? 0).clamp(0, d);
+      if (x > 0) retraits.update((top, cat, nature), (v) => v + x, ifAbsent: () => x);
+    }
     switch (nature) {
       case Nature.essentiel:
         bilan.essentiel += d;
@@ -159,10 +166,11 @@ Bilan calculerBilan({
 
   // L'argent retiré puis dépensé en espèces : la dépense compte, le retrait
   // n'est plus qu'un passage du compte au porte-monnaie.
+  var aDeduire = retraitsDepenses == null ? especes : retraits.values.fold<int>(0, (s, v) => s + v);
   for (final e in retraits.entries) {
-    if (especes <= 0) break;
-    final x = e.value < especes ? e.value : especes;
-    especes -= x;
+    if (aDeduire <= 0) break;
+    final x = e.value < aDeduire ? e.value : aDeduire;
+    aDeduire -= x;
     final (top, cat, nature) = e.key;
     bilan.sorties -= x;
     bilan.parCategorie[top.id] = (bilan.parCategorie[top.id] ?? 0) - x;
@@ -209,6 +217,30 @@ Map<int, int> poidsNets(List<Operation> operations, List<Lien> liens) {
     if (depense != null) poids[depense.id] = poids[depense.id]! + m;
   }
   return poids;
+}
+
+/// Ce que chaque retrait au distributeur a financé en espèces : chaque
+/// dépense en espèces puise dans le plus ancien retrait qui la précède, de
+/// deux mois au plus. Retirer 50 € en septembre puis payer 20 € au marché
+/// en octobre : le retrait ne compte plus que 30 €, les courses 20 €, et
+/// les 50 € ne sont comptés qu'une fois.
+Map<int, int> financementEspeces(List<Operation> retraits, List<Operation> especes) {
+  final file = [...retraits]..sort((a, b) => a.le.compareTo(b.le));
+  final reste = {for (final r in file) r.id: -r.montantCentimes};
+  final pris = <int, int>{};
+  for (final e in [...especes]..sort((a, b) => a.le.compareTo(b.le))) {
+    var besoin = -e.montantCentimes;
+    for (final r in file) {
+      if (besoin <= 0) break;
+      if (r.le.isAfter(e.le) || e.le.difference(r.le).inDays > 62) continue;
+      final x = reste[r.id]! < besoin ? reste[r.id]! : besoin;
+      if (x <= 0) continue;
+      reste[r.id] = reste[r.id]! - x;
+      pris[r.id] = (pris[r.id] ?? 0) + x;
+      besoin -= x;
+    }
+  }
+  return pris;
 }
 
 /// La sous-catégorie des remboursements : de l'argent qui revient, pas un

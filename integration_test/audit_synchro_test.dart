@@ -563,9 +563,7 @@ void main() {
       expect(b.entrees, 5000);
     });
 
-    // Choix gardé : une dépense en espèces compte le mois où elle est faite,
-    // et ne se retranche que des retraits de ce mois-là.
-    test('D5 espèces dépensées le mois suivant le retrait : pas comptées deux fois', skip: 'à trancher : report des espèces sur le mois suivant', () async {
+    test('D5 espèces dépensées le mois suivant le retrait : pas comptées deux fois', () async {
       final compte = await _compte();
       await _w(_ops.importer(compte, [_b('r1', '2026-09-25', 'RETRAIT DAB VANNES 25/09', -50)]));
       await _w(_ops.ajouterEspeces(le: DateTime(2026, 10, 2), nom: 'Marché', centimes: 2000, categorieId: await _idDe('Courses', 'Marché et primeur')));
