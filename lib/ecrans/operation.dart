@@ -225,7 +225,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content: Text(suivies > 0
-                                      ? 'Reclassée, et ${pluriel(suivies, 'autre opération')} du même marchand avec elle.'
+                                      ? 'Reclassée, et ${pluriel(suivies, 'autre opération', 'autres opérations')} du même marchand avec elle.'
                                       : 'Reclassée. Les prochaines de ce marchand suivront.'),
                                 ));
                               }
@@ -961,7 +961,7 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
                 child: Text(
                   'Pour « ${_depense!.titre} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse, avant ou après l\'achat.'
-                  '${_autres > 0 ? ' Elle est aussi liée à ${pluriel(_autres, 'autre entrée')}, qui le reste.' : ''}',
+                  '${_autres > 0 ? ' Elle est aussi liée à ${_autres > 1 ? '${pluriel(_autres, 'autre entrée', 'autres entrées')}, qui le restent.' : 'une autre entrée, qui le reste.'}' : ''}',
                   style: const TextStyle(fontSize: 13.5, height: 1.5, color: AppColors.texteSecondaire),
                 ),
               ),

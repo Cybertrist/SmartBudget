@@ -1,0 +1,580 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 772" width="1280" height="772" role="img" aria-label="La sauvegarde, entre deux téléphones animés. Sur ce téléphone, Réglages, Sauvegarde, Exporter, chiffré : la carte Phrase de la sauvegarde demande une phrase d’au moins huit caractères, deux fois, et prévient que sans elle personne ne peut relire le fichier, pas même toi. Les six tables, catégories, comptes, opérations, règles, liens et réglages, partent dans le fichier avec la version de la base, compressées puis chiffrées par la phrase. Le sélecteur du système enregistre smartbudget-2026-09-26.sbx dans les Téléchargements : Sauvegarde enregistrée. Le fichier voyage, par les Téléchargements, un ordinateur ou un nuage, et reste illisible sans la phrase. Sur un autre téléphone où l’appli vient d’être installée, Restaurer une sauvegarde : on choisit le fichier, on confirme Remplacer, car tout ce qui est dans l’application sera remplacé. Une phrase fausse donne Phrase incorrecte, ou fichier abîmé, et rien n’est touché. La bonne phrase passe les contrôles : l’en-tête SBEX1 et le MAC d’AES-GCM, une sauvegarde de Smart Budget d’une version connue, puis tout est remplacé d’un bloc, en une seule transaction. Sauvegarde restaurée : l’accueil affiche les mêmes 4 125,33 euros que l’ancien téléphone. La phrase ne se retrouve pas : perdue, la sauvegarde l’est aussi.">
+<title>La sauvegarde, entre deux téléphones animés. Sur ce téléphone, Réglages, Sauvegarde, Exporter, chiffré : la carte Phrase de la sauvegarde demande une phrase d’au moins huit caractères, deux fois, et prévient que sans elle personne ne peut relire le fichier, pas même toi. Les six tables, catégories, comptes, opérations, règles, liens et réglages, partent dans le fichier avec la version de la base, compressées puis chiffrées par la phrase. Le sélecteur du système enregistre smartbudget-2026-09-26.sbx dans les Téléchargements : Sauvegarde enregistrée. Le fichier voyage, par les Téléchargements, un ordinateur ou un nuage, et reste illisible sans la phrase. Sur un autre téléphone où l’appli vient d’être installée, Restaurer une sauvegarde : on choisit le fichier, on confirme Remplacer, car tout ce qui est dans l’application sera remplacé. Une phrase fausse donne Phrase incorrecte, ou fichier abîmé, et rien n’est touché. La bonne phrase passe les contrôles : l’en-tête SBEX1 et le MAC d’AES-GCM, une sauvegarde de Smart Budget d’une version connue, puis tout est remplacé d’un bloc, en une seule transaction. Sauvegarde restaurée : l’accueil affiche les mêmes 4 125,33 euros que l’ancien téléphone. La phrase ne se retrouve pas : perdue, la sauvegarde l’est aussi.</title>
+<defs>
+  <filter id="halo" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <pattern id="grille" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#1ED760" stroke-opacity="0.05"/>
+  </pattern>
+  <pattern id="hachures" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#161D27"/><line x1="0" y1="0" x2="0" y2="10" stroke="#2A3542" stroke-width="4"/>
+  </pattern>
+  <radialGradient id="lueur" cx="50%" cy="0%" r="80%">
+    <stop offset="0" stop-color="#1ED760" stop-opacity="0.10"/><stop offset="1" stop-color="#1ED760" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="1280" height="772" rx="16" fill="#0D1117"/>
+<rect width="1280" height="772" rx="16" fill="url(#grille)"/>
+<rect width="1280" height="772" rx="16" fill="url(#lueur)"/>
+<text x="60" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="700" fill="#1ED760" text-anchor="start" letter-spacing="3">LA SAUVEGARDE</text><text x="232" y="52" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B99A8" text-anchor="start" >Un fichier chiffré par une phrase que toi seul connais, relisible sur un autre téléphone.</text><text x="200" y="90" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#5C6A7A" text-anchor="middle" letter-spacing="2">CE TÉLÉPHONE</text><text x="1080" y="90" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#5C6A7A" text-anchor="middle" letter-spacing="2">UN AUTRE TÉLÉPHONE</text><rect x="60" y="104" width="280" height="610" rx="36" fill="#07090C" stroke="#2F3A47" stroke-width="2"/>
+      <clipPath id="ecranSauvA"><rect x="70" y="118" width="260" height="582" rx="26"/></clipPath>
+      <rect x="70" y="118" width="260" height="582" rx="26" fill="#121212"/>
+      <rect x="170" y="109" width="60" height="5" rx="2.5" fill="#1B222C"/><g clip-path="url(#ecranSauvA)"><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.003;0.04;0.043000000000000003;1" values="0;1;1;0;0"/><text x="86" y="162" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="19" font-weight="800" fill="#FFFFFF">Smart <tspan fill="#50F48D">Budget</tspan></text>
+        <text x="314" y="161" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#B3B3B3" text-anchor="end" >Septembre 2026</text>
+        <text x="88" y="198" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#B3B3B3" text-anchor="start" >Sur tes comptes</text>
+        <text x="86" y="234" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="31" font-weight="800" fill="#FFFFFF" text-anchor="start" >4 125,33 €</text>
+        <text x="88" y="262" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >Mis à jour le 26 sept.</text>
+        <rect x="80" y="284" width="240" height="160" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">MES COMPTES</text>
+        <text x="306" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#7A7A7A" text-anchor="end" >2 comptes</text>
+        
+        <rect x="94" y="326" width="34" height="34" rx="10" fill="#1ED760" fill-opacity="0.16" stroke="#1ED760" stroke-opacity="0.5"/>
+        <rect x="102" y="337" width="18" height="12" rx="2" fill="none" stroke="#1ED760" stroke-width="1.8"/><path d="M102 341 h18" stroke="#1ED760" stroke-width="2"/>
+        <text x="138" y="340" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Compte courant</text>
+        <text x="138" y="356" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Crédit Mutuel de Bretagne</text>
+        <text x="308" y="340" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >1 065,33 €</text>
+        <line x1="94" y1="374" x2="306" y2="374" stroke="#2A2A2A"/>
+          
+        <rect x="94" y="388" width="34" height="34" rx="10" fill="#3CE0FF" fill-opacity="0.16" stroke="#3CE0FF" stroke-opacity="0.5"/>
+        <text x="111" y="410" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="800" fill="#3CE0FF" text-anchor="middle" >€</text>
+        <text x="138" y="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Livret A</text>
+        <text x="138" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Livret d’épargne</text>
+        <text x="308" y="402" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >3 060,00 €</text>
+        <g transform="translate(0,0)">
+          <rect x="80" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <rect x="205" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <text x="94" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">BUDGET</text>
+          <text x="219" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">ÉPARGNE</text>
+          <text x="94" y="516" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="800" fill="#1ED760" text-anchor="start" >247,41 €</text>
+              <text x="94" y="534" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#B3B3B3" text-anchor="start" >restants sur 1 500 €</text>
+              <rect x="94" y="554" width="87" height="6" rx="3" fill="#2A2A2A"/>
+              <rect x="94" y="554" width="72.645" height="6" rx="3" fill="#1ED760"/>
+              <text x="219" y="516" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="start" >3 060,00 €</text>
+              <text x="219" y="534" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#B3B3B3" text-anchor="start" >61 % de 5 000 €</text>
+        </g></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.037;0.04;0.085;0.08800000000000001;1" values="0;0;1;1;0;0"/><text x="88" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="80" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="94" y1="248" x2="306" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="96" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="270" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="270" r="7" fill="#000000"/>
+        <line x1="94" y1="300" x2="306" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="96" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="304" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="94" y1="352" x2="306" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="96" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="270" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="374" r="7" fill="#000000"/>
+        <rect x="80" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="94" y1="458" x2="306" y2="458" stroke="#2A2A2A"/>
+        <rect x="94" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M296 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 486 V474 M104 479 L109 474 L114 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="94" y1="510" x2="306" y2="510" stroke="#2A2A2A"/>
+        <rect x="94" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M296 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 526 V538 M104 533 L109 538 L114 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.04999999999999999;0.05399999999999999;0.08399999999999999;0.088;1" values="0;0;1;1;0;0"/>
+    <circle cx="200" cy="480" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="200" cy="480" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.072;0.074;0.107;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.072;0.107;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.082;0.085;0.186;0.189;1" values="0;0;1;1;0;0"/><text x="88" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="80" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="94" y1="248" x2="306" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="96" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="270" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="270" r="7" fill="#000000"/>
+        <line x1="94" y1="300" x2="306" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="96" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="304" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="94" y1="352" x2="306" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="96" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="270" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="374" r="7" fill="#000000"/>
+        <rect x="80" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="94" y1="458" x2="306" y2="458" stroke="#2A2A2A"/>
+        <rect x="94" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M296 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 486 V474 M104 479 L109 474 L114 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="94" y1="510" x2="306" y2="510" stroke="#2A2A2A"/>
+        <rect x="94" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M296 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 526 V538 M104 533 L109 538 L114 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="70" y="118" width="260" height="582" fill="#000000" fill-opacity="0.55"/>
+        <rect x="80" y="264" width="240" height="250" rx="18" fill="#242424"/>
+        <text x="96" y="296" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="start" >Phrase de la sauvegarde</text>
+        <text x="96" y="318" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#B3B3B3" text-anchor="start" >Elle chiffre le fichier. Sans elle,</text><text x="96" y="334" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#B3B3B3" text-anchor="start" >personne ne peut le relire, toi non</text><text x="96" y="350" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#B3B3B3" text-anchor="start" >plus : note-la bien.</text><rect x="96" y="368" width="208" height="34" rx="9" fill="#2A2A2A"/>
+        <g><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.098;0.1;1" values="1;1;0;0"/><text x="108" y="390" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >Au moins 8 caractères</text></g>
+        <clipPath id="frappe3"><rect x="106" y="371" height="28" width="0">
+    <animate attributeName="width" dur="36s" repeatCount="indefinite" keyTimes="0;0.098;0.128;1" values="0;0;110.78;110.78"/></rect></clipPath>
+  <g clip-path="url(#frappe3)"><text x="108" y="391" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="start" >●●●●●●●●●●●●●</text></g><rect x="96" y="412" width="208" height="34" rx="9" fill="#2A2A2A"/>
+        <g><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.134;0.136;1" values="1;1;0;0"/><text x="108" y="434" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >La même, une seconde fois</text></g>
+        <clipPath id="frappe4"><rect x="106" y="415" height="28" width="0">
+    <animate attributeName="width" dur="36s" repeatCount="indefinite" keyTimes="0;0.134;0.162;1" values="0;0;110.78;110.78"/></rect></clipPath>
+  <g clip-path="url(#frappe4)"><text x="108" y="435" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="start" >●●●●●●●●●●●●●</text></g><text x="180" y="487" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1ED760" text-anchor="middle" >Annuler</text>
+        <rect x="220" y="464" width="88" height="36" rx="18" fill="#1ED760"/>
+        <text x="264" y="487" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#000000" text-anchor="middle" >Enregistrer</text><rect x="70" y="532" width="260" height="168" fill="#1A1A1A"/><rect x="78.0" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="102.8" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="127.6" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="152.4" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="177.2" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="202.0" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="226.8" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="251.6" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="276.4" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="301.2" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="90.6" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="115.8" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="141.0" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="166.2" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="191.4" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="216.6" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="241.8" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="267.0" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="292.2" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="117.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="143.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="169.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="195.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="221.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="247.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="273.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="130" y="658" width="140" height="30" rx="5" fill="#333333"/><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.154;0.158;0.188;0.192;1" values="0;0;1;1;0;0"/>
+    <circle cx="264" cy="482" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="264" cy="482" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.176;0.178;0.211;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.176;0.211;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.183;0.186;0.25;0.253;1" values="0;0;1;1;0;0"/><text x="88" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="80" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="94" y1="248" x2="306" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="96" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="270" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="270" r="7" fill="#000000"/>
+        <line x1="94" y1="300" x2="306" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="96" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="304" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="94" y1="352" x2="306" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="96" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="270" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="374" r="7" fill="#000000"/>
+        <rect x="80" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="94" y1="458" x2="306" y2="458" stroke="#2A2A2A"/>
+        <rect x="94" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M296 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 486 V474 M104 479 L109 474 L114 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="94" y1="510" x2="306" y2="510" stroke="#2A2A2A"/>
+        <rect x="94" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M296 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 526 V538 M104 533 L109 538 L114 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.185;0.188;0.25;0.253;1" values="0;0;1;1;0;0"/><rect x="80" y="636" width="240" height="42" rx="10" fill="#2E2E2E"/>
+      <text x="94" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="start" >Chiffrement de la sauvegarde…</text></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.247;0.25;0.315;0.318;1" values="0;0;1;1;0;0"/><rect x="70" y="118" width="260" height="582" fill="#1B1B1F"/>
+        <path d="M90 158 h16 M90 164 h16 M90 170 h16" stroke="#E3E3E8" stroke-width="2" stroke-linecap="round"/>
+        <text x="120" y="169" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="700" fill="#E3E3E8" text-anchor="start" >Enregistrer dans</text>
+        <text x="90" y="210" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#A9A9B2" text-anchor="start" >Téléchargements</text><rect x="82" y="226" width="236" height="44" rx="10" fill="#FFFFFF" fill-opacity="0.03" />
+          <g transform="translate(90,234)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#8A8A94" stroke-width="2" stroke-linejoin="round"/></g>
+          <text x="126" y="253" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#8A8A94" text-anchor="start" >releve-aout.pdf</text><rect x="82" y="278" width="236" height="44" rx="10" fill="#FFFFFF" fill-opacity="0.03" />
+          <g transform="translate(90,286)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#8A8A94" stroke-width="2" stroke-linejoin="round"/></g>
+          <text x="126" y="305" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#8A8A94" text-anchor="start" >billet-train.pdf</text><rect x="70" y="604" width="260" height="96" fill="#26262B"/>
+          <rect x="84" y="618" width="232" height="30" rx="6" fill="#1B1B1F" stroke="#4A4A55"/>
+          <text x="92" y="638" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10.5" font-weight="400" fill="#FFFFFF" text-anchor="start" >smartbudget-2026-09-26.sbx</text>
+          <rect x="212" y="656" width="104" height="30" rx="15" fill="#A8C7FA"/>
+          <text x="264" y="675.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="700" fill="#062E6F" text-anchor="middle" >Enregistrer</text><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.27799999999999997;0.282;0.312;0.316;1" values="0;0;1;1;0;0"/>
+    <circle cx="264" cy="671" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="264" cy="671" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.3;0.302;0.33499999999999996;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.3;0.33499999999999996;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.312;0.315;0.42;0.423;1" values="0;0;1;1;0;0"/><text x="88" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="80" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="94" y1="248" x2="306" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="96" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="270" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="270" r="7" fill="#000000"/>
+        <line x1="94" y1="300" x2="306" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="96" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="304" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="94" y1="352" x2="306" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="96" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="270" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="294" cy="374" r="7" fill="#000000"/>
+        <rect x="80" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="94" y1="458" x2="306" y2="458" stroke="#2A2A2A"/>
+        <rect x="94" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M296 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 486 V474 M104 479 L109 474 L114 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="94" y1="510" x2="306" y2="510" stroke="#2A2A2A"/>
+        <rect x="94" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="134" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M296 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 526 V538 M104 533 L109 538 L114 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.417;0.42;0.975;0.978;1" values="0;0;1;1;0;0"/><text x="86" y="162" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="19" font-weight="800" fill="#FFFFFF">Smart <tspan fill="#50F48D">Budget</tspan></text>
+        <text x="314" y="161" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#B3B3B3" text-anchor="end" >Septembre 2026</text>
+        <text x="88" y="198" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#B3B3B3" text-anchor="start" >Sur tes comptes</text>
+        <text x="86" y="234" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="31" font-weight="800" fill="#FFFFFF" text-anchor="start" >4 125,33 €</text>
+        <text x="88" y="262" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >Mis à jour le 26 sept.</text>
+        <rect x="80" y="284" width="240" height="160" rx="14" fill="#1C1C1C"/>
+        <text x="94" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">MES COMPTES</text>
+        <text x="306" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#7A7A7A" text-anchor="end" >2 comptes</text>
+        
+        <rect x="94" y="326" width="34" height="34" rx="10" fill="#1ED760" fill-opacity="0.16" stroke="#1ED760" stroke-opacity="0.5"/>
+        <rect x="102" y="337" width="18" height="12" rx="2" fill="none" stroke="#1ED760" stroke-width="1.8"/><path d="M102 341 h18" stroke="#1ED760" stroke-width="2"/>
+        <text x="138" y="340" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Compte courant</text>
+        <text x="138" y="356" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Crédit Mutuel de Bretagne</text>
+        <text x="308" y="340" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >1 065,33 €</text>
+        <line x1="94" y1="374" x2="306" y2="374" stroke="#2A2A2A"/>
+          
+        <rect x="94" y="388" width="34" height="34" rx="10" fill="#3CE0FF" fill-opacity="0.16" stroke="#3CE0FF" stroke-opacity="0.5"/>
+        <text x="111" y="410" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="800" fill="#3CE0FF" text-anchor="middle" >€</text>
+        <text x="138" y="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Livret A</text>
+        <text x="138" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Livret d’épargne</text>
+        <text x="308" y="402" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >3 060,00 €</text>
+        <g transform="translate(0,0)">
+          <rect x="80" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <rect x="205" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <text x="94" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">BUDGET</text>
+          <text x="219" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">ÉPARGNE</text>
+          <text x="94" y="516" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="800" fill="#1ED760" text-anchor="start" >247,41 €</text>
+              <text x="94" y="534" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#B3B3B3" text-anchor="start" >restants sur 1 500 €</text>
+              <rect x="94" y="554" width="87" height="6" rx="3" fill="#2A2A2A"/>
+              <rect x="94" y="554" width="72.645" height="6" rx="3" fill="#1ED760"/>
+              <text x="219" y="516" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="start" >3 060,00 €</text>
+              <text x="219" y="534" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#B3B3B3" text-anchor="start" >61 % de 5 000 €</text>
+        </g></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.315;0.318;0.418;0.421;1" values="0;0;1;1;0;0"/><rect x="80" y="636" width="240" height="42" rx="10" fill="#2E2E2E"/>
+      <text x="94" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="start" >Sauvegarde enregistrée.</text></g></g><rect x="940" y="104" width="280" height="610" rx="36" fill="#07090C" stroke="#2F3A47" stroke-width="2"/>
+      <clipPath id="ecranSauvB"><rect x="950" y="118" width="260" height="582" rx="26"/></clipPath>
+      <rect x="950" y="118" width="260" height="582" rx="26" fill="#121212"/>
+      <rect x="1050" y="109" width="60" height="5" rx="2.5" fill="#1B222C"/><g clip-path="url(#ecranSauvB)"><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.003;0.455;0.458;1" values="0;1;1;0;0"/><text x="966" y="162" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="19" font-weight="800" fill="#FFFFFF">Smart <tspan fill="#50F48D">Budget</tspan></text>
+        <text x="1194" y="161" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#B3B3B3" text-anchor="end" >Septembre 2026</text>
+        <text x="968" y="198" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#B3B3B3" text-anchor="start" >Sur tes comptes</text>
+        <text x="966" y="234" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="31" font-weight="800" fill="#FFFFFF" text-anchor="start" >0,00 €</text>
+        
+        <rect x="960" y="284" width="240" height="100" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">MES COMPTES</text>
+        <text x="1186" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 compte</text>
+        
+        <rect x="974" y="326" width="34" height="34" rx="10" fill="#1ED760" fill-opacity="0.16" stroke="#1ED760" stroke-opacity="0.5"/>
+        <rect x="982" y="337" width="18" height="12" rx="2" fill="none" stroke="#1ED760" stroke-width="1.8"/><path d="M982 341 h18" stroke="#1ED760" stroke-width="2"/>
+        <text x="1018" y="340" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Compte courant</text>
+        <text x="1018" y="356" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Compte bancaire</text>
+        <text x="1188" y="340" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >0,00 €</text>
+        
+        <g transform="translate(0,-60)">
+          <rect x="960" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <rect x="1085" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <text x="974" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">BUDGET</text>
+          <text x="1099" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">ÉPARGNE</text>
+          <text x="974" y="514" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="800" fill="#1ED760" text-anchor="start" >Fixer un</text>
+              <text x="974" y="531" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="800" fill="#1ED760" text-anchor="start" >budget</text>
+              <text x="974" y="552" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >pour voir ce qu’il reste</text>
+              <text x="1099" y="514" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="800" fill="#3CE0FF" text-anchor="start" >Ajouter</text>
+              <text x="1099" y="531" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="800" fill="#3CE0FF" text-anchor="start" >un livret</text>
+              <text x="1099" y="552" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >la banque ne les</text>
+              <text x="1099" y="565" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >partage pas</text>
+        </g></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.016;0.02;0.44;0.444;1" values="0;0;1;1;0;0"/><rect x="990" y="642" width="180" height="30" rx="15" fill="#2E2E2E"/><text x="1080" y="661.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#B3B3B3" text-anchor="middle" >l’appli vient d’être installée</text></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.452;0.455;0.5;0.503;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.46299999999999997;0.46699999999999997;0.497;0.501;1" values="0;0;1;1;0;0"/>
+    <circle cx="1080" cy="532" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1080" cy="532" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.485;0.487;0.52;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.485;0.52;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.497;0.5;0.545;0.548;1" values="0;0;1;1;0;0"/><rect x="950" y="118" width="260" height="582" fill="#1B1B1F"/>
+        <path d="M970 158 h16 M970 164 h16 M970 170 h16" stroke="#E3E3E8" stroke-width="2" stroke-linecap="round"/>
+        <text x="1000" y="169" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="700" fill="#E3E3E8" text-anchor="start" >Ouvrir depuis</text>
+        <text x="970" y="210" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#A9A9B2" text-anchor="start" >Téléchargements</text><rect x="962" y="226" width="236" height="44" rx="10" fill="#1ED760" fill-opacity="0.12" stroke="#1ED760" stroke-opacity="0.5"/>
+          <g transform="translate(970,234)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#1ED760" stroke-width="2" stroke-linejoin="round"/></g>
+          <text x="1006" y="253" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="start" >smartbudget-2026-09-26.sbx</text><rect x="962" y="278" width="236" height="44" rx="10" fill="#FFFFFF" fill-opacity="0.03" />
+          <g transform="translate(970,286)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#8A8A94" stroke-width="2" stroke-linejoin="round"/></g>
+          <text x="1006" y="305" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#8A8A94" text-anchor="start" >photo-identite.jpg</text><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.51;0.514;0.544;0.548;1" values="0;0;1;1;0;0"/>
+    <circle cx="1080" cy="248" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1080" cy="248" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.532;0.534;0.5670000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.532;0.5670000000000001;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.542;0.545;0.597;0.6;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="950" y="118" width="260" height="582" fill="#000000" fill-opacity="0.6"/>
+      <rect x="966" y="318" width="228" height="172" rx="22" fill="#2A2A2A"/>
+      <text x="984" y="354" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="800" fill="#FFFFFF" text-anchor="start" >Restaurer cette sauvegarde ?</text>
+      <text x="984" y="380" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >Tout ce qui est dans l’application</text><text x="984" y="397" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >sera remplacé par le contenu de</text><text x="984" y="414" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >la sauvegarde.</text>
+      <text x="1082" y="468" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1ED760" text-anchor="middle" >Annuler</text>
+      <text x="1152" y="468" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FF6B7A" text-anchor="middle" >Remplacer</text><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.5619999999999999;0.566;0.596;0.6;1" values="0;0;1;1;0;0"/>
+    <circle cx="1152" cy="464" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1152" cy="464" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.584;0.586;0.619;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.584;0.619;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.594;0.597;0.667;0.67;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="950" y="118" width="260" height="582" fill="#000000" fill-opacity="0.55"/>
+        <rect x="960" y="314" width="240" height="172" rx="18" fill="#242424"/>
+        <text x="976" y="346" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="start" >Phrase de la sauvegarde</text>
+        <text x="976" y="368" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#B3B3B3" text-anchor="start" >Celle choisie au moment de l’export.</text><rect x="976" y="390" width="208" height="34" rx="9" fill="#2A2A2A"/>
+        <g><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.608;0.61;1" values="1;1;0;0"/><text x="988" y="412" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >Au moins 8 caractères</text></g>
+        <clipPath id="frappe5"><rect x="986" y="393" height="28" width="0">
+    <animate attributeName="width" dur="36s" repeatCount="indefinite" keyTimes="0;0.608;0.636;1" values="0;0;94.66;94.66"/></rect></clipPath>
+  <g clip-path="url(#frappe5)"><text x="988" y="413" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="start" >●●●●●●●●●●●</text></g><text x="1060" y="459" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1ED760" text-anchor="middle" >Annuler</text>
+        <rect x="1100" y="436" width="88" height="36" rx="18" fill="#1ED760"/>
+        <text x="1144" y="459" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#000000" text-anchor="middle" >Enregistrer</text><rect x="950" y="532" width="260" height="168" fill="#1A1A1A"/><rect x="958.0" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="982.8" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1007.6" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1032.4" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1057.2" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1082.0" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1106.8" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1131.6" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1156.4" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1181.2" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="970.6" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="995.8" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1021.0" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1046.2" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1071.4" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1096.6" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1121.8" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1147.0" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1172.2" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="997.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1023.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1049.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1075.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1101.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1127.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1153.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1010" y="658" width="140" height="30" rx="5" fill="#333333"/><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.632;0.636;0.666;0.67;1" values="0;0;1;1;0;0"/>
+    <circle cx="1144" cy="454" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1144" cy="454" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.654;0.656;0.6890000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.654;0.6890000000000001;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.664;0.667;0.725;0.728;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.665;0.668;0.684;0.687;1" values="0;0;1;1;0;0"/><rect x="960" y="636" width="240" height="42" rx="10" fill="#2E2E2E"/>
+      <text x="974" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="start" >Déchiffrement…</text></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.681;0.684;0.724;0.727;1" values="0;0;1;1;0;0"/><rect x="960" y="636" width="240" height="42" rx="10" fill="#2E2E2E" stroke="#FF6B7A" stroke-opacity="0.5"/>
+    <text x="972" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#FFFFFF" text-anchor="start" >Phrase incorrecte, ou fichier abîmé.</text></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.722;0.725;0.738;0.741;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.709;0.713;0.743;0.747;1" values="0;0;1;1;0;0"/>
+    <circle cx="1080" cy="532" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1080" cy="532" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.731;0.733;0.766;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.731;0.766;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.735;0.738;0.752;0.755;1" values="0;0;1;1;0;0"/><rect x="950" y="118" width="260" height="582" fill="#1B1B1F"/>
+        <path d="M970 158 h16 M970 164 h16 M970 170 h16" stroke="#E3E3E8" stroke-width="2" stroke-linecap="round"/>
+        <text x="1000" y="169" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="700" fill="#E3E3E8" text-anchor="start" >Ouvrir depuis</text>
+        <text x="970" y="210" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="700" fill="#A9A9B2" text-anchor="start" >Téléchargements</text><rect x="962" y="226" width="236" height="44" rx="10" fill="#1ED760" fill-opacity="0.12" stroke="#1ED760" stroke-opacity="0.5"/>
+          <g transform="translate(970,234)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#1ED760" stroke-width="2" stroke-linejoin="round"/></g>
+          <text x="1006" y="253" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="start" >smartbudget-2026-09-26.sbx</text><rect x="962" y="278" width="236" height="44" rx="10" fill="#FFFFFF" fill-opacity="0.03" />
+          <g transform="translate(970,286)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#8A8A94" stroke-width="2" stroke-linejoin="round"/></g>
+          <text x="1006" y="305" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#8A8A94" text-anchor="start" >photo-identite.jpg</text><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.724;0.728;0.758;0.762;1" values="0;0;1;1;0;0"/>
+    <circle cx="1080" cy="248" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1080" cy="248" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.746;0.748;0.781;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.746;0.781;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.749;0.752;0.766;0.769;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="950" y="118" width="260" height="582" fill="#000000" fill-opacity="0.6"/>
+      <rect x="966" y="318" width="228" height="172" rx="22" fill="#2A2A2A"/>
+      <text x="984" y="354" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="800" fill="#FFFFFF" text-anchor="start" >Restaurer cette sauvegarde ?</text>
+      <text x="984" y="380" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >Tout ce qui est dans l’application</text><text x="984" y="397" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >sera remplacé par le contenu de</text><text x="984" y="414" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#B3B3B3" text-anchor="start" >la sauvegarde.</text>
+      <text x="1082" y="468" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1ED760" text-anchor="middle" >Annuler</text>
+      <text x="1152" y="468" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FF6B7A" text-anchor="middle" >Remplacer</text><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.738;0.742;0.772;0.776;1" values="0;0;1;1;0;0"/>
+    <circle cx="1152" cy="464" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1152" cy="464" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.76;0.762;0.795;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.76;0.795;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.763;0.766;0.806;0.809;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="950" y="118" width="260" height="582" fill="#000000" fill-opacity="0.55"/>
+        <rect x="960" y="314" width="240" height="172" rx="18" fill="#242424"/>
+        <text x="976" y="346" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="start" >Phrase de la sauvegarde</text>
+        <text x="976" y="368" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#B3B3B3" text-anchor="start" >Celle choisie au moment de l’export.</text><rect x="976" y="390" width="208" height="34" rx="9" fill="#2A2A2A"/>
+        <g><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.772;0.774;1" values="1;1;0;0"/><text x="988" y="412" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >Au moins 8 caractères</text></g>
+        <clipPath id="frappe6"><rect x="986" y="393" height="28" width="0">
+    <animate attributeName="width" dur="36s" repeatCount="indefinite" keyTimes="0;0.772;0.794;1" values="0;0;110.78;110.78"/></rect></clipPath>
+  <g clip-path="url(#frappe6)"><text x="988" y="413" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="start" >●●●●●●●●●●●●●</text></g><text x="1060" y="459" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1ED760" text-anchor="middle" >Annuler</text>
+        <rect x="1100" y="436" width="88" height="36" rx="18" fill="#1ED760"/>
+        <text x="1144" y="459" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#000000" text-anchor="middle" >Enregistrer</text><rect x="950" y="532" width="260" height="168" fill="#1A1A1A"/><rect x="958.0" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="982.8" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1007.6" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1032.4" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1057.2" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1082.0" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1106.8" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1131.6" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1156.4" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="1181.2" y="544" width="20.8" height="30" rx="5" fill="#333333"/><rect x="970.6" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="995.8" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1021.0" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1046.2" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1071.4" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1096.6" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1121.8" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1147.0" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="1172.2" y="582" width="21.2" height="30" rx="5" fill="#333333"/><rect x="997.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1023.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1049.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1075.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1101.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1127.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1153.0" y="620" width="22.0" height="30" rx="5" fill="#333333"/><rect x="1010" y="658" width="140" height="30" rx="5" fill="#333333"/><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.778;0.782;0.812;0.8160000000000001;1" values="0;0;1;1;0;0"/>
+    <circle cx="1144" cy="454" r="13" fill="#FFFFFF" fill-opacity="0.28" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <circle cx="1144" cy="454" r="10" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.8;0.802;0.8350000000000001;1" values="0;0;0.8;0;0"/>
+    <animate attributeName="r" dur="36s" repeatCount="indefinite" keyTimes="0;0.8;0.8350000000000001;1" values="10;10;30;30"/>
+  </circle></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.803;0.806;0.852;0.855;1" values="0;0;1;1;0;0"/><text x="968" y="168" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="start" >Réglages</text>
+                <rect x="960" y="206" width="240" height="196" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="232" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SÉCURITÉ</text>
+        <line x1="974" y1="248" x2="1186" y2="248" stroke="#2A2A2A"/>
+        
+        <text x="976" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Empreinte à l’ouverture</text><rect x="1150" y="260" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="270" r="7" fill="#000000"/>
+        <line x1="974" y1="300" x2="1186" y2="300" stroke="#2A2A2A"/>
+        
+        <text x="976" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Verrouiller après</text><text x="1184" y="330" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#7A7A7A" text-anchor="end" >1 minute</text>
+        <line x1="974" y1="352" x2="1186" y2="352" stroke="#2A2A2A"/>
+        
+        <text x="976" y="382" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Masquer dans le multitâche</text><rect x="1150" y="364" width="34" height="20" rx="10" fill="#1ED760"/><circle cx="1174" cy="374" r="7" fill="#000000"/>
+        <rect x="960" y="416" width="240" height="146" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="442" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">SAUVEGARDE</text>
+        <line x1="974" y1="458" x2="1186" y2="458" stroke="#2A2A2A"/>
+        <rect x="974" y="467" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="488" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Exporter, chiffré</text><path d="M1176 475 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 486 V474 M984 479 L989 474 L994 479" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="974" y1="510" x2="1186" y2="510" stroke="#2A2A2A"/>
+        <rect x="974" y="519" width="30" height="30" rx="10" fill="#FFFFFF" fill-opacity="0.04"/>
+        <text x="1014" y="540" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="start" >Restaurer une sauvegarde</text><path d="M1176 527 l5 5 l-5 5" fill="none" stroke="#7A7A7A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M989 526 V538 M984 533 L989 538 L994 533" fill="none" stroke="#B3B3B3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.804;0.807;0.852;0.855;1" values="0;0;1;1;0;0"/><rect x="960" y="636" width="240" height="42" rx="10" fill="#2E2E2E"/>
+      <text x="974" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="start" >Déchiffrement…</text></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.849;0.852;0.975;0.978;1" values="0;0;1;1;0;0"/><text x="966" y="162" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="19" font-weight="800" fill="#FFFFFF">Smart <tspan fill="#50F48D">Budget</tspan></text>
+        <text x="1194" y="161" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#B3B3B3" text-anchor="end" >Septembre 2026</text>
+        <text x="968" y="198" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#B3B3B3" text-anchor="start" >Sur tes comptes</text>
+        <text x="966" y="234" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="31" font-weight="800" fill="#FFFFFF" text-anchor="start" >4 125,33 €</text>
+        <text x="968" y="262" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#7A7A7A" text-anchor="start" >Mis à jour le 26 sept.</text>
+        <rect x="960" y="284" width="240" height="160" rx="14" fill="#1C1C1C"/>
+        <text x="974" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">MES COMPTES</text>
+        <text x="1186" y="310" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#7A7A7A" text-anchor="end" >2 comptes</text>
+        
+        <rect x="974" y="326" width="34" height="34" rx="10" fill="#1ED760" fill-opacity="0.16" stroke="#1ED760" stroke-opacity="0.5"/>
+        <rect x="982" y="337" width="18" height="12" rx="2" fill="none" stroke="#1ED760" stroke-width="1.8"/><path d="M982 341 h18" stroke="#1ED760" stroke-width="2"/>
+        <text x="1018" y="340" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Compte courant</text>
+        <text x="1018" y="356" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Crédit Mutuel de Bretagne</text>
+        <text x="1188" y="340" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >1 065,33 €</text>
+        <line x1="974" y1="374" x2="1186" y2="374" stroke="#2A2A2A"/>
+          
+        <rect x="974" y="388" width="34" height="34" rx="10" fill="#3CE0FF" fill-opacity="0.16" stroke="#3CE0FF" stroke-opacity="0.5"/>
+        <text x="991" y="410" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="800" fill="#3CE0FF" text-anchor="middle" >€</text>
+        <text x="1018" y="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="start" >Livret A</text>
+        <text x="1018" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#7A7A7A" text-anchor="start" >Livret d’épargne</text>
+        <text x="1188" y="402" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end" >3 060,00 €</text>
+        <g transform="translate(0,0)">
+          <rect x="960" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <rect x="1085" y="458" width="115" height="118" rx="14" fill="#1C1C1C"/>
+          <text x="974" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">BUDGET</text>
+          <text x="1099" y="484" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#B3B3B3" text-anchor="start" letter-spacing="1.6">ÉPARGNE</text>
+          <text x="974" y="516" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="800" fill="#1ED760" text-anchor="start" >247,41 €</text>
+              <text x="974" y="534" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#B3B3B3" text-anchor="start" >restants sur 1 500 €</text>
+              <rect x="974" y="554" width="87" height="6" rx="3" fill="#2A2A2A"/>
+              <rect x="974" y="554" width="72.645" height="6" rx="3" fill="#1ED760"/>
+              <text x="1099" y="516" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="start" >3 060,00 €</text>
+              <text x="1099" y="534" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#B3B3B3" text-anchor="start" >61 % de 5 000 €</text>
+        </g></g><g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.85;0.853;0.975;0.978;1" values="0;0;1;1;0;0"/><rect x="960" y="636" width="240" height="42" rx="10" fill="#2E2E2E"/>
+      <text x="974" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="start" >Sauvegarde restaurée.</text></g></g><text x="380" y="128" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#5C6A7A" text-anchor="start" letter-spacing="2">CE QUI PART DANS LE FICHIER</text><rect x="380" y="142" width="80" height="34" rx="9" fill="#131A24" stroke="#1F2833"/>
+      <rect x="380" y="142" width="80" height="34" rx="9" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.186;0.19;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <text x="420" y="163.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#F0F4F8" text-anchor="middle" >catégories</text><rect x="468" y="142" width="80" height="34" rx="9" fill="#131A24" stroke="#1F2833"/>
+      <rect x="468" y="142" width="80" height="34" rx="9" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.191;0.195;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <text x="508" y="163.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#F0F4F8" text-anchor="middle" >comptes</text><rect x="556" y="142" width="80" height="34" rx="9" fill="#131A24" stroke="#1F2833"/>
+      <rect x="556" y="142" width="80" height="34" rx="9" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.196;0.2;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <text x="596" y="163.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#F0F4F8" text-anchor="middle" >opérations</text><rect x="644" y="142" width="80" height="34" rx="9" fill="#131A24" stroke="#1F2833"/>
+      <rect x="644" y="142" width="80" height="34" rx="9" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.201;0.20500000000000002;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <text x="684" y="163.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#F0F4F8" text-anchor="middle" >règles</text><rect x="732" y="142" width="80" height="34" rx="9" fill="#131A24" stroke="#1F2833"/>
+      <rect x="732" y="142" width="80" height="34" rx="9" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.206;0.21;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <text x="772" y="163.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#F0F4F8" text-anchor="middle" >liens</text><rect x="820" y="142" width="80" height="34" rx="9" fill="#131A24" stroke="#1F2833"/>
+      <rect x="820" y="142" width="80" height="34" rx="9" fill="#FFC857" fill-opacity="0.1" stroke="#FFC857" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.211;0.215;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <text x="860" y="163.5" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#F0F4F8" text-anchor="middle" >réglages</text><text x="380" y="200" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >Les six tables, ligne par ligne, et la version de la base. Puis compressé,</text><text x="380" y="217" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >et chiffré par ta phrase : le schéma du chiffrement le détaille.</text><rect x="380" y="232" width="520" height="62" rx="13" fill="#131A24" stroke="#1F2833"/>
+    <rect x="380" y="232" width="520" height="62" rx="13" fill="none" stroke="#FFC857" stroke-width="1.5" filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.23099999999999998;0.235;0.285;0.289;1" values="0;0;1;1;0;0"/></rect>
+    <rect x="380" y="246" width="3" height="34" rx="1.5" fill="#FFC857"/>
+    <g transform="translate(398,249)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#FFC857" stroke-width="2" stroke-linejoin="round"/></g>
+    <g opacity="0.35"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.235;0.975" values="0.35;1;0.35" calcMode="discrete" />
+      <text x="438" y="258" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" font-weight="700" fill="#F0F4F8" text-anchor="start" >smartbudget-2026-09-26.sbx</text>
+      <text x="438" y="278" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="start" >le nom du jour ; environ une seconde de calcul pour le chiffrer</text>
+    </g><text x="380" y="330" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#5C6A7A" text-anchor="start" letter-spacing="2">IL VOYAGE, ILLISIBLE</text><line x1="344" y1="378" x2="936" y2="378" stroke="#2F3A47" stroke-width="2" stroke-dasharray="4 7"/><circle cx="420" cy="378" r="22" fill="#131A24" stroke="#1F2833" stroke-width="1.5"/>
+      <circle cx="420" cy="378" r="22" fill="none" stroke="#FFC857" stroke-width="1.8" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.336;0.34;0.38;0.384;1" values="0;0;1;1;0;0"/></circle>
+      <g transform="translate(406,364)"><path d="M6 2 H17 L23 8 V26 H6 Z M17 2 V8 H23" fill="none" stroke="#8B99A8" stroke-width="2" stroke-linejoin="round"/></g>
+      <text x="420" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="middle" >Téléchargements</text><circle cx="640" cy="378" r="22" fill="#131A24" stroke="#1F2833" stroke-width="1.5"/>
+      <circle cx="640" cy="378" r="22" fill="none" stroke="#FFC857" stroke-width="1.8" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.381;0.385;0.425;0.429;1" values="0;0;1;1;0;0"/></circle>
+      <g transform="translate(626,364)"><rect x="2" y="4" width="24" height="16" rx="2" fill="none" stroke="#8B99A8" stroke-width="2"/><path d="M9 25 H19 M14 20 V25" stroke="#8B99A8" stroke-width="2"/></g>
+      <text x="640" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="middle" >un ordinateur</text><circle cx="860" cy="378" r="22" fill="#131A24" stroke="#1F2833" stroke-width="1.5"/>
+      <circle cx="860" cy="378" r="22" fill="none" stroke="#FFC857" stroke-width="1.8" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.42600000000000005;0.43000000000000005;0.47000000000000003;0.47400000000000003;1" values="0;0;1;1;0;0"/></circle>
+      <g transform="translate(846,364)"><path d="M8 22 H22 A5 5 0 0 0 21 12 A7 7 0 0 0 8 13 A4.5 4.5 0 0 0 8 22 Z" fill="none" stroke="#8B99A8" stroke-width="2"/></g>
+      <text x="860" y="418" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B99A8" text-anchor="middle" >un nuage</text><g filter="url(#halo)" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.32;0.325;0.45;0.455;1" values="0;0;1;1;0;0"/>
+    <circle cy="378" r="6" fill="#FFC857"><animate attributeName="cx" dur="36s" repeatCount="indefinite" keyTimes="0;0.325;0.45;1" values="340;340;940;940"/></circle></g><rect x="380" y="436" width="520" height="62" rx="12" fill="#0A0E14" stroke="#1F2833"/>
+    <text x="396" y="460" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#5C6A7A" text-anchor="start" >53 42 45 58 31  9f 3a c1 7e 02 b4 5d e8 71 0c a6 3f 94 …</text>
+    <text x="396" y="482" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#FFC857" text-anchor="start" >Sans la phrase, rien ne se relit : ni un curieux, ni toi.</text><text x="380" y="534" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11.5" font-weight="700" fill="#5C6A7A" text-anchor="start" letter-spacing="2">À LA RESTAURATION</text><rect x="380" y="548" width="254" height="72" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="380" y="548" width="254" height="72" rx="12" fill="#FF6B7A" fill-opacity="0.06" stroke="#FF6B7A" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.682;0.686;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <circle cx="404" cy="574" r="10" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.682;0.686;0.975;0.979;1" values="0;0;1;1;0;0"/>
+        <circle cx="404" cy="574" r="10" fill="#FF6B7A"/>
+        <path d="M400 570 l8 8 M408 570 l-8 8" stroke="#000000" stroke-width="2.4" stroke-linecap="round"/>
+      </g>
+      <text x="424" y="578" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Phrase fausse : rien n’est touché</text>
+      <text x="424" y="598" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#8B99A8" text-anchor="start" >le MAC ne concorde pas, on s’arrête</text><rect x="646" y="548" width="254" height="72" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="646" y="548" width="254" height="72" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.8109999999999999;0.815;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <circle cx="670" cy="574" r="10" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.8109999999999999;0.815;0.975;0.979;1" values="0;0;1;1;0;0"/>
+        <circle cx="670" cy="574" r="10" fill="#1ED760"/>
+        <path d="M665 574 l3.5 3.5 l7 -7" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="690" y="578" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Bonne phrase, fichier intact</text>
+      <text x="690" y="598" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#8B99A8" text-anchor="start" >en-tête SBEX1, MAC d’AES-GCM juste</text><rect x="380" y="632" width="254" height="72" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="380" y="632" width="254" height="72" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.824;0.828;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <circle cx="404" cy="658" r="10" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.824;0.828;0.975;0.979;1" values="0;0;1;1;0;0"/>
+        <circle cx="404" cy="658" r="10" fill="#1ED760"/>
+        <path d="M399 658 l3.5 3.5 l7 -7" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="424" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Une sauvegarde de Smart Budget</text>
+      <text x="424" y="682" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#8B99A8" text-anchor="start" >d’une version que l’appli sait relire</text><rect x="646" y="632" width="254" height="72" rx="12" fill="#131A24" stroke="#1F2833"/>
+      <rect x="646" y="632" width="254" height="72" rx="12" fill="#1ED760" fill-opacity="0.06" stroke="#1ED760" stroke-opacity="0.6" opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.837;0.841;0.975;0.979;1" values="0;0;1;1;0;0"/></rect>
+      <circle cx="670" cy="658" r="10" fill="none" stroke="#2F3A47" stroke-width="2"/>
+      <g opacity="0"><animate attributeName="opacity" dur="36s" repeatCount="indefinite" keyTimes="0;0.837;0.841;0.975;0.979;1" values="0;0;1;1;0;0"/>
+        <circle cx="670" cy="658" r="10" fill="#1ED760"/>
+        <path d="M665 658 l3.5 3.5 l7 -7" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="690" y="662" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#F0F4F8" text-anchor="start" >Tout remplacé d’un bloc</text>
+      <text x="690" y="682" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="400" fill="#8B99A8" text-anchor="start" >une seule transaction : tout, ou rien</text><text x="640" y="748" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#5C6A7A" text-anchor="middle" >La phrase ne se retrouve pas : perdue, la sauvegarde l’est aussi. Garde-la ailleurs que dans le téléphone.</text>
+</svg>
