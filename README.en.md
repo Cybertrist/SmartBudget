@@ -142,13 +142,9 @@ A **"Compte courant en négatif"** (current account overdrawn) notification, wit
 
 ### When it goes out
 
-<img src="docs/en/schemas/notification-regle.svg" alt="The alert rule: two states, armed and warned. Six balance reads: 120 euros and 35 euros, nothing to say; -42 euros, the account drops below zero, a Current account overdrawn notification, and the state becomes warned; -80 euros, silence, already warned; 15 euros, the account recovers, the alert is re-armed; -8 euros, a new notification. One alert per drop below zero." width="100%">
-
 **One alert per drop below zero.** As long as the account stays overdrawn, the following reads stay quiet: no notification every six hours. As soon as a read finds the account at zero or above, the alert re-arms, and the next drop below zero will warn again.
 
 ### How it checks
-
-<img src="docs/en/schemas/notification-veille.svg" alt="One check, every six hours, even with the app closed. Android wakes the watch when there is a network; the master key is loaded without fingerprint; Enable Banking gives the balance, nothing else; the balance is compared to zero, taking an alert already given into account; a notification goes out only when dropping below zero; then everything is closed, the key forgotten and the database closed. The key stays in memory only for the read. Without a network or with expired access, nothing shows and Android tries again next time. Every sync inside the app runs the same comparison." width="100%">
 
 - **Every six hours, even with the app closed**, Android wakes a small background task (WorkManager), only when there is a network. Android may shift it by a few minutes to save battery.
 - It reads **the current account's balance, and nothing else**: not the transactions. Four reads a day at most, the limit PSD2 grants to access made without you. If the balance was already read less than an hour ago, it asks the bank for nothing.

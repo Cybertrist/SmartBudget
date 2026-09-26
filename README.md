@@ -138,13 +138,9 @@ Une notification **« Compte courant en négatif »**, avec le montant : « Ton 
 
 ### Quand elle part
 
-<img src="docs/schemas/notification-regle.svg" alt="La règle de l'alerte : deux états, armée et prévenu. Six lectures du solde : 120 euros et 35 euros, rien à dire ; -42 euros, le compte passe sous zéro, une notification Compte courant en négatif, et l'état passe à prévenu ; -80 euros, silence, déjà prévenu ; 15 euros, le compte remonte, l'alerte est réarmée ; -8 euros, une nouvelle notification. Une seule alerte par passage sous zéro." width="100%">
-
 **Une seule alerte par passage sous zéro.** Tant que le compte reste en négatif, les lectures suivantes se taisent : pas une notification toutes les six heures. Dès qu'une lecture trouve le compte à zéro ou au-dessus, l'alerte se réarme, et le prochain passage en négatif préviendra de nouveau.
 
 ### Comment elle vérifie
-
-<img src="docs/schemas/notification-veille.svg" alt="Une vérification, toutes les six heures, même application fermée. Android réveille la veille quand il y a du réseau ; la clé maîtresse est chargée sans empreinte ; Enable Banking donne le solde, rien d'autre ; le solde est comparé à zéro, en tenant compte d'une alerte déjà donnée ; une notification part seulement au passage sous zéro ; puis tout est refermé, la clé oubliée et la base fermée. La clé ne reste en mémoire que le temps de la lecture. Sans réseau ou accès expiré, rien ne s'affiche et Android réessaie au passage suivant. Chaque synchronisation dans l'application fait la même comparaison." width="100%">
 
 - **Toutes les six heures, même application fermée**, Android réveille une petite tâche de fond (WorkManager), seulement quand il y a du réseau. Android peut la décaler de quelques minutes pour ménager la batterie.
 - Elle lit **le solde du compte courant, et lui seul** : pas les opérations. Quatre lectures par jour au plus, la limite que la DSP2 accorde aux accès faits sans toi. Si le solde a déjà été lu il y a moins d'une heure, elle ne redemande rien à la banque.
