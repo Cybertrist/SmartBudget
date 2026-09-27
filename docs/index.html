@@ -3,23 +3,356 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Smart Budget, retour de la banque</title>
+<script>
+  // Retour de la banque : Enable Banking revient ici avec ?code=…&state=…
+  // (ou ?error=…). Ici, on choisit seulement l'écran : celui du retour, ou
+  // le site de présentation. Le retour lui-même part juste après l'écran de
+  // retour, en tête du corps, une fois son texte posé.
+  (function () {
+    var q = location.search;
+    var p = new URLSearchParams(q);
+    if (q && (p.has('code') || p.has('state') || p.has('error'))) {
+      document.documentElement.className = 'retour';
+      window.__retour = 'smartbudget://banque' + q;
+    } else {
+      document.documentElement.className = 'js';
+    }
+  })();
+</script>
+<title>Smart Budget</title>
+<meta name="description" content="Smart Budget, une application Android de budget : le compte courant lu par la DSP2, chaque opération classée, tout chiffré sur le téléphone. Aucun serveur, aucun compte, aucune publicité.">
+<meta name="theme-color" content="#0D1117">
+<meta property="og:title" content="Smart Budget">
+<meta property="og:description" content="Votre argent. Vos projets. Votre avenir. Une application Android de budget, chiffrée, sans serveur.">
+<meta property="og:image" content="https://cybertrist.github.io/SmartBudget/social-preview.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=block">
 <style>
-  :root { color-scheme: dark; }
-  html, body { margin: 0; height: 100%; background: #121212; color: #fff; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  main { min-height: 100%; display: grid; place-items: center; padding: 24px; box-sizing: border-box; text-align: center; }
-  .carte { max-width: 420px; }
-  img { width: 96px; height: 96px; }
-  h1 { font-size: 26px; margin: 18px 0 6px; letter-spacing: -.5px; }
-  h1 span { color: #50F48D; }
-  p { color: #B3B3B3; margin: 0 0 22px; }
-  a { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #1ED760; color: #000; font-weight: 800; text-decoration: none; }
-  .erreur { color: #FF6B7A; }
+  :root {
+    color-scheme: dark;
+    --fond: #0D1117;
+    --fond-2: #0A0E13;
+    --carte: #121821;
+    --carte-2: #161D27;
+    --bord: #1F2935;
+    --bord-2: #2A3643;
+    --texte: #F0F3F6;
+    --doux: #B3B3B3;
+    --gris: #8B96A3;
+    --vert: #1ED760;
+    --neon: #50F48D;
+    --vert-sombre: #0F2A1B;
+    --epargne: #3CE0FF;
+    --interne: #8FA3B8;
+    --attention: #FFC857;
+    --alerte: #FF6B7A;
+    --titre: 'Syne', sans-serif;
+    --corps: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --large: 1180px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 17px/1.6 var(--corps); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; }
+  .ms { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; -webkit-font-feature-settings: 'liga'; font-feature-settings: 'liga'; }
+
+  /* ---------- Retour de la banque ---------- */
+  .retour-ecran { display: none; }
+  html.retour .site { display: none; }
+  html.retour .retour-ecran { display: grid; min-height: 100vh; place-items: center; padding: 24px; text-align: center; background: #121212; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .retour-ecran .carte { max-width: 420px; }
+  .retour-ecran img { width: 96px; height: 96px; margin: 0 auto; }
+  .retour-ecran h1 { font-size: 26px; margin: 18px 0 6px; letter-spacing: -.5px; }
+  .retour-ecran h1 span { color: #50F48D; }
+  .retour-ecran p { color: #B3B3B3; margin: 0 0 22px; }
+  .retour-ecran a { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #1ED760; color: #000; font-weight: 800; text-decoration: none; }
+  .retour-ecran .erreur { color: #FF6B7A; }
+
+  /* ---------- Fond ---------- */
+  .site { position: relative; }
+  .grille { position: absolute; inset: 0 0 auto 0; height: 1100px; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(80,244,141,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(80,244,141,.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 20%, #000 30%, transparent 75%);
+            mask-image: radial-gradient(ellipse 80% 70% at 50% 20%, #000 30%, transparent 75%); }
+  .conteneur { width: 100%; max-width: var(--large); margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ---------- Navigation ---------- */
+  .nav { position: sticky; top: 0; z-index: 50; background: rgba(13,17,23,.72); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); border-bottom: 1px solid transparent; transition: border-color .3s, background .3s; }
+  .nav.defile { border-bottom-color: var(--bord); background: rgba(13,17,23,.9); }
+  .nav .conteneur { display: flex; align-items: center; gap: 28px; height: 68px; }
+  .marque { display: flex; align-items: center; gap: 11px; text-decoration: none; font-family: var(--titre); font-weight: 800; font-size: 19px; letter-spacing: -.2px; flex-shrink: 0; }
+  .marque img { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(80,244,141,.35)); }
+  .marque span { white-space: nowrap; }
+  .marque b { color: var(--neon); font-weight: 800; }
+  .nav ul { list-style: none; display: flex; gap: 4px; margin: 0 0 0 auto; padding: 0; }
+  .nav ul a { display: block; padding: 8px 13px; border-radius: 999px; text-decoration: none; color: var(--gris); font-size: 15px; font-weight: 500; transition: color .2s, background .2s; }
+  .nav ul a:hover { color: var(--texte); background: rgba(255,255,255,.04); }
+  .nav .cta { margin-left: 8px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 999px; background: var(--vert); color: #000; font-weight: 700; font-size: 15px; text-decoration: none; transition: transform .2s, box-shadow .2s; flex-shrink: 0; }
+  .nav .cta .ms { font-size: 20px; }
+  .nav .cta:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(30,215,96,.35); }
+
+  /* ---------- Héros ---------- */
+  .heros { position: relative; padding: 72px 0 40px; overflow-x: clip; }
+  .heros .conteneur { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+  .etiquettes { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+  .etiquette { font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--vert); padding: 7px 14px; border: 1px solid rgba(30,215,96,.35); border-radius: 8px; background: rgba(30,215,96,.06); }
+  .heros h1 { font-family: var(--titre); font-weight: 800; font-size: clamp(50px, 7.4vw, 98px); line-height: .92; letter-spacing: -2px; margin: 0 0 28px; }
+  .heros h1 span { display: block; color: var(--neon); text-shadow: 0 0 60px rgba(80,244,141,.25); }
+  .accroche { font-size: clamp(21px, 2.3vw, 27px); font-weight: 500; margin: 0 0 6px; letter-spacing: -.2px; }
+  .sous-accroche { font-size: clamp(19px, 2vw, 24px); color: var(--gris); margin: 0 0 34px; }
+  .sous-accroche em { font-style: normal; color: var(--neon); }
+  .boutons { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 30px; }
+  .bouton { display: inline-flex; align-items: center; gap: 14px; padding: 14px 24px 14px 18px; border-radius: 18px; text-decoration: none; transition: transform .2s, box-shadow .25s, border-color .25s, background .25s; }
+  .bouton .ms { font-size: 28px; }
+  .bouton b { display: block; font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .bouton small { display: block; font-size: 13px; opacity: .72; line-height: 1.3; margin-top: 2px; }
+  .bouton.plein { background: var(--vert); color: #000; box-shadow: 0 10px 40px -8px rgba(30,215,96,.55); }
+  .bouton.plein:hover { transform: translateY(-2px); box-shadow: 0 16px 50px -8px rgba(30,215,96,.7); }
+  .bouton.creux { border: 1px solid var(--bord-2); background: rgba(22,29,39,.7); color: var(--texte); }
+  .bouton.creux .ms { color: var(--neon); }
+  .bouton.creux:hover { transform: translateY(-2px); border-color: rgba(80,244,141,.5); background: rgba(22,29,39,1); }
+  .technos { display: flex; flex-wrap: wrap; gap: 8px; }
+  .techno { font-size: 14px; font-weight: 500; color: var(--vert); padding: 6px 13px; border: 1px solid rgba(30,215,96,.3); border-radius: 9px; background: rgba(30,215,96,.05); }
+
+  .scene { position: relative; height: 640px; }
+  .halo { position: absolute; inset: 8% 4% 4% 4%; background: radial-gradient(circle at 50% 45%, rgba(30,215,96,.28), transparent 62%); filter: blur(20px); }
+  .telephone { position: absolute; width: 270px; border-radius: 42px; padding: 9px; background: linear-gradient(160deg, #2B3542, #10151C 40%, #0A0D11); box-shadow: 0 0 0 1px #2A3643, 0 40px 80px -20px rgba(0,0,0,.8), 0 0 60px -10px rgba(30,215,96,.25); }
+  .telephone img { border-radius: 34px; width: 100%; aspect-ratio: 540 / 1069; object-fit: cover; object-position: top; background: #000; }
+  .telephone.avant { left: 50%; top: 20px; transform: translateX(-2%) rotate(4deg); z-index: 2; }
+  .telephone.arriere { left: 50%; top: 70px; transform: translateX(-78%) rotate(-7deg) scale(.9); opacity: .78; filter: saturate(.9); }
+  .flotte { animation: flotte 7s ease-in-out infinite; }
+  .flotte.lent { animation-duration: 9s; animation-delay: -3s; }
+  @keyframes flotte { 50% { translate: 0 -14px; } }
+  .logo-flottant { position: absolute; z-index: 3; width: 104px; left: 12%; bottom: 40px; filter: drop-shadow(0 0 30px rgba(80,244,141,.55)); animation: flotte 8s ease-in-out infinite; animation-delay: -1.5s; }
+
+  /* ---------- Chiffres ---------- */
+  .chiffres { padding: 36px 0 20px; }
+  .chiffres .rangee { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--bord); border-radius: 22px; background: linear-gradient(180deg, rgba(22,29,39,.8), rgba(13,17,23,.8)); overflow: hidden; }
+  .chiffre { padding: 26px 18px 24px; text-align: center; position: relative; }
+  .chiffre + .chiffre::before { content: ''; position: absolute; left: 0; top: 22%; bottom: 22%; width: 1px; background: var(--bord); }
+  .chiffre b { display: block; font-family: var(--titre); font-weight: 800; font-size: clamp(30px, 3.4vw, 42px); line-height: 1; color: var(--neon); letter-spacing: -1px; }
+  .chiffre span { display: block; margin-top: 10px; font-size: 14px; color: var(--gris); line-height: 1.35; }
+
+  /* ---------- Sections ---------- */
+  section.bloc { padding: 110px 0 20px; }
+  .entete { margin-bottom: 44px; }
+  .bandeau { display: flex; align-items: center; gap: 22px; }
+  .numero { font-family: var(--mono); font-weight: 500; font-size: 17px; color: var(--vert); width: 58px; height: 46px; display: grid; place-items: center; border: 1px solid rgba(30,215,96,.4); border-radius: 10px; background: var(--vert-sombre); flex-shrink: 0; }
+  .bandeau h2 { font-family: var(--titre); font-weight: 800; text-transform: uppercase; font-size: clamp(22px, 3.2vw, 36px); letter-spacing: clamp(2px, .5vw, 6px); margin: 0; line-height: 1.1; }
+  .trait { height: 2px; margin-top: 22px; background: linear-gradient(90deg, var(--vert) 0 58px, #2A3440 58px, transparent 95%); }
+  .intro { max-width: 760px; margin: 26px 0 0; font-size: 19px; color: var(--doux); }
+  .intro strong { color: var(--texte); font-weight: 600; }
+
+  /* Fonctionnalités */
+  .fonctions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .fonction { padding: 26px 26px 28px; border-radius: 20px; background: var(--carte); border: 1px solid var(--bord); transition: border-color .3s, transform .3s, background .3s; }
+  .fonction:hover { border-color: rgba(30,215,96,.35); transform: translateY(-3px); background: var(--carte-2); }
+  .icone { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; color: var(--vert); background: var(--vert-sombre); border: 1px solid rgba(30,215,96,.3); box-shadow: 0 0 24px -6px rgba(30,215,96,.45); margin-bottom: 18px; }
+  .icone .ms { font-size: 27px; }
+  .fonction h3 { margin: 0 0 8px; font-size: 20px; font-weight: 600; letter-spacing: -.2px; }
+  .fonction p { margin: 0; color: var(--gris); font-size: 16px; line-height: 1.55; }
+
+  /* Écrans */
+  .defileur { -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 60px), transparent); mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 60px), transparent); display: flex; gap: 26px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 24px; padding: 10px 24px 30px; margin: 0 -24px; scrollbar-width: thin; scrollbar-color: #2A3643 transparent; }
+  .defileur::-webkit-scrollbar { height: 6px; }
+  .defileur::-webkit-scrollbar-thumb { background: #2A3643; border-radius: 3px; }
+  .ecran { flex: 0 0 236px; scroll-snap-align: start; margin: 0; }
+  .ecran .telephone { position: relative; width: 100%; border-radius: 36px; padding: 8px; box-shadow: 0 0 0 1px #2A3643, 0 24px 50px -20px rgba(0,0,0,.8); transition: transform .35s, box-shadow .35s; }
+  .ecran .telephone img { border-radius: 29px; }
+  .ecran:hover .telephone { transform: translateY(-6px); box-shadow: 0 0 0 1px rgba(30,215,96,.45), 0 30px 60px -20px rgba(0,0,0,.8), 0 0 50px -12px rgba(30,215,96,.4); }
+  .ecran h3 { margin: 20px 4px 4px; font-size: 18px; font-weight: 600; }
+  .ecran p { margin: 0 4px; color: var(--gris); font-size: 15px; line-height: 1.5; }
+  .fleches { display: flex; gap: 10px; justify-content: flex-end; margin: -20px 0 18px; }
+  .fleche { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--bord-2); background: var(--carte); color: var(--texte); display: grid; place-items: center; cursor: pointer; transition: border-color .2s, color .2s; }
+  .fleche:hover { border-color: var(--vert); color: var(--neon); }
+  .note-essai { display: inline-flex; align-items: center; gap: 10px; margin-top: 8px; padding: 12px 18px; border-radius: 14px; border: 1px dashed var(--bord-2); color: var(--gris); font-size: 15px; }
+  .note-essai .ms { color: var(--neon); font-size: 20px; }
+
+  /* Vitrines à onglets */
+  .onglets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .onglet { display: inline-flex; align-items: center; gap: 9px; padding: 11px 18px; border-radius: 999px; border: 1px solid var(--bord-2); background: var(--carte); color: var(--gris); font: 600 15px var(--corps); cursor: pointer; transition: all .2s; }
+  .onglet .ms { font-size: 20px; }
+  .onglet:hover { color: var(--texte); border-color: #3A4756; }
+  .onglet[aria-selected="true"] { color: #000; background: var(--vert); border-color: var(--vert); box-shadow: 0 6px 24px -6px rgba(30,215,96,.55); }
+  .panneau { display: none; }
+  .panneau.actif { display: block; animation: apparait .45s ease both; }
+  @keyframes apparait { from { opacity: 0; transform: translateY(10px); } }
+  .panneau > p { max-width: 820px; color: var(--doux); margin: 0 0 22px; font-size: 17px; }
+  .panneau > p strong { color: var(--texte); font-weight: 600; }
+  .cadre { border-radius: 22px; padding: 10px; background: linear-gradient(180deg, #18212C, #0F141B); border: 1px solid var(--bord); box-shadow: 0 30px 80px -40px rgba(0,0,0,.9), 0 0 80px -50px rgba(30,215,96,.5); }
+  .cadre img { border-radius: 16px; width: 100%; height: auto; }
+
+  /* Étapes de la banque */
+  .etapes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin: 0 0 26px; counter-reset: e; }
+  .etape { padding: 20px 18px 22px; border-radius: 18px; background: var(--carte); border: 1px solid var(--bord); }
+  .etape .n { font-family: var(--mono); font-size: 13px; color: var(--vert); display: inline-grid; place-items: center; width: 32px; height: 28px; border-radius: 8px; background: var(--vert-sombre); border: 1px solid rgba(30,215,96,.35); margin-bottom: 14px; }
+  .etape h3 { margin: 0 0 6px; font-size: 17px; font-weight: 600; }
+  .etape p { margin: 0; font-size: 14.5px; color: var(--gris); line-height: 1.5; }
+  .duo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 22px; }
+  .info { display: flex; gap: 16px; align-items: flex-start; padding: 22px; border-radius: 18px; background: var(--carte); border: 1px solid var(--bord); }
+  .info .icone { margin: 0; flex-shrink: 0; width: 46px; height: 46px; border-radius: 12px; }
+  .info .icone .ms { font-size: 24px; }
+  .info h3 { margin: 0 0 4px; font-size: 17px; font-weight: 600; }
+  .info p { margin: 0; font-size: 15px; color: var(--gris); line-height: 1.5; }
+  .info.bleu .icone { color: var(--epargne); background: #0B2530; border-color: rgba(60,224,255,.3); box-shadow: 0 0 24px -6px rgba(60,224,255,.45); }
+  .info.jaune .icone { color: var(--attention); background: #2A220C; border-color: rgba(255,200,87,.3); box-shadow: 0 0 24px -6px rgba(255,200,87,.4); }
+  .info.rouge .icone { color: var(--alerte); background: #2C1116; border-color: rgba(255,107,122,.3); box-shadow: 0 0 24px -6px rgba(255,107,122,.4); }
+
+  /* Alerte */
+  .alerte { display: grid; grid-template-columns: 1fr; gap: 22px; }
+
+  /* Écran déplié */
+  .deplie { position: relative; max-width: 1000px; margin: 0 auto; }
+  .tablette { border-radius: 30px; padding: 12px; background: linear-gradient(160deg, #2B3542, #10151C 40%, #0A0D11); box-shadow: 0 0 0 1px #2A3643, 0 40px 90px -30px rgba(0,0,0,.9), 0 0 90px -40px rgba(30,215,96,.45); position: relative; }
+  .tablette .vue { position: relative; aspect-ratio: 1100 / 749; border-radius: 20px; overflow: hidden; background: #000; }
+  .tablette .vue img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
+  .tablette .vue img.actif { opacity: 1; }
+  .puces { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 22px 0 8px; }
+  .puce { padding: 9px 16px; border-radius: 999px; border: 1px solid var(--bord-2); background: var(--carte); color: var(--gris); font: 500 14px var(--corps); cursor: pointer; transition: all .2s; }
+  .puce:hover { color: var(--texte); }
+  .puce[aria-pressed="true"] { color: var(--neon); border-color: rgba(80,244,141,.5); background: var(--vert-sombre); }
+  .legende { text-align: center; color: var(--gris); font-size: 16px; min-height: 52px; margin: 6px auto 0; max-width: 640px; }
+
+  /* Sécurité */
+  .garanties { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 30px; }
+  .garantie { padding: 24px 20px; border-radius: 18px; background: var(--carte); border: 1px solid var(--bord); text-align: left; }
+  .garantie .icone { width: 44px; height: 44px; border-radius: 12px; margin-bottom: 14px; }
+  .garantie .icone .ms { font-size: 23px; }
+  .garantie h3 { margin: 0 0 6px; font-size: 17px; font-weight: 600; }
+  .garantie p { margin: 0; font-size: 14.5px; color: var(--gris); line-height: 1.5; }
+
+  /* Installer */
+  .installer { position: relative; border-radius: 30px; padding: 60px 48px; background: radial-gradient(ellipse at 20% 0%, rgba(30,215,96,.16), transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(60,224,255,.08), transparent 50%), var(--carte); border: 1px solid var(--bord); overflow: hidden; }
+  .installer::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(80,244,141,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(80,244,141,.04) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 80%); mask-image: linear-gradient(180deg, #000, transparent 80%); pointer-events: none; }
+  .apk { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; }
+  .apk-carte { display: flex; flex-direction: column; padding: 30px; border-radius: 22px; background: rgba(13,17,23,.75); border: 1px solid var(--bord-2); }
+  .apk-carte.principale { border-color: rgba(30,215,96,.45); box-shadow: 0 0 60px -30px rgba(30,215,96,.6); }
+  .apk-tete { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .apk-tete img { width: 58px; height: 58px; filter: drop-shadow(0 0 16px rgba(80,244,141,.35)); }
+  .apk-tete h3 { margin: 0; font-size: 22px; font-weight: 700; }
+  .apk-tete span { font-family: var(--mono); font-size: 13px; color: var(--gris); }
+  .apk-carte ul { list-style: none; margin: 0 0 26px; padding: 0; display: grid; gap: 10px; }
+  .apk-carte li { display: flex; gap: 12px; align-items: flex-start; color: var(--doux); font-size: 16px; line-height: 1.45; }
+  .apk-carte li .ms { color: var(--neon); font-size: 20px; margin-top: 1px; }
+  .apk-carte .bouton { margin-top: auto; justify-content: center; }
+  .precisions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 20px; position: relative; }
+  .empreintes { margin-top: 20px; position: relative; border-radius: 18px; border: 1px solid var(--bord); background: rgba(13,17,23,.6); }
+  .empreintes summary { cursor: pointer; padding: 18px 22px; font-weight: 600; display: flex; align-items: center; gap: 10px; list-style: none; }
+  .empreintes summary::-webkit-details-marker { display: none; }
+  .empreintes summary .ms { color: var(--neon); transition: transform .25s; }
+  .empreintes[open] summary .ms.tourne { transform: rotate(180deg); }
+  .empreintes pre { margin: 0; padding: 0 22px 22px; font: 500 13px/1.8 var(--mono); color: var(--doux); white-space: pre-wrap; word-break: break-all; }
+  .empreintes pre i { font-style: normal; color: var(--gris); }
+
+  /* Pied */
+  footer { margin-top: 120px; border-top: 1px solid var(--bord); background: var(--fond-2); }
+  .pied { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; padding: 56px 24px 40px; }
+  .pied p { color: var(--gris); font-size: 15px; margin: 14px 0 0; max-width: 420px; }
+  .pied h4 { font-family: var(--mono); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--vert); margin: 6px 0 16px; font-weight: 700; }
+  .liens-pied { display: grid; gap: 10px; }
+  .liens-pied a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--doux); font-size: 15px; transition: color .2s; }
+  .liens-pied a:hover { color: var(--neon); }
+  .liens-pied .ms { font-size: 19px; color: var(--gris); }
+  .bas { border-top: 1px solid var(--bord); padding: 22px 24px 30px; display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; color: var(--gris); font-size: 14px; }
+  .bas span b { color: var(--doux); font-weight: 600; }
+
+  /* Apparition au défilement */
+  html.js .rv { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  html.js .rv.vu { opacity: 1; transform: none; }
+  @media (max-width: 380px) {
+    .nav .cta .ms { display: none; }
+    .marque { font-size: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    html.js .rv { opacity: 1; transform: none; transition: none; }
+    .flotte, .logo-flottant, .panneau.actif { animation: none; }
+    .tablette .vue img { transition: none; }
+  }
+
+  /* ---------- Adaptatif ---------- */
+  @media (max-width: 1080px) {
+    .nav ul { display: none; }
+    .nav .cta { margin-left: auto; }
+    .heros .conteneur { grid-template-columns: 1fr; gap: 10px; }
+    .scene { height: 560px; max-width: 560px; width: 100%; margin: 0 auto; }
+    .chiffres .rangee { grid-template-columns: repeat(3, 1fr); }
+    .chiffre:nth-child(4)::before { display: none; }
+    .chiffre:nth-child(n+4) { border-top: 1px solid var(--bord); }
+    .fonctions { grid-template-columns: repeat(2, 1fr); }
+    .etapes { grid-template-columns: repeat(2, 1fr); }
+    .etape:last-child { grid-column: 1 / -1; }
+    .garanties { grid-template-columns: repeat(2, 1fr); }
+    .duo, .precisions { grid-template-columns: 1fr; }
+    .pied { grid-template-columns: 1fr 1fr; }
+    .pied > div:first-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 720px) {
+    body { font-size: 16px; }
+    .conteneur { padding: 0 16px; }
+    .nav .conteneur { height: 60px; gap: 12px; }
+    .nav .cta { padding: 9px 14px; font-size: 14px; }
+    .heros { padding: 44px 0 10px; }
+    .heros h1 { letter-spacing: -1px; }
+    .etiquettes { margin-bottom: 22px; }
+    .etiquette { font-size: 11px; letter-spacing: 2px; padding: 6px 10px; }
+    .boutons { flex-direction: column; }
+    .bouton { width: 100%; }
+    .scene { height: 470px; }
+    .telephone { width: 212px; border-radius: 34px; padding: 7px; }
+    .telephone img { border-radius: 28px; }
+    .telephone.avant { transform: translateX(-20%) rotate(4deg); }
+    .telephone.arriere { transform: translateX(-84%) rotate(-7deg) scale(.9); }
+    .logo-flottant { width: 74px; left: 2%; bottom: 40px; }
+    .chiffres .rangee { grid-template-columns: repeat(2, 1fr); }
+    .chiffre:nth-child(n)::before { display: block; }
+    .chiffre:nth-child(odd)::before { display: none; }
+    .chiffre:nth-child(n+3) { border-top: 1px solid var(--bord); }
+    .chiffre { padding: 22px 12px; }
+    section.bloc { padding-top: 80px; }
+    .entete { margin-bottom: 32px; }
+    .bandeau { gap: 14px; }
+    .numero { width: 48px; height: 40px; font-size: 15px; }
+    .bandeau h2 { font-size: 4.4vw; letter-spacing: .5px; overflow-wrap: anywhere; }
+    .marque { font-size: 17px; gap: 9px; }
+    .marque img { width: 30px; height: 30px; }
+    .trait { background: linear-gradient(90deg, var(--vert) 0 48px, #2A3440 48px, transparent 95%); }
+    .intro { font-size: 17px; }
+    .fonctions, .etapes, .garanties, .apk { grid-template-columns: 1fr; }
+    .etape:last-child { grid-column: auto; }
+    .fonction { padding: 22px; }
+    .defileur { padding: 10px 16px 26px; margin: 0 -16px; gap: 18px; scroll-padding-inline: 16px; }
+    .ecran { flex-basis: 210px; }
+    .fleches { display: none; }
+    .onglets { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px 18px; padding: 2px 16px 6px; scrollbar-width: none; }
+    .onglets::-webkit-scrollbar { display: none; }
+    .onglet { flex-shrink: 0; }
+    .cadre { padding: 5px; border-radius: 16px; }
+    .cadre img { border-radius: 12px; }
+    .cadre { overflow-x: auto; scrollbar-width: thin; scrollbar-color: #2A3643 transparent; }
+    .cadre img { min-width: 780px; }
+    .cadre::before { content: 'Glisse pour voir tout le schéma'; position: sticky; left: 0; display: flex; align-items: center; gap: 6px; padding: 6px 8px 8px; font: 500 12px var(--mono); color: var(--gris); letter-spacing: .5px; }
+    .tablette { padding: 7px; border-radius: 18px; }
+    .tablette .vue { border-radius: 12px; }
+    .installer { padding: 36px 16px; border-radius: 22px; }
+    .apk-carte { padding: 22px 18px; }
+    .pied { grid-template-columns: 1fr; padding: 44px 16px 30px; }
+    .bas { padding: 20px 16px 28px; }
+  }
 </style>
 </head>
 <body>
-<main>
+
+<!-- Retour de la banque : même écran, même texte qu'avant -->
+<main class="retour-ecran">
   <div class="carte">
     <img src="logo.png" alt="">
     <h1>Smart <span>Budget</span></h1>
@@ -28,25 +361,475 @@
   </div>
 </main>
 <script>
-  // La banque revient ici avec ?code=…&state=… : la page ne garde rien et
-  // n'envoie rien ailleurs, elle rend la main à l'application sur le
-  // téléphone, qui échange elle-même le code contre l'accès.
-  const q = location.search;
-  const texte = document.getElementById('texte');
-  const lien = document.getElementById('lien');
-  if (!q) {
-    texte.textContent = "Cette page sert au retour de la banque vers l'application Smart Budget.";
-  } else {
-    const cible = 'smartbudget://banque' + q;
-    lien.href = cible;
+  if (window.__retour) {
+    var texte = document.getElementById('texte');
+    var lien = document.getElementById('lien');
+    lien.href = window.__retour;
     lien.hidden = false;
-    if (new URLSearchParams(q).has('error')) {
+    if (new URLSearchParams(location.search).has('error')) {
       texte.textContent = "La banque n'a pas donné l'accès. Retourne dans l'application pour réessayer.";
       texte.className = 'erreur';
     } else {
       texte.textContent = "Accès accordé. Si l'application ne s'ouvre pas toute seule, touche le bouton.";
     }
-    location.replace(cible);
+    // La page ne garde rien et n'envoie rien ailleurs : elle rend la main à
+    // l'application sur le téléphone, qui échange elle-même le code.
+    location.replace(window.__retour);
+  }
+</script>
+
+<div class="site">
+  <div class="grille" aria-hidden="true"></div>
+
+  <nav class="nav" id="nav">
+    <div class="conteneur">
+      <a class="marque" href="#haut"><img src="logo.png" alt=""><span>Smart <b>Budget</b></span></a>
+      <ul>
+        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+        <li><a href="#ecrans">Écrans</a></li>
+        <li><a href="#banque">La banque</a></li>
+        <li><a href="#securite">Sécurité</a></li>
+        <li><a href="https://github.com/Cybertrist/SmartBudget">GitHub</a></li>
+      </ul>
+      <a class="cta" href="#installer"><span class="ms">download</span>Installer</a>
+    </div>
+  </nav>
+
+  <!-- Héros -->
+  <header class="heros" id="haut">
+    <div class="conteneur">
+      <div>
+        <div class="etiquettes rv"><span class="etiquette">Android</span><span class="etiquette">Finances</span><span class="etiquette">Open source</span></div>
+        <h1 class="rv">Smart <span>Budget</span></h1>
+        <p class="accroche rv">Votre argent. Vos projets. Votre avenir.</p>
+        <p class="sous-accroche rv">Gardez le <em>contrôle</em>, profitez de l'<em>essentiel</em>.</p>
+        <div class="boutons rv">
+          <a class="bouton plein" href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk">
+            <span class="ms">download</span><span><b>Télécharger</b><small>La version complète, Android 8 ou plus</small></span>
+          </a>
+          <a class="bouton creux" href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget-demo.apk">
+            <span class="ms">play_circle</span><span><b>Essayer la démo</b><small>Sans banque, déjà remplie</small></span>
+          </a>
+        </div>
+        <div class="technos rv"><span class="techno">Flutter</span><span class="techno">Enable Banking</span><span class="techno">SQLCipher</span><span class="techno">AES-GCM</span><span class="techno">Fold</span></div>
+      </div>
+      <div class="scene rv" aria-hidden="true">
+        <div class="halo"></div>
+        <div class="telephone arriere"><div class="flotte lent"><img src="tools/src-captures/telephone/03-analyse.jpg" alt=""></div></div>
+        <div class="telephone avant flotte"><img src="tools/src-captures/telephone/01-accueil.jpg" alt=""></div>
+        <img class="logo-flottant" src="logo.png" alt="">
+      </div>
+    </div>
+  </header>
+
+  <!-- Chiffres -->
+  <div class="chiffres">
+    <div class="conteneur">
+      <div class="rangee rv">
+        <div class="chiffre"><b>23</b><span>catégories</span></div>
+        <div class="chiffre"><b>180</b><span>sous-catégories</span></div>
+        <div class="chiffre"><b>250</b><span>marchands reconnus</span></div>
+        <div class="chiffre"><b>12</b><span>mois d'historique</span></div>
+        <div class="chiffre"><b>0</b><span>serveur, compte ou publicité</span></div>
+        <div class="chiffre"><b>83</b><span>tests automatiques</span></div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+  <!-- 01 Fonctionnalités -->
+  <section class="bloc" id="fonctionnalites">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">01</span><h2>Fonctionnalités</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Une application de budget faite pour une seule personne et un seul compte&nbsp;: le sien. Elle lit le compte courant par la DSP2, range chaque opération dans sa catégorie, met à part ce qui n'est ni une dépense ni un revenu, et montre où part l'argent, mois après mois. <strong>Tout reste sur le téléphone, chiffré.</strong></p>
+      </div>
+      <div class="fonctions">
+        <article class="fonction rv"><div class="icone"><span class="ms">account_balance</span></div><h3>Le compte, tout seul</h3><p>Ton compte courant, lu par la DSP2 via Enable Banking&nbsp;: douze mois d'historique, une synchronisation à chaque ouverture, et une alerte s'il passe en négatif.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">category</span></div><h3>Classé sans rien faire</h3><p>23 catégories, 180 sous-catégories, 250 marchands reconnus. Une correction est apprise et suivie par les prochaines opérations.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">donut_large</span></div><h3>L'anneau des dépenses</h3><p>Le mois, trois mois ou un an&nbsp;: où part l'argent, catégorie par catégorie, jusqu'à l'opération.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">sync_alt</span></div><h3>Les virements internes à part</h3><p>Vers le livret, depuis le livret&nbsp;: ni dépense ni revenu, hachurés, hors budget. Mis de côté et pioché, suivis.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">link</span></div><h3>Les remboursements liés</h3><p>Un chèque de 500 € réparti sur deux dépenses&nbsp;: elles ne comptent plus que pour leur reste à charge.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">autorenew</span></div><h3>Les récurrences</h3><p>Loyer, forfait, abonnements&nbsp;: repérés seuls, réglables à la main, en retard, à venir ou payés.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">fact_check</span></div><h3>À vérifier, et pointer</h3><p>Ce que rien ne reconnaît attend sa catégorie. Une coche verte dit qu'une opération a été vérifiée.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">payments</span></div><h3>Espèces et portefeuille</h3><p>Une dépense en espèces se saisit&nbsp;; elle se retranche des retraits, et le portefeuille suit ce qui reste.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">savings</span></div><h3>Livrets et épargne</h3><p>Saisis une fois avec leur solde, puis tenus à jour par les virements repérés sur le compte courant.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">search</span></div><h3>La recherche</h3><p>Toutes les opérations, depuis la première&nbsp;: un nom, une note, un montant.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">lock</span></div><h3>Chiffré sur le téléphone</h3><p>SQLCipher, clé dans le Keystore, déverrouillée par l'empreinte. Captures et aperçu du multitâche bloqués.</p></article>
+        <article class="fonction rv"><div class="icone"><span class="ms">cloud_upload</span></div><h3>La sauvegarde chiffrée</h3><p>Un fichier AES-GCM, clé tirée d'une phrase par PBKDF2, qui se relit sur un autre téléphone.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Les écrans -->
+  <section class="bloc" id="ecrans">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">02</span><h2>Les écrans</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Sobre et sombre, avec un seul vert. Sur le téléphone, une capsule flottante en bas pour naviguer.</p>
+      </div>
+      <div class="fleches rv"><button class="fleche" data-sens="-1" aria-label="Écrans précédents"><span class="ms">arrow_back</span></button><button class="fleche" data-sens="1" aria-label="Écrans suivants"><span class="ms">arrow_forward</span></button></div>
+      <div class="defileur rv" id="defileur">
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/00-ouverture.jpg" alt="L'ouverture de Smart Budget"></div><h3>L'ouverture</h3><p>Le logo, l'accroche, et l'empreinte qui charge la clé.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/01-accueil.jpg" alt="Le mois"></div><h3>Le mois</h3><p>Le solde de tous les comptes, ce qui reste à vérifier, tes comptes.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/02-accueil-bas.jpg" alt="Où part l'argent"></div><h3>Où part l'argent</h3><p>Budget, épargne, les cinq premières catégories, la répartition.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/03-analyse.jpg" alt="L'anneau des sorties"></div><h3>L'anneau</h3><p>Un mois, trois ou un an. Le centre ouvre les opérations.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/04-categorie.jpg" alt="Une catégorie"></div><h3>Une catégorie</h3><p>Ses sous-catégories, et celles qui n'ont rien eu ce mois-ci.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/05-recurrences.jpg" alt="Les récurrences"></div><h3>Les récurrences</h3><p>Payées, à venir, en retard&nbsp;: ce qui revient tout seul.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/06-epargne.jpg" alt="L'épargne"></div><h3>L'épargne</h3><p>Mis de côté, pioché, les livrets tenus par les virements.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/07-verifier.jpg" alt="À vérifier"></div><h3>À vérifier</h3><p>Ce que rien n'a reconnu&nbsp;: classer, ou marquer interne.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/08-operations.jpg" alt="Les opérations"></div><h3>Les opérations</h3><p>Toutes, jour par jour, avec la recherche et les espèces.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/09-operation.jpg" alt="Une opération"></div><h3>Une opération</h3><p>Nom, mouvement, catégorie, type, répétition, remboursement.</p></figure>
+        <figure class="ecran"><div class="telephone"><img loading="lazy" src="tools/src-captures/telephone/10-reglages.jpg" alt="Les réglages"></div><h3>Les réglages</h3><p>La banque, le budget, la sécurité, la sauvegarde.</p></figure>
+      </div>
+      <div class="note-essai rv"><span class="ms">science</span>Toutes ces captures viennent du jeu d'essai de la démo&nbsp;: aucun vrai compte, aucun vrai montant.</div>
+    </div>
+  </section>
+
+  <!-- 03 Relier la banque -->
+  <section class="bloc" id="banque">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">03</span><h2>Relier la banque</h2></div>
+        <div class="trait"></div>
+        <p class="intro">La banque ne parle pas aux particuliers&nbsp;: il faut un agrégateur agréé DSP2. Enable Banking en propose un, gratuit en mode restreint. <strong>Une dizaine de minutes, une seule fois</strong>&nbsp;: ensuite, l'accès tient 180 jours.</p>
+      </div>
+      <div class="etapes">
+        <div class="etape rv"><span class="n">1</span><h3>Choisir la banque</h3><p>Réglages, Ta banque. Toutes celles qu'Enable Banking sait lire, dans une trentaine de pays d'Europe.</p></div>
+        <div class="etape rv"><span class="n">2</span><h3>Chercher la sienne</h3><p>Par son nom ou son pays. Chaque icône est rangée dans l'appli&nbsp;: rien n'est chargé d'Internet.</p></div>
+        <div class="etape rv"><span class="n">3</span><h3>Obtenir sa clé</h3><p>Sur le portail d'Enable Banking, guidé pas à pas, chaque valeur avec son bouton Copier.</p></div>
+        <div class="etape rv"><span class="n">4</span><h3>Importer la clé</h3><p>Le fichier .pem, chiffré aussitôt en AES-GCM, et sa copie de travail effacée.</p></div>
+        <div class="etape rv"><span class="n">5</span><h3>Relier le compte</h3><p>On valide sur la page de la banque, et les douze derniers mois arrivent.</p></div>
+      </div>
+      <div class="onglets rv" role="tablist">
+        <button class="onglet" role="tab" aria-selected="true" data-cible="b1"><span class="ms">smartphone</span>Dans l'application</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="b2"><span class="ms">language</span>Sur le portail</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="b3"><span class="ms">hub</span>Ce qui se passe derrière</button>
+      </div>
+      <div class="rv">
+        <div class="panneau actif" id="b1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/parcours-banque.svg" alt="Choisir et relier sa banque, en cinq étapes, sur un téléphone animé."></div></div>
+        <div class="panneau" id="b2" role="tabpanel"><p>C'est la seule étape hors de l'application. La page <strong>Obtenir ta clé</strong> donne les consignes dans l'ordre&nbsp;: il suffit d'aller et venir entre Smart Budget et le navigateur.</p><div class="cadre"><img loading="lazy" data-src="schemas/portail.svg" alt="Sur le portail d'Enable Banking : se connecter, créer l'application, puis relier son compte."></div></div>
+        <div class="panneau" id="b3" role="tabpanel"><p>Chaque requête porte un jeton signé en RS256 par la clé importée, déchiffrée le temps de l'appel seulement. Le jeton d'état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.</p><div class="cadre"><img loading="lazy" data-src="schemas/banque.svg" alt="Relier la banque, un échange entre Smart Budget, Enable Banking, la banque et GitHub Pages."></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Au quotidien -->
+  <section class="bloc" id="quotidien">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">04</span><h2>Au quotidien</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Smart Budget se synchronise <strong>à chaque ouverture</strong>. Il n'y a rien d'autre à faire que regarder.</p>
+      </div>
+      <div class="onglets rv" role="tablist">
+        <button class="onglet" role="tab" aria-selected="true" data-cible="q1"><span class="ms">home</span>L'accueil</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="q2"><span class="ms">donut_large</span>L'analyse</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="q3"><span class="ms">sync</span>La synchronisation</button>
+      </div>
+      <div class="rv">
+        <div class="panneau actif" id="q1" role="tabpanel"><p>L'accueil montre toujours le mois en cours. Le budget, c'est ce qui reste une fois les sorties retirées&nbsp;: <strong>vert, jaune dès 90 %, rouge au-delà</strong>, où il affiche le dépassement. Suivent les cinq catégories les plus lourdes, puis la répartition entre essentiel, plaisir, épargne et imprévu.</p><div class="cadre"><img loading="lazy" src="schemas/accueil.svg" alt="L'accueil, le mois en cours en un coup d'œil, sur un téléphone animé."></div></div>
+        <div class="panneau" id="q2" role="tabpanel"><p>L'analyse part d'un mois et descend jusqu'à l'opération. Les flèches changent de mois, les puces choisissent un mois, trois ou un an, et les onglets passent des sorties aux entrées et aux récurrences.</p><div class="cadre"><img loading="lazy" data-src="schemas/analyse.svg" alt="L'écran Analyse, sur un téléphone animé, en six gestes."></div></div>
+        <div class="panneau" id="q3" role="tabpanel"><p>Chaque synchronisation redemande les opérations depuis la dernière, moins sept jours, pour rattraper celles que la banque comptabilise en retard. <strong>Relancer ne double rien.</strong> Une opération en attente apparaît tout de suite, puis se met à jour sur place en gardant tout ce que tu y avais fait à la main.</p><div class="cadre"><img loading="lazy" data-src="schemas/synchro.svg" alt="La synchronisation à l'ouverture."></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Comment une opération est lue -->
+  <section class="bloc" id="lecture">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">05</span><h2>Une opération lue</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Un libellé de banque est écrit pour la banque. Le marchand s'en extrait en retirant les préfixes, la carte masquée, les dates et les références&nbsp;: <strong>sa clé reste la même d'un mois à l'autre</strong>, et c'est elle qui porte les corrections.</p>
+      </div>
+      <div class="onglets rv" role="tablist">
+        <button class="onglet" role="tab" aria-selected="true" data-cible="l1"><span class="ms">manage_search</span>Le classement</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="l2"><span class="ms">school</span>La correction apprise</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="l3"><span class="ms">autorenew</span>Les récurrences</button>
+      </div>
+      <div class="rv">
+        <div class="panneau actif" id="l1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/classement.svg" alt="Comment une opération est lue : le libellé perd son bruit, il reste la clé du marchand."></div></div>
+        <div class="panneau" id="l2" role="tabpanel"><p>Ce que rien ne reconnaît attend dans <strong>À vérifier</strong>. Classer une opération écrit une règle sur la clé du marchand&nbsp;: ses autres opérations suivent tout de suite, et les prochaines arriveront déjà classées.</p><div class="cadre"><img loading="lazy" data-src="schemas/apprentissage.svg" alt="À vérifier, et la correction apprise, sur un téléphone animé."></div></div>
+        <div class="panneau" id="l3" role="tabpanel"><p>Au moins deux passages d'un même marchand, un montant à 15 % près, et chaque écart dans une fenêtre&nbsp;: une semaine, un mois, un trimestre, un an. La prochaine date en découle, et l'analyse les range en retard, à venir ou payées.</p><div class="cadre"><img loading="lazy" data-src="schemas/recurrences.svg" alt="Les récurrences, déduites des opérations sans rien saisir."></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 Virements, remboursements, épargne -->
+  <section class="bloc" id="mouvements">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">06</span><h2>Un budget honnête</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Un budget honnête ne compte pas deux fois le même argent. Virements vers les livrets, remboursements, espèces&nbsp;: <strong>chacun est compté une fois, au bon endroit.</strong></p>
+      </div>
+      <div class="onglets rv" role="tablist">
+        <button class="onglet" role="tab" aria-selected="true" data-cible="m1"><span class="ms">sync_alt</span>Les trois pièges</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="m2"><span class="ms">link</span>Les remboursements</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="m3"><span class="ms">savings</span>L'épargne</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="m4"><span class="ms">calendar_month</span>Le mois budgétaire</button>
+      </div>
+      <div class="rv">
+        <div class="panneau actif" id="m1" role="tabpanel"><p>Un virement entre ses comptes n'est ni une dépense ni un revenu&nbsp;: il sort du budget, hachuré. Un remboursement allège la dépense qu'il rembourse. Une dépense en espèces puise dans le plus ancien retrait qui la précède&nbsp;: <strong>jamais compté deux fois.</strong></p><div class="cadre"><img loading="lazy" src="schemas/mouvements.svg" alt="Trois pièges d'un relevé : virement vers le livret, remboursement, espèces."></div></div>
+        <div class="panneau" id="m2" role="tabpanel"><p>Le remboursement peut arriver avant l'achat ou après. Depuis l'entrée, <strong>Lier des dépenses</strong> la répartit sur plusieurs dépenses, et la jauge ne dépasse jamais le montant reçu. Chaque opération reste dans son mois.</p><div class="cadre"><img loading="lazy" data-src="schemas/remboursement.svg" alt="Lier un remboursement, dans les deux sens, sur un téléphone animé."></div></div>
+        <div class="panneau" id="m3" role="tabpanel"><p>Chaque livret s'ajoute une fois, avec son solde et le mot qui le désigne sur le relevé. Ensuite, <strong>chaque virement vers lui ou depuis lui fait bouger son solde</strong>, repéré sur le compte courant.</p><div class="cadre"><img loading="lazy" data-src="schemas/epargne.svg" alt="L'épargne et les livrets, sur un téléphone animé."></div></div>
+        <div class="panneau" id="m4" role="tabpanel"><p>Le mois budgétaire commence <strong>le jour où ton salaire arrive</strong>&nbsp;: Smart Budget le repère tout seul dans tes six derniers mois, et suit s'il change. Une opération tombée du mauvais côté se rattache au mois d'avant ou d'après.</p><div class="cadre"><img loading="lazy" data-src="schemas/mois.svg" alt="Le mois budgétaire, sur une frise et un téléphone animé."></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 L'alerte -->
+  <section class="bloc" id="alerte">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">07</span><h2>Une seule alerte</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Smart Budget n'envoie qu'une seule notification&nbsp;: <strong>«&nbsp;Compte courant en négatif&nbsp;»</strong>, avec le montant. Pas de rappel de budget, pas de résumé de la semaine, pas de publicité&nbsp;: rien d'autre ne sonne.</p>
+      </div>
+      <div class="cadre rv"><img loading="lazy" src="schemas/alerte.svg" alt="La veille du solde : toutes les six heures, le solde du compte courant est relu."></div>
+      <div class="duo">
+        <div class="info rouge rv"><div class="icone"><span class="ms">notifications_active</span></div><div><h3>Une fois par passage</h3><p>Tant que le compte reste en négatif, les lectures suivantes se taisent. Dès qu'il remonte, l'alerte se réarme.</p></div></div>
+        <div class="info rv"><div class="icone"><span class="ms">schedule</span></div><div><h3>Toutes les six heures</h3><p>Même application fermée, seulement avec du réseau. Elle lit le solde, et lui seul.</p></div></div>
+        <div class="info jaune rv"><div class="icone"><span class="ms">lock_open</span></div><div><h3>Le prix de l'alerte</h3><p>La seule exception à «&nbsp;rien ne s'ouvre sans l'empreinte&nbsp;», comptée dans le modèle de confidentialité.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 L'écran déplié -->
+  <section class="bloc" id="deplie">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">08</span><h2>L'écran déplié</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur le Fold ouvert, les pages deviennent <strong>des volets côte à côte</strong>&nbsp;: on descend de l'analyse à l'opération sans jamais perdre d'où l'on vient, et chaque page tient d'un coup, sans défiler.</p>
+      </div>
+      <div class="deplie rv">
+        <div class="tablette"><div class="vue" id="vue">
+          <img class="actif" src="tools/src-captures/deplie/01-accueil.jpg" alt="Le mois en deux colonnes, sur l'écran déplié">
+          <img loading="lazy" src="tools/src-captures/deplie/02-analyse.jpg" alt="L'analyse sur l'écran déplié">
+          <img loading="lazy" src="tools/src-captures/deplie/03-categorie.jpg" alt="Une catégorie ouverte en volet">
+          <img loading="lazy" src="tools/src-captures/deplie/04-sous.jpg" alt="Une sous-catégorie en volet">
+          <img loading="lazy" src="tools/src-captures/deplie/05-operation.jpg" alt="Une opération en volet">
+          <img loading="lazy" src="tools/src-captures/deplie/06-epargne.jpg" alt="L'épargne sur l'écran déplié">
+          <img loading="lazy" src="tools/src-captures/deplie/07-reglages.jpg" alt="Les réglages sur l'écran déplié">
+        </div></div>
+        <div class="puces" id="puces"></div>
+        <p class="legende" id="legende"></p>
+      </div>
+      <div class="cadre rv" style="margin-top:34px"><img loading="lazy" src="schemas/volets.svg" alt="L'écran déplié : deux volets côte à côte à droite du rail."></div>
+    </div>
+  </section>
+
+  <!-- 09 Sécurité -->
+  <section class="bloc" id="securite">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">09</span><h2>Sécurité</h2></div>
+        <div class="trait"></div>
+        <p class="intro">La clé maîtresse est tirée au hasard au premier lancement et <strong>ne quitte jamais le Keystore d'Android</strong>. Tout le reste en dérive&nbsp;: la base, et la clé privée d'Enable Banking, qui n'est déchiffrée que le temps d'une requête.</p>
+      </div>
+      <div class="garanties">
+        <div class="garantie rv"><div class="icone"><span class="ms">cloud_off</span></div><h3>Aucun serveur</h3><p>Aucun compte à créer, aucune publicité. Seule la banque est interrogée, en lecture.</p></div>
+        <div class="garantie rv"><div class="icone"><span class="ms">fingerprint</span></div><h3>L'empreinte</h3><p>Elle charge la clé elle-même, pas un simple écran de verrouillage.</p></div>
+        <div class="garantie rv"><div class="icone"><span class="ms">enhanced_encryption</span></div><h3>Chiffré deux fois</h3><p>La clé bancaire, par sa propre clé, dans une base elle-même chiffrée par SQLCipher.</p></div>
+        <div class="garantie rv"><div class="icone"><span class="ms">delete_forever</span></div><h3>Tout effacer</h3><p>Détruit la clé d'abord, puis la base&nbsp;: même interrompu, rien de lisible ne reste.</p></div>
+      </div>
+      <div class="onglets rv" role="tablist">
+        <button class="onglet" role="tab" aria-selected="true" data-cible="s1"><span class="ms">key</span>Le chiffrement</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="s2"><span class="ms">backup</span>La sauvegarde</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="s3"><span class="ms">shield</span>La confidentialité</button>
+      </div>
+      <div class="rv">
+        <div class="panneau actif" id="s1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/chiffrement.svg" alt="L'empreinte charge la clé maîtresse depuis le Keystore ; HKDF-SHA256 en dérive les clés."></div></div>
+        <div class="panneau" id="s2" role="tabpanel"><p>Réglages, Sauvegarde, <strong>Exporter, chiffré</strong>. Le fichier peut voyager n'importe où&nbsp;: sans la phrase, il est illisible. Une phrase fausse ne touche à rien.</p><div class="cadre"><img loading="lazy" data-src="schemas/sauvegarde.svg" alt="La sauvegarde, entre deux téléphones animés."></div></div>
+        <div class="panneau" id="s3" role="tabpanel"><p>Au centre, le téléphone. Le seul fil qui en sort va vers Enable Banking, puis vers la banque, <strong>en lecture seule</strong>.</p><div class="cadre"><img loading="lazy" data-src="schemas/confidentialite.svg" alt="Le modèle de confidentialité de Smart Budget."></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 Sous le capot -->
+  <section class="bloc" id="capot">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">10</span><h2>Sous le capot</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Les montants sont des entiers, en centimes&nbsp;: <strong>jamais un flottant ne touche à l'argent</strong>. Le domaine ne connaît ni Flutter ni la base, ce qui le rend testable sans appareil.</p>
+      </div>
+      <div class="onglets rv" role="tablist">
+        <button class="onglet" role="tab" aria-selected="true" data-cible="c1"><span class="ms">layers</span>La pile</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="c2"><span class="ms">view_agenda</span>Les couches</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="c3"><span class="ms">table_chart</span>Les données</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="c4"><span class="ms">task_alt</span>Les tests</button>
+        <button class="onglet" role="tab" aria-selected="false" data-cible="c5"><span class="ms">history</span>Les versions</button>
+      </div>
+      <div class="rv">
+        <div class="panneau actif" id="c1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/stack.svg" alt="La pile de Smart Budget, sur un socle Flutter 3."></div></div>
+        <div class="panneau" id="c2" role="tabpanel"><div class="cadre"><img loading="lazy" data-src="schemas/couches.svg" alt="Les six couches de Smart Budget, traversées par une écriture."></div></div>
+        <div class="panneau" id="c3" role="tabpanel"><div class="cadre"><img loading="lazy" data-src="schemas/modele.svg" alt="Le modèle de données : six tables dans une base chiffrée par SQLCipher."></div></div>
+        <div class="panneau" id="c4" role="tabpanel"><p>SQLCipher et le Keystore n'existent que sur un appareil&nbsp;: les tests d'intégration tournent sur un émulateur, <strong>jamais sur le téléphone qui porte les vrais comptes</strong>.</p><div class="cadre"><img loading="lazy" data-src="schemas/tests.svg" alt="Les tests, lancés un à un, de 0 à 83."></div></div>
+        <div class="panneau" id="c5" role="tabpanel"><div class="cadre"><img loading="lazy" data-src="schemas/versions.svg" alt="Les versions de Smart Budget, empilées l'une sur l'autre."></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 Installer -->
+  <section class="bloc" id="installer">
+    <div class="conteneur">
+      <div class="entete rv">
+        <div class="bandeau"><span class="numero">11</span><h2>Installer</h2></div>
+        <div class="trait"></div>
+        <p class="intro">Deux applications, qui s'installent <strong>côte à côte</strong> sans se gêner.</p>
+      </div>
+      <div class="installer rv">
+        <div class="apk">
+          <div class="apk-carte principale">
+            <div class="apk-tete"><img src="logo.png" alt=""><div><h3>Smart Budget</h3><span>SmartBudget.apk</span></div></div>
+            <ul>
+              <li><span class="ms">account_balance</span>La version complète&nbsp;: elle se relie à ta banque.</li>
+              <li><span class="ms">person</span>Elle ne contient que tes vraies opérations.</li>
+              <li><span class="ms">fingerprint</span>Empreinte à l'ouverture, captures d'écran bloquées.</li>
+            </ul>
+            <a class="bouton plein" href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget.apk"><span class="ms">download</span><span><b>Télécharger</b><small>Android 8 ou plus</small></span></a>
+          </div>
+          <div class="apk-carte">
+            <div class="apk-tete"><img src="logo.png" alt=""><div><h3>Smart Budget démo</h3><span>SmartBudget-demo.apk</span></div></div>
+            <ul>
+              <li><span class="ms">science</span>Quatre mois d'opérations inventées, déjà chargées.</li>
+              <li><span class="ms">link_off</span>Sans banque, sans empreinte, captures permises.</li>
+              <li><span class="ms">visibility</span>Pour voir chaque écran avant de relier quoi que ce soit.</li>
+            </ul>
+            <a class="bouton creux" href="https://github.com/Cybertrist/SmartBudget/releases/latest/download/SmartBudget-demo.apk"><span class="ms">play_circle</span><span><b>Essayer la démo</b><small>Android 8 ou plus</small></span></a>
+          </div>
+        </div>
+        <div class="precisions">
+          <div class="info bleu"><div class="icone"><span class="ms">install_mobile</span></div><div><h3>Hors Play Store</h3><p>Android demande, une fois, d'autoriser l'installation depuis le navigateur.</p></div></div>
+          <div class="info"><div class="icone"><span class="ms">verified</span></div><div><h3>Toujours la même clé</h3><p>Chaque version s'installe par-dessus la précédente sans rien perdre.</p></div></div>
+          <div class="info jaune"><div class="icone"><span class="ms">event_repeat</span></div><div><h3>180 jours d'accès</h3><p>Par la loi. La carte de la banque prévient quinze jours avant, un toucher le renouvelle.</p></div></div>
+        </div>
+        <details class="empreintes">
+          <summary><span class="ms">fingerprint</span>Vérifier le fichier téléchargé<span class="ms tourne" style="margin-left:auto">expand_more</span></summary>
+<pre><i># SHA-256 de SmartBudget.apk, version 1.2.3</i>
+2f25bed5fcf390eccf357f58e999c08b7b88f1f739e167bb23996d9cd89ec631
+
+<i># SHA-256 de SmartBudget-demo.apk, version 1.2.3</i>
+509751e823996b88e019e9c6491fc4ec2f2e321f69b0142e6e16a5a7aeacbebe
+
+<i># SHA-256 du certificat de signature, CN=SmartBudget, O=Cybertrist</i>
+55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef</pre>
+        </details>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <footer>
+    <div class="conteneur pied">
+      <div>
+        <a class="marque" href="#haut"><img src="logo.png" alt=""><span>Smart <b>Budget</b></span></a>
+        <p>Conçu et écrit par Tristan Joncour, élève ingénieur en cyberdéfense à l'ENSIBS, pour tenir ses propres comptes. Le socle de sécurité vient de son autre application, BodyCount.</p>
+      </div>
+      <div>
+        <h4>Le projet</h4>
+        <div class="liens-pied">
+          <a href="https://github.com/Cybertrist/SmartBudget"><span class="ms">code</span>Le code sur GitHub</a>
+          <a href="https://github.com/Cybertrist/SmartBudget/releases"><span class="ms">new_releases</span>Les versions</a>
+          <a href="https://github.com/Cybertrist/SmartBudget/blob/main/LICENSE"><span class="ms">gavel</span>Licence MIT</a>
+        </div>
+      </div>
+      <div>
+        <h4>Ailleurs</h4>
+        <div class="liens-pied">
+          <a href="https://github.com/Cybertrist/BodyCount"><span class="ms">apps</span>BodyCount</a>
+          <a href="https://github.com/Cybertrist"><span class="ms">person</span>Cybertrist</a>
+          <a href="https://enablebanking.com"><span class="ms">account_balance</span>Enable Banking</a>
+        </div>
+      </div>
+    </div>
+    <div class="conteneur bas">
+      <span>Code sous licence <b>MIT</b>, par Tristan Joncour.</span>
+      <span>Aucun cookie, aucune mesure d'audience.</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  if (!window.__retour) {
+    // Barre de navigation : un trait dès qu'on défile
+    var nav = document.getElementById('nav');
+    var suivre = function () { nav.classList.toggle('defile', scrollY > 10); };
+    addEventListener('scroll', suivre, { passive: true }); suivre();
+
+    // Apparition au défilement
+    var elements = document.querySelectorAll('.rv');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('vu'); io.unobserve(e.target); } });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+      elements.forEach(function (el) { io.observe(el); });
+    } else {
+      elements.forEach(function (el) { el.classList.add('vu'); });
+    }
+
+    // Onglets : chaque schéma animé repart du début quand on l'ouvre
+    document.querySelectorAll('.onglets').forEach(function (groupe) {
+      var boutons = groupe.querySelectorAll('.onglet');
+      boutons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          boutons.forEach(function (x) {
+            var actif = x === b;
+            x.setAttribute('aria-selected', actif);
+            document.getElementById(x.dataset.cible).classList.toggle('actif', actif);
+          });
+          var img = document.getElementById(b.dataset.cible).querySelector('img');
+          if (img) {
+            var src = img.dataset.src || img.getAttribute('src');
+            img.removeAttribute('data-src');
+            img.src = src.split('#')[0] + '#' + Date.now();
+          }
+          b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+        });
+      });
+    });
+
+    // Écrans : flèches
+    var defileur = document.getElementById('defileur');
+    document.querySelectorAll('.fleche').forEach(function (f) {
+      f.addEventListener('click', function () { defileur.scrollBy({ left: f.dataset.sens * 520, behavior: 'smooth' }); });
+    });
+
+    // Écran déplié : puces et défilement automatique
+    var vues = document.querySelectorAll('#vue img');
+    var titres = ['Le mois', "L'analyse", 'Une catégorie', 'Une sous-catégorie', 'Une opération', "L'épargne", 'Les réglages'];
+    var textes = [
+      'Le mois en deux colonnes, sans défiler.',
+      "L'anneau à gauche, les catégories à droite.",
+      'Toucher Logement pousse tout vers la gauche, la ligne ouverte reste surlignée.',
+      'Puis Loyer, un volet de plus.',
+      "Jusqu'à l'opération, dont le titre porte le montant.",
+      'Les livrets à gauche, les mouvements du mois à droite.',
+      'La banque, le budget, la sécurité et la sauvegarde.'
+    ];
+    var puces = document.getElementById('puces'), legende = document.getElementById('legende');
+    var courant = 0, minuterie;
+    var montrer = function (i) {
+      courant = i;
+      vues.forEach(function (v, j) { v.classList.toggle('actif', j === i); });
+      puces.querySelectorAll('.puce').forEach(function (p, j) { p.setAttribute('aria-pressed', j === i); });
+      legende.textContent = textes[i];
+    };
+    titres.forEach(function (t, i) {
+      var p = document.createElement('button');
+      p.className = 'puce'; p.textContent = t;
+      p.addEventListener('click', function () { clearInterval(minuterie); montrer(i); });
+      puces.appendChild(p);
+    });
+    montrer(0);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      minuterie = setInterval(function () { montrer((courant + 1) % vues.length); }, 4200);
+    }
   }
 </script>
 </body>
