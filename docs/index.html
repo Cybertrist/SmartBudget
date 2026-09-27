@@ -138,7 +138,7 @@
   .chiffres .rangee { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--bord); border-radius: 22px; background: linear-gradient(180deg, rgba(22,29,39,.8), rgba(13,17,23,.8)); overflow: hidden; }
   .chiffre { padding: 26px 18px 24px; text-align: center; position: relative; }
   .chiffre + .chiffre::before { content: ''; position: absolute; left: 0; top: 22%; bottom: 22%; width: 1px; background: var(--bord); }
-  .chiffre b { display: block; font-family: var(--titre); font-weight: 800; font-size: clamp(30px, 3.4vw, 42px); line-height: 1; color: var(--neon); letter-spacing: -1px; }
+  .chiffre b { display: block; font: 700 clamp(40px, 4.4vw, 60px)/1 var(--corps); letter-spacing: -.045em; white-space: nowrap; font-variant-numeric: tabular-nums; background: linear-gradient(180deg, #FFFFFF 10%, var(--neon) 95%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 22px rgba(30,215,96,.25)); }
   .chiffre span { display: block; margin-top: 10px; font-size: 14px; color: var(--gris); line-height: 1.35; }
 
   /* ---------- Sections ---------- */
@@ -165,6 +165,7 @@
   .defileur::-webkit-scrollbar { height: 6px; }
   .defileur::-webkit-scrollbar-thumb { background: #2A3643; border-radius: 3px; }
   .ecran { flex: 0 0 236px; scroll-snap-align: start; margin: 0; }
+  .defileur { overscroll-behavior-x: contain; }
   .ecran .telephone { position: relative; width: 100%; border-radius: 36px; padding: 8px; box-shadow: 0 0 0 1px #2A3643, 0 24px 50px -20px rgba(0,0,0,.8); transition: transform .35s, box-shadow .35s; }
   .ecran .telephone img { border-radius: 29px; }
   .ecran:hover .telephone { transform: translateY(-6px); box-shadow: 0 0 0 1px rgba(30,215,96,.45), 0 30px 60px -20px rgba(0,0,0,.8), 0 0 50px -12px rgba(30,215,96,.4); }
@@ -265,7 +266,7 @@
   .bas span b { color: var(--doux); font-weight: 600; }
 
   /* Apparition au défilement */
-  html.js .rv { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  html.js .rv { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
   html.js .rv.vu { opacity: 1; transform: none; }
   @media (max-width: 380px) {
     .nav .cta .ms { display: none; }
@@ -330,16 +331,15 @@
     .etape:last-child { grid-column: auto; }
     .fonction { padding: 22px; }
     .defileur { padding: 10px 16px 26px; margin: 0 -16px; gap: 18px; scroll-padding-inline: 16px; }
-    .ecran { flex-basis: 210px; }
+    .defileur { -webkit-mask-image: none; mask-image: none; scroll-padding-inline: 0; padding-inline: calc((100vw - 58vw) / 2); }
+    .ecran { flex-basis: 58vw; scroll-snap-align: center; scroll-snap-stop: always; }
+    .ecran:hover .telephone { transform: none; }
     .fleches { display: none; }
     .onglets { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px 18px; padding: 2px 16px 6px; scrollbar-width: none; }
     .onglets::-webkit-scrollbar { display: none; }
     .onglet { flex-shrink: 0; }
     .cadre { padding: 5px; border-radius: 16px; }
     .cadre img { border-radius: 12px; }
-    .cadre { overflow-x: auto; scrollbar-width: thin; scrollbar-color: #2A3643 transparent; }
-    .cadre img { min-width: 780px; }
-    .cadre::before { content: 'Glisse pour voir tout le schéma'; position: sticky; left: 0; display: flex; align-items: center; gap: 6px; padding: 6px 8px 8px; font: 500 12px var(--mono); color: var(--gris); letter-spacing: .5px; }
     .tablette { padding: 7px; border-radius: 18px; }
     .tablette .vue { border-radius: 12px; }
     .installer { padding: 36px 16px; border-radius: 22px; }
@@ -347,6 +347,13 @@
     .pied { grid-template-columns: 1fr; padding: 44px 16px 30px; }
     .bas { padding: 20px 16px 28px; }
   }
+
+  /* Schémas : la place est réservée, l'animation part quand on les voit */
+  img.schema { display: block; width: 100%; height: auto; opacity: 0; transition: opacity .35s ease; background: rgba(255,255,255,.025); cursor: zoom-in; }
+  img.schema.pret { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { img.schema { transition: none; } }
+  .zoom { display: none; margin: 10px 0 2px; text-align: center; font: 500 12px var(--mono); letter-spacing: .5px; opacity: .7; }
+  @media (max-width: 720px) { .zoom { display: block; } }
 </style>
 </head>
 <body>
@@ -426,12 +433,12 @@
   <div class="chiffres">
     <div class="conteneur">
       <div class="rangee rv">
-        <div class="chiffre"><b>23</b><span>catégories</span></div>
-        <div class="chiffre"><b>180</b><span>sous-catégories</span></div>
-        <div class="chiffre"><b>250</b><span>marchands reconnus</span></div>
-        <div class="chiffre"><b>12</b><span>mois d'historique</span></div>
-        <div class="chiffre"><b>0</b><span>serveur, compte ou publicité</span></div>
-        <div class="chiffre"><b>83</b><span>tests automatiques</span></div>
+        <div class="chiffre"><b data-compte>23</b><span>catégories</span></div>
+        <div class="chiffre"><b data-compte>180</b><span>sous-catégories</span></div>
+        <div class="chiffre"><b data-compte>250</b><span>marchands reconnus</span></div>
+        <div class="chiffre"><b data-compte>12</b><span>mois d'historique</span></div>
+        <div class="chiffre"><b data-compte>0</b><span>serveur, compte ou publicité</span></div>
+        <div class="chiffre"><b data-compte>83</b><span>tests automatiques</span></div>
       </div>
     </div>
   </div>
@@ -509,9 +516,9 @@
         <button class="onglet" role="tab" aria-selected="false" data-cible="b3"><span class="ms">hub</span>Ce qui se passe derrière</button>
       </div>
       <div class="rv">
-        <div class="panneau actif" id="b1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/parcours-banque.svg" alt="Choisir et relier sa banque, en cinq étapes, sur un téléphone animé."></div></div>
-        <div class="panneau" id="b2" role="tabpanel"><p>C'est la seule étape hors de l'application. La page <strong>Obtenir ta clé</strong> donne les consignes dans l'ordre&nbsp;: il suffit d'aller et venir entre Smart Budget et le navigateur.</p><div class="cadre"><img loading="lazy" data-src="schemas/portail.svg" alt="Sur le portail d'Enable Banking : se connecter, créer l'application, puis relier son compte."></div></div>
-        <div class="panneau" id="b3" role="tabpanel"><p>Chaque requête porte un jeton signé en RS256 par la clé importée, déchiffrée le temps de l'appel seulement. Le jeton d'état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.</p><div class="cadre"><img loading="lazy" data-src="schemas/banque.svg" alt="Relier la banque, un échange entre Smart Budget, Enable Banking, la banque et GitHub Pages."></div></div>
+        <div class="panneau actif" id="b1" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/parcours-banque.svg" alt="Choisir et relier sa banque, en cinq étapes, sur un téléphone animé." width="1280" height="760" style="aspect-ratio:1280/760"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="b2" role="tabpanel"><p>C'est la seule étape hors de l'application. La page <strong>Obtenir ta clé</strong> donne les consignes dans l'ordre&nbsp;: il suffit d'aller et venir entre Smart Budget et le navigateur.</p><div class="cadre"><img class="schema" data-schema="schemas/portail.svg" alt="Sur le portail d'Enable Banking : se connecter, créer l'application, puis relier son compte." width="1280" height="720" style="aspect-ratio:1280/720"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="b3" role="tabpanel"><p>Chaque requête porte un jeton signé en RS256 par la clé importée, déchiffrée le temps de l'appel seulement. Le jeton d'état, tiré au hasard au départ et vérifié au retour, empêche un lien fabriqué ailleurs de relier un autre compte.</p><div class="cadre"><img class="schema" data-schema="schemas/banque.svg" alt="Relier la banque, un échange entre Smart Budget, Enable Banking, la banque et GitHub Pages." width="1280" height="630" style="aspect-ratio:1280/630"><div class="zoom">Touche pour agrandir</div></div></div>
       </div>
     </div>
   </section>
@@ -530,9 +537,9 @@
         <button class="onglet" role="tab" aria-selected="false" data-cible="q3"><span class="ms">sync</span>La synchronisation</button>
       </div>
       <div class="rv">
-        <div class="panneau actif" id="q1" role="tabpanel"><p>L'accueil montre toujours le mois en cours. Le budget, c'est ce qui reste une fois les sorties retirées&nbsp;: <strong>vert, jaune dès 90 %, rouge au-delà</strong>, où il affiche le dépassement. Suivent les cinq catégories les plus lourdes, puis la répartition entre essentiel, plaisir, épargne et imprévu.</p><div class="cadre"><img loading="lazy" src="schemas/accueil.svg" alt="L'accueil, le mois en cours en un coup d'œil, sur un téléphone animé."></div></div>
-        <div class="panneau" id="q2" role="tabpanel"><p>L'analyse part d'un mois et descend jusqu'à l'opération. Les flèches changent de mois, les puces choisissent un mois, trois ou un an, et les onglets passent des sorties aux entrées et aux récurrences.</p><div class="cadre"><img loading="lazy" data-src="schemas/analyse.svg" alt="L'écran Analyse, sur un téléphone animé, en six gestes."></div></div>
-        <div class="panneau" id="q3" role="tabpanel"><p>Chaque synchronisation redemande les opérations depuis la dernière, moins sept jours, pour rattraper celles que la banque comptabilise en retard. <strong>Relancer ne double rien.</strong> Une opération en attente apparaît tout de suite, puis se met à jour sur place en gardant tout ce que tu y avais fait à la main.</p><div class="cadre"><img loading="lazy" data-src="schemas/synchro.svg" alt="La synchronisation à l'ouverture."></div></div>
+        <div class="panneau actif" id="q1" role="tabpanel"><p>L'accueil montre toujours le mois en cours. Le budget, c'est ce qui reste une fois les sorties retirées&nbsp;: <strong>vert, jaune dès 90 %, rouge au-delà</strong>, où il affiche le dépassement. Suivent les cinq catégories les plus lourdes, puis la répartition entre essentiel, plaisir, épargne et imprévu.</p><div class="cadre"><img class="schema" data-schema="schemas/accueil.svg" alt="L'accueil, le mois en cours en un coup d'œil, sur un téléphone animé." width="1280" height="800" style="aspect-ratio:1280/800"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="q2" role="tabpanel"><p>L'analyse part d'un mois et descend jusqu'à l'opération. Les flèches changent de mois, les puces choisissent un mois, trois ou un an, et les onglets passent des sorties aux entrées et aux récurrences.</p><div class="cadre"><img class="schema" data-schema="schemas/analyse.svg" alt="L'écran Analyse, sur un téléphone animé, en six gestes." width="1280" height="790" style="aspect-ratio:1280/790"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="q3" role="tabpanel"><p>Chaque synchronisation redemande les opérations depuis la dernière, moins sept jours, pour rattraper celles que la banque comptabilise en retard. <strong>Relancer ne double rien.</strong> Une opération en attente apparaît tout de suite, puis se met à jour sur place en gardant tout ce que tu y avais fait à la main.</p><div class="cadre"><img class="schema" data-schema="schemas/synchro.svg" alt="La synchronisation à l'ouverture." width="1280" height="806" style="aspect-ratio:1280/806"><div class="zoom">Touche pour agrandir</div></div></div>
       </div>
     </div>
   </section>
@@ -551,9 +558,9 @@
         <button class="onglet" role="tab" aria-selected="false" data-cible="l3"><span class="ms">autorenew</span>Les récurrences</button>
       </div>
       <div class="rv">
-        <div class="panneau actif" id="l1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/classement.svg" alt="Comment une opération est lue : le libellé perd son bruit, il reste la clé du marchand."></div></div>
-        <div class="panneau" id="l2" role="tabpanel"><p>Ce que rien ne reconnaît attend dans <strong>À vérifier</strong>. Classer une opération écrit une règle sur la clé du marchand&nbsp;: ses autres opérations suivent tout de suite, et les prochaines arriveront déjà classées.</p><div class="cadre"><img loading="lazy" data-src="schemas/apprentissage.svg" alt="À vérifier, et la correction apprise, sur un téléphone animé."></div></div>
-        <div class="panneau" id="l3" role="tabpanel"><p>Au moins deux passages d'un même marchand, un montant à 15 % près, et chaque écart dans une fenêtre&nbsp;: une semaine, un mois, un trimestre, un an. La prochaine date en découle, et l'analyse les range en retard, à venir ou payées.</p><div class="cadre"><img loading="lazy" data-src="schemas/recurrences.svg" alt="Les récurrences, déduites des opérations sans rien saisir."></div></div>
+        <div class="panneau actif" id="l1" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/classement.svg" alt="Comment une opération est lue : le libellé perd son bruit, il reste la clé du marchand." width="1280" height="464" style="aspect-ratio:1280/464"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="l2" role="tabpanel"><p>Ce que rien ne reconnaît attend dans <strong>À vérifier</strong>. Classer une opération écrit une règle sur la clé du marchand&nbsp;: ses autres opérations suivent tout de suite, et les prochaines arriveront déjà classées.</p><div class="cadre"><img class="schema" data-schema="schemas/apprentissage.svg" alt="À vérifier, et la correction apprise, sur un téléphone animé." width="1280" height="740" style="aspect-ratio:1280/740"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="l3" role="tabpanel"><p>Au moins deux passages d'un même marchand, un montant à 15 % près, et chaque écart dans une fenêtre&nbsp;: une semaine, un mois, un trimestre, un an. La prochaine date en découle, et l'analyse les range en retard, à venir ou payées.</p><div class="cadre"><img class="schema" data-schema="schemas/recurrences.svg" alt="Les récurrences, déduites des opérations sans rien saisir." width="1280" height="752" style="aspect-ratio:1280/752"><div class="zoom">Touche pour agrandir</div></div></div>
       </div>
     </div>
   </section>
@@ -573,10 +580,10 @@
         <button class="onglet" role="tab" aria-selected="false" data-cible="m4"><span class="ms">calendar_month</span>Le mois budgétaire</button>
       </div>
       <div class="rv">
-        <div class="panneau actif" id="m1" role="tabpanel"><p>Un virement entre ses comptes n'est ni une dépense ni un revenu&nbsp;: il sort du budget, hachuré. Un remboursement allège la dépense qu'il rembourse. Une dépense en espèces puise dans le plus ancien retrait qui la précède&nbsp;: <strong>jamais compté deux fois.</strong></p><div class="cadre"><img loading="lazy" src="schemas/mouvements.svg" alt="Trois pièges d'un relevé : virement vers le livret, remboursement, espèces."></div></div>
-        <div class="panneau" id="m2" role="tabpanel"><p>Le remboursement peut arriver avant l'achat ou après. Depuis l'entrée, <strong>Lier des dépenses</strong> la répartit sur plusieurs dépenses, et la jauge ne dépasse jamais le montant reçu. Chaque opération reste dans son mois.</p><div class="cadre"><img loading="lazy" data-src="schemas/remboursement.svg" alt="Lier un remboursement, dans les deux sens, sur un téléphone animé."></div></div>
-        <div class="panneau" id="m3" role="tabpanel"><p>Chaque livret s'ajoute une fois, avec son solde et le mot qui le désigne sur le relevé. Ensuite, <strong>chaque virement vers lui ou depuis lui fait bouger son solde</strong>, repéré sur le compte courant.</p><div class="cadre"><img loading="lazy" data-src="schemas/epargne.svg" alt="L'épargne et les livrets, sur un téléphone animé."></div></div>
-        <div class="panneau" id="m4" role="tabpanel"><p>Le mois budgétaire commence <strong>le jour où ton salaire arrive</strong>&nbsp;: Smart Budget le repère tout seul dans tes six derniers mois, et suit s'il change. Une opération tombée du mauvais côté se rattache au mois d'avant ou d'après.</p><div class="cadre"><img loading="lazy" data-src="schemas/mois.svg" alt="Le mois budgétaire, sur une frise et un téléphone animé."></div></div>
+        <div class="panneau actif" id="m1" role="tabpanel"><p>Un virement entre ses comptes n'est ni une dépense ni un revenu&nbsp;: il sort du budget, hachuré. Un remboursement allège la dépense qu'il rembourse. Une dépense en espèces puise dans le plus ancien retrait qui la précède&nbsp;: <strong>jamais compté deux fois.</strong></p><div class="cadre"><img class="schema" data-schema="schemas/mouvements.svg" alt="Trois pièges d'un relevé : virement vers le livret, remboursement, espèces." width="1280" height="440" style="aspect-ratio:1280/440"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="m2" role="tabpanel"><p>Le remboursement peut arriver avant l'achat ou après. Depuis l'entrée, <strong>Lier des dépenses</strong> la répartit sur plusieurs dépenses, et la jauge ne dépasse jamais le montant reçu. Chaque opération reste dans son mois.</p><div class="cadre"><img class="schema" data-schema="schemas/remboursement.svg" alt="Lier un remboursement, dans les deux sens, sur un téléphone animé." width="1280" height="792" style="aspect-ratio:1280/792"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="m3" role="tabpanel"><p>Chaque livret s'ajoute une fois, avec son solde et le mot qui le désigne sur le relevé. Ensuite, <strong>chaque virement vers lui ou depuis lui fait bouger son solde</strong>, repéré sur le compte courant.</p><div class="cadre"><img class="schema" data-schema="schemas/epargne.svg" alt="L'épargne et les livrets, sur un téléphone animé." width="1280" height="792" style="aspect-ratio:1280/792"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="m4" role="tabpanel"><p>Le mois budgétaire commence <strong>le jour où ton salaire arrive</strong>&nbsp;: Smart Budget le repère tout seul dans tes six derniers mois, et suit s'il change. Une opération tombée du mauvais côté se rattache au mois d'avant ou d'après.</p><div class="cadre"><img class="schema" data-schema="schemas/mois.svg" alt="Le mois budgétaire, sur une frise et un téléphone animé." width="1280" height="812" style="aspect-ratio:1280/812"><div class="zoom">Touche pour agrandir</div></div></div>
       </div>
     </div>
   </section>
@@ -589,7 +596,7 @@
         <div class="trait"></div>
         <p class="intro">Smart Budget n'envoie qu'une seule notification&nbsp;: <strong>«&nbsp;Compte courant en négatif&nbsp;»</strong>, avec le montant. Pas de rappel de budget, pas de résumé de la semaine, pas de publicité&nbsp;: rien d'autre ne sonne.</p>
       </div>
-      <div class="cadre rv"><img loading="lazy" src="schemas/alerte.svg" alt="La veille du solde : toutes les six heures, le solde du compte courant est relu."></div>
+      <div class="cadre rv"><img class="schema" data-schema="schemas/alerte.svg" alt="La veille du solde : toutes les six heures, le solde du compte courant est relu." width="1280" height="480" style="aspect-ratio:1280/480"><div class="zoom">Touche pour agrandir</div></div>
       <div class="duo">
         <div class="info rouge rv"><div class="icone"><span class="ms">notifications_active</span></div><div><h3>Une fois par passage</h3><p>Tant que le compte reste en négatif, les lectures suivantes se taisent. Dès qu'il remonte, l'alerte se réarme.</p></div></div>
         <div class="info rv"><div class="icone"><span class="ms">schedule</span></div><div><h3>Toutes les six heures</h3><p>Même application fermée, seulement avec du réseau. Elle lit le solde, et lui seul.</p></div></div>
@@ -619,7 +626,7 @@
         <div class="puces" id="puces"></div>
         <p class="legende" id="legende"></p>
       </div>
-      <div class="cadre rv" style="margin-top:34px"><img loading="lazy" src="schemas/volets.svg" alt="L'écran déplié : deux volets côte à côte à droite du rail."></div>
+      <div class="cadre rv" style="margin-top:34px"><img class="schema" data-schema="schemas/volets.svg" alt="L'écran déplié : deux volets côte à côte à droite du rail." width="1280" height="462" style="aspect-ratio:1280/462"><div class="zoom">Touche pour agrandir</div></div>
     </div>
   </section>
 
@@ -643,9 +650,9 @@
         <button class="onglet" role="tab" aria-selected="false" data-cible="s3"><span class="ms">shield</span>La confidentialité</button>
       </div>
       <div class="rv">
-        <div class="panneau actif" id="s1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/chiffrement.svg" alt="L'empreinte charge la clé maîtresse depuis le Keystore ; HKDF-SHA256 en dérive les clés."></div></div>
-        <div class="panneau" id="s2" role="tabpanel"><p>Réglages, Sauvegarde, <strong>Exporter, chiffré</strong>. Le fichier peut voyager n'importe où&nbsp;: sans la phrase, il est illisible. Une phrase fausse ne touche à rien.</p><div class="cadre"><img loading="lazy" data-src="schemas/sauvegarde.svg" alt="La sauvegarde, entre deux téléphones animés."></div></div>
-        <div class="panneau" id="s3" role="tabpanel"><p>Au centre, le téléphone. Le seul fil qui en sort va vers Enable Banking, puis vers la banque, <strong>en lecture seule</strong>.</p><div class="cadre"><img loading="lazy" data-src="schemas/confidentialite.svg" alt="Le modèle de confidentialité de Smart Budget."></div></div>
+        <div class="panneau actif" id="s1" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/chiffrement.svg" alt="L'empreinte charge la clé maîtresse depuis le Keystore ; HKDF-SHA256 en dérive les clés." width="1280" height="530" style="aspect-ratio:1280/530"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="s2" role="tabpanel"><p>Réglages, Sauvegarde, <strong>Exporter, chiffré</strong>. Le fichier peut voyager n'importe où&nbsp;: sans la phrase, il est illisible. Une phrase fausse ne touche à rien.</p><div class="cadre"><img class="schema" data-schema="schemas/sauvegarde.svg" alt="La sauvegarde, entre deux téléphones animés." width="1280" height="772" style="aspect-ratio:1280/772"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="s3" role="tabpanel"><p>Au centre, le téléphone. Le seul fil qui en sort va vers Enable Banking, puis vers la banque, <strong>en lecture seule</strong>.</p><div class="cadre"><img class="schema" data-schema="schemas/confidentialite.svg" alt="Le modèle de confidentialité de Smart Budget." width="1280" height="975" style="aspect-ratio:1280/975"><div class="zoom">Touche pour agrandir</div></div></div>
       </div>
     </div>
   </section>
@@ -666,11 +673,11 @@
         <button class="onglet" role="tab" aria-selected="false" data-cible="c5"><span class="ms">history</span>Les versions</button>
       </div>
       <div class="rv">
-        <div class="panneau actif" id="c1" role="tabpanel"><div class="cadre"><img loading="lazy" src="schemas/stack.svg" alt="La pile de Smart Budget, sur un socle Flutter 3."></div></div>
-        <div class="panneau" id="c2" role="tabpanel"><div class="cadre"><img loading="lazy" data-src="schemas/couches.svg" alt="Les six couches de Smart Budget, traversées par une écriture."></div></div>
-        <div class="panneau" id="c3" role="tabpanel"><div class="cadre"><img loading="lazy" data-src="schemas/modele.svg" alt="Le modèle de données : six tables dans une base chiffrée par SQLCipher."></div></div>
-        <div class="panneau" id="c4" role="tabpanel"><p>SQLCipher et le Keystore n'existent que sur un appareil&nbsp;: les tests d'intégration tournent sur un émulateur, <strong>jamais sur le téléphone qui porte les vrais comptes</strong>.</p><div class="cadre"><img loading="lazy" data-src="schemas/tests.svg" alt="Les tests, lancés un à un, de 0 à 83."></div></div>
-        <div class="panneau" id="c5" role="tabpanel"><div class="cadre"><img loading="lazy" data-src="schemas/versions.svg" alt="Les versions de Smart Budget, empilées l'une sur l'autre."></div></div>
+        <div class="panneau actif" id="c1" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/stack.svg" alt="La pile de Smart Budget, sur un socle Flutter 3." width="1280" height="620" style="aspect-ratio:1280/620"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="c2" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/couches.svg" alt="Les six couches de Smart Budget, traversées par une écriture." width="1280" height="904" style="aspect-ratio:1280/904"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="c3" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/modele.svg" alt="Le modèle de données : six tables dans une base chiffrée par SQLCipher." width="1280" height="818" style="aspect-ratio:1280/818"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="c4" role="tabpanel"><p>SQLCipher et le Keystore n'existent que sur un appareil&nbsp;: les tests d'intégration tournent sur un émulateur, <strong>jamais sur le téléphone qui porte les vrais comptes</strong>.</p><div class="cadre"><img class="schema" data-schema="schemas/tests.svg" alt="Les tests, lancés un à un, de 0 à 83." width="1280" height="844" style="aspect-ratio:1280/844"><div class="zoom">Touche pour agrandir</div></div></div>
+        <div class="panneau" id="c5" role="tabpanel"><div class="cadre"><img class="schema" data-schema="schemas/versions.svg" alt="Les versions de Smart Budget, empilées l'une sur l'autre." width="1280" height="926" style="aspect-ratio:1280/926"><div class="zoom">Touche pour agrandir</div></div></div>
       </div>
     </div>
   </section>
@@ -783,12 +790,7 @@
             x.setAttribute('aria-selected', actif);
             document.getElementById(x.dataset.cible).classList.toggle('actif', actif);
           });
-          var img = document.getElementById(b.dataset.cible).querySelector('img');
-          if (img) {
-            var src = img.dataset.src || img.getAttribute('src');
-            img.removeAttribute('data-src');
-            img.src = src.split('#')[0] + '#' + Date.now();
-          }
+          window.lancerSchema(document.getElementById(b.dataset.cible).querySelector('img.schema'));
           b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
         });
       });
@@ -830,6 +832,58 @@
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       minuterie = setInterval(function () { montrer((courant + 1) % vues.length); }, 4200);
     }
+
+  // Schémas : chargés quand ils arrivent à l'écran, pour que l'animation
+  // commence sous les yeux ; la place est déjà réservée, rien ne saute.
+  (function () {
+    var lancer = window.lancerSchema = function (img) {
+      if (!img || !img.dataset.schema) return;
+      img.classList.remove('pret');
+      img.src = img.dataset.schema + '#' + Date.now();
+    };
+    document.addEventListener('load', function (e) {
+      var t = e.target;
+      if (t.classList && t.classList.contains('schema')) t.classList.add('pret');
+    }, true);
+    var schemas = document.querySelectorAll('img.schema');
+    schemas.forEach(function (img) {
+      img.addEventListener('click', function () { window.open(img.dataset.schema, '_blank', 'noopener'); });
+    });
+    if ('IntersectionObserver' in window) {
+      var vus = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) {
+          if (e.isIntersecting && !e.target.dataset.lance) { e.target.dataset.lance = '1'; lancer(e.target); vus.unobserve(e.target); }
+        });
+      }, { rootMargin: '700px 0px' });
+      schemas.forEach(function (img) { vus.observe(img); });
+    } else {
+      schemas.forEach(lancer);
+    }
+
+    // Chiffres : ils comptent jusqu'à leur valeur une fois visibles.
+    var fr = new Intl.NumberFormat('fr-FR');
+    var compter = function (el) {
+      var fin = parseInt(el.textContent.replace(/\D/g, ''), 10);
+      if (!fin) return;
+      var debut = null, duree = 1400;
+      var pas = function (t) {
+        if (debut === null) debut = t;
+        var p = Math.min(1, (t - debut) / duree), v = 1 - Math.pow(1 - p, 3);
+        el.textContent = fr.format(Math.round(fin * v)).replace(/\u202f/g, '\u00a0');
+        if (p < 1) requestAnimationFrame(pas);
+      };
+      el.textContent = '0';
+      requestAnimationFrame(pas);
+    };
+    var nombres = document.querySelectorAll('[data-compte]');
+    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var vu = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) { if (e.isIntersecting) { compter(e.target); vu.unobserve(e.target); } });
+      }, { threshold: .6 });
+      nombres.forEach(function (n) { vu.observe(n); });
+    }
+  })();
+
   }
 </script>
 </body>
