@@ -106,7 +106,7 @@ function carte(x, y, l, h, titre, sous, accent, { icone = '', allume = null, cyc
   return `<g>
   <rect x="${x}" y="${y}" width="${l}" height="${h}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
   ${bord}
-  <rect x="${x}" y="${y + 14}" width="3" height="${h - 28}" rx="1.5" fill="${accent}"/>
+  <rect x="${x}" y="${y}" width="${l}" height="${h}" rx="13" fill="${accent}" fill-opacity="0.05" stroke="${accent}" stroke-opacity="0.3"/>
   ${icone ? `<g transform="translate(${x + 18},${y + h / 2 - 14})">${icone(accent)}</g>` : ''}
   ${t(x + (icone ? 58 : 20), y + h / 2 - 3, titre, { taille: 14.5, couleur: TITRE, police: MONO, poids: 700 })}
   ${t(x + (icone ? 58 : 20), y + h / 2 + 17, sous, { taille: 12.5 })}
@@ -187,7 +187,7 @@ const P = {
   acteurs.forEach(([x, titre, sous, icone, c], k) => {
     const l = 236, x0 = x - l / 2;
     corps += `<rect x="${x0}" y="${hY}" width="${l}" height="${hL}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${x0}" y="${hY + 12}" width="3" height="${hL - 24}" rx="1.5" fill="${c}"/>
+      <rect x="${x0}" y="${hY}" width="${l}" height="${hL}" rx="13" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>
       <g transform="translate(${x0 + 18},${hY + hL / 2 - 14})">${icone(c)}</g>
       ${t(x0 + 58, hY + 29, titre, { taille: 14.5, couleur: TITRE, police: MONO, poids: 700 })}
       ${t(x0 + 58, hY + 48, sous, { taille: 12.5 })}`;

@@ -177,7 +177,7 @@ module.exports = (O) => {
   // ------------------------------------------------ la fiche qui se compose
   const FX = X_G, FY = T.reglages.y + hauteur(T.reglages.rangs.length) + 28, FL = L_C, FH = 760 - FY;
   corps += `<rect x="${FX}" y="${FY}" width="${FL}" height="${FH}" rx="14" fill="${CARTE}" stroke="${BORD}"/>
-    <rect x="${FX}" y="${FY + 14}" width="3" height="${FH - 28}" rx="1.5" fill="${VERT}"/>
+    <rect x="${FX}" y="${FY}" width="${FL}" height="${FH}" rx="14" fill="${VERT}" fill-opacity="0.05" stroke="${VERT}" stroke-opacity="0.3"/>
     ${t(FX + 20, FY + 28, 'CE QUE L’APPLICATION EN MONTRE', { taille: 11, couleur: DISCRET, police: MONO, poids: 700, extra: 'letter-spacing="1.5"' })}`;
   const deOp = (i) => REMPLI(i);
   const apparait = (de, contenu, a = FIN) => `<g opacity="0">${visible(C, de, a, 0.005)}${contenu}</g>`;

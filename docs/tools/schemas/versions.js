@@ -132,7 +132,7 @@ module.exports = (O) => {
     const [y, h] = ys[i], s = arrive(i), dernier = i === N - 1;
     const cur = dernier ? FIN : arrive(i + 1);
     let r = `<rect x="${X}" y="${y}" width="${XF - X}" height="${h}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${X}" y="${y + 12}" width="3" height="${h - 24}" rx="1.5" fill="${c}"/>`;
+      <rect x="${X}" y="${y}" width="${XF - X}" height="${h}" rx="13" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>`;
     if (dernier) {
       r += `<rect x="${X}" y="${y}" width="${XF - X}" height="${h}" rx="13" fill="${c}" fill-opacity="0.035"/>
         <g transform="translate(${X + 18},${y + 22})">${icone(c)}</g>

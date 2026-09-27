@@ -87,7 +87,6 @@ module.exports = (O) => {
   const SX = X0, SL = 1200;
   corps += g(0.02, FIN, `<rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" rx="14" fill="${CARTE}" stroke="${BORD}"/>
     <rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" rx="14" fill="${BLEU}" fill-opacity="0.04" stroke="${BLEU}" stroke-opacity="0.35"/>
-    <rect x="${SX}" y="${SY + 14}" width="3" height="${SH - 28}" rx="1.5" fill="${BLEU}"/>
     <path d="M${SX + 30} ${SY + 22} l-9 9 l9 9 M${SX + 44} ${SY + 22} l9 9 l-9 9 M${SX + 40} ${SY + 20} l-6 22" fill="none" stroke="${BLEU}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     ${t(SX + 72, SY + 38, 'Flutter 3', { taille: 16, couleur: TITRE, police: MONO, poids: 700 })}
     ${t(SX + 190, SY + 38, 'L\'application entière, en Dart, un seul code pour le téléphone et l\'écran déplié.', { taille: 13.5 })}`, 0.01);
@@ -120,7 +119,7 @@ module.exports = (O) => {
     corps += `<g opacity="0">${visible(C, s, FIN, 0.004)}<g>
       <animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite" keyTimes="0;${s.toFixed(4)};${(s + 0.022).toFixed(4)};1" values="0 -70;0 -70;0 0;0 0" calcMode="spline" keySplines="0 0 1 1;0.5 0 0.8 1;0 0 1 1"/>
       <rect x="${x}" y="${y}" width="${CL}" height="${h}" rx="11" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${x}" y="${y + 12}" width="3" height="${h - 24}" rx="1.5" fill="${c}"/>
+      <rect x="${x}" y="${y}" width="${CL}" height="${h}" rx="11" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>
       ${t(x + 18, y + 26, nom, { taille: nom.length > 22 ? 12 : 13.5, couleur: TITRE, police: MONO, poids: 700 })}
       ${para(x + 18, y + 47, role, TL, { taille: TAILLE, pas: PAS })}
     </g></g>`;

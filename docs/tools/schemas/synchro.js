@@ -219,7 +219,7 @@ module.exports = (O) => {
   faits.forEach(([titre, lignes], k) => {
     const x = 60 + k * (FL + 20);
     corps += `<rect x="${x}" y="${FY}" width="${FL}" height="${FH}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${x}" y="${FY + 14}" width="3" height="${FH - 28}" rx="1.5" fill="${[VERT, BLEU, OR][k]}"/>
+      <rect x="${x}" y="${FY}" width="${FL}" height="${FH}" rx="13" fill="${[VERT, BLEU, OR][k]}" fill-opacity="0.05" stroke="${[VERT, BLEU, OR][k]}" stroke-opacity="0.3"/>
       ${t(x + 20, FY + 26, titre, { taille: 14, couleur: TITRE, police: MONO, poids: 700 })}
       ${lignes.map((l, j) => t(x + 20, FY + 47 + j * 17, l, { taille: 12 })).join('')}`;
   });

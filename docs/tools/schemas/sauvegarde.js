@@ -218,7 +218,7 @@ module.exports = (O) => {
   const NE = 0.235;
   corps += `<rect x="${MX}" y="232" width="${ML}" height="62" rx="13" fill="${CARTE}" stroke="${BORD}"/>
     <rect x="${MX}" y="232" width="${ML}" height="62" rx="13" fill="none" stroke="${OR}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, NE, NE + 0.05, 0.004)}</rect>
-    <rect x="${MX}" y="246" width="3" height="34" rx="1.5" fill="${OR}"/>
+    <rect x="${MX}" y="232" width="${ML}" height="62" rx="13" fill="${OR}" fill-opacity="0.05" stroke="${OR}" stroke-opacity="0.3"/>
     <g transform="translate(${MX + 18},249)">${P.fichier(OR)}</g>
     <g opacity="0.35">${paliers('opacity', C, [[0, 0.35], [NE, 1], [FIN, 0.35]])}
       ${t(MX + 58, 258, 'smartbudget-2026-09-26.sbx', { taille: 14, couleur: TITRE, police: MONO, poids: 700 })}

@@ -281,7 +281,6 @@ module.exports = (O) => {
     const ferme = i < 6, c = ferme ? VERT : OR;
     corps += `<g opacity="0">${visible(C, S(i), E(i), d)}
       <rect x="${KX}" y="${KY}" width="${KL}" height="${KH}" rx="14" fill="none" stroke="${c}" stroke-opacity="0.7"/>
-      <rect x="${KX}" y="${KY + 16}" width="3" height="${KH - 32}" rx="1.5" fill="${c}"/>
       ${t(KX + 22, KY + 32, ferme ? 'IL ESSAIE' : 'CE QUI RESTE OUVERT', { taille: 11, couleur: ROSE_, police: MONO, poids: 700, extra: 'letter-spacing="2"' })}
       ${t(KX + KL - 20, KY + 32, `${ferme ? i + 1 : i - 5} / 6`, { taille: 11, couleur: DISCRET, police: MONO, ancre: 'end' })}
       ${t(KX + 22, KY + 60, quoi, { taille: 15, couleur: TITRE, poids: 700 })}
@@ -328,7 +327,7 @@ module.exports = (O) => {
       const y1 = y + h / 2 - ((lignes.length) * LH) / 2 + 5;
       s += `<rect x="${x}" y="${y}" width="${CL}" height="${h}" rx="12" fill="${CARTE}" stroke="${BORD}"/>
         <rect x="${x}" y="${y}" width="${CL}" height="${h}" rx="12" fill="${c}" fill-opacity="0.06" stroke="${c}" stroke-width="1.5" opacity="0">${plages(quand.map((i) => [S(i), E(i)]))}</rect>
-        <rect x="${x}" y="${y + 12}" width="3" height="${h - 24}" rx="1.5" fill="${c}"/>
+        <rect x="${x}" y="${y}" width="${CL}" height="${h}" rx="12" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>
         <circle cx="${x + 26}" cy="${y1 - 5}" r="5" fill="${c}" fill-opacity="0.25" stroke="${c}"/>
         ${t(x + 44, y1, gras, { taille: 14, couleur: TITRE, poids: 700 })}
         ${lignes.map((l, k) => t(x + 44, y1 + (k + 1) * LH, l, { taille: 12.5 })).join('')}`;

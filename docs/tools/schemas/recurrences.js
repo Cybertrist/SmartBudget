@@ -157,7 +157,7 @@ module.exports = (O) => {
     const x = GX + k * (CL + GL - 2 * CL);
     corps += `<rect x="${x}" y="${CY}" width="${CL}" height="92" rx="12" fill="${CARTE}" stroke="${BORD}"/>
       <rect x="${x}" y="${CY}" width="${CL}" height="92" rx="12" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.8" opacity="0">${visible(C, de, a, 0.006)}</rect>
-      <rect x="${x}" y="${CY + 14}" width="3" height="64" rx="1.5" fill="${c}"/>
+      <rect x="${x}" y="${CY}" width="${CL}" height="92" rx="12" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>
       ${t(x + 20, CY + 30, titre, { taille: 14, couleur: TITRE, poids: 700 })}
       ${lignes.map((s, i) => t(x + 20, CY + 53 + i * 19, s, { taille: 12.5, couleur: TEXTE })).join('')}`;
   });

@@ -229,7 +229,7 @@ module.exports = (O) => {
   regles.forEach(([titre, c, lignes, quand], i) => {
     const y = 136 + i * 136;
     corps += `<rect x="${RX}" y="${y}" width="${RL}" height="122" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${RX}" y="${y + 14}" width="3" height="94" rx="1.5" fill="${c}"/>
+      <rect x="${RX}" y="${y}" width="${RL}" height="122" rx="13" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>
       ${t(RX + 20, y + 32, titre, { taille: 15, couleur: TITRE, police: MONO, poids: 700 })}
       ${lignes.map((l, j) => t(RX + 20, y + 58 + j * 20, l, { taille: 12.5 })).join('')}`;
     for (const k of quand) {

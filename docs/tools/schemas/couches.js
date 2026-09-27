@@ -166,7 +166,7 @@ module.exports = (O) => {
   for (const k of couches) {
     const x = KX, y = k.y, h = k.h;
     corps += `<rect x="${x}" y="${y}" width="${KL}" height="${h}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${x}" y="${y + 14}" width="3" height="${h - 28}" rx="1.5" fill="${k.c}"/>
+      <rect x="${x}" y="${y}" width="${KL}" height="${h}" rx="13" fill="${k.c}" fill-opacity="0.05" stroke="${k.c}" stroke-opacity="0.3"/>
       <g transform="translate(${x + 16},${y + 11}) scale(0.82)">${I[k.cle](k.c)}</g>
       ${t(x + 50, y + 29, k.nom, { taille: 14.5, couleur: k.cle === 'base' ? TITRE : k.c, police: MONO, poids: 700 })}
       ${k.regle.map((l, i) => t(x + 20, y + 52 + i * 17, l, { taille: 12.5 })).join('')}`;

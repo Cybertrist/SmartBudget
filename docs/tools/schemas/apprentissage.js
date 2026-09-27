@@ -252,7 +252,7 @@ module.exports = (O) => {
   const MY = 222, ML = 390, MH = 84;
   const memoire = (x, titre, vide, valeur, couleurValeur, sous, de) => `
     <rect x="${x}" y="${MY}" width="${ML}" height="${MH}" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-    <rect x="${x}" y="${MY + 14}" width="3" height="${MH - 28}" rx="1.5" fill="${couleurValeur}"/>
+    <rect x="${x}" y="${MY}" width="${ML}" height="${MH}" rx="13" fill="${couleurValeur}" fill-opacity="0.05" stroke="${couleurValeur}" stroke-opacity="0.3"/>
     <rect x="${x}" y="${MY}" width="${ML}" height="${MH}" rx="13" fill="none" stroke="${couleurValeur}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, de, de + 0.06, 0.006)}</rect>
     ${t(x + 20, MY + 26, titre, { taille: 11, couleur: DISCRET, police: MONO, poids: 700, extra: 'letter-spacing="2"' })}
     ${g(0.004, de, t(x + 20, MY + 54, vide, { taille: 13, couleur: DISCRET, extra: 'font-style="italic"' }))}
@@ -326,7 +326,7 @@ module.exports = (O) => {
     const x = RX + k * (NL + NG);
     corps += `<rect x="${x}" y="${NY}" width="${NL}" height="86" rx="12" fill="${CARTE}" stroke="${BORD}"/>
       <rect x="${x}" y="${NY}" width="${NL}" height="86" rx="12" fill="none" stroke="${c}" stroke-opacity="0.8" opacity="0">${visible(C, de, a, 0.006)}</rect>
-      <rect x="${x}" y="${NY + 14}" width="3" height="58" rx="1.5" fill="${c}"/>
+      <rect x="${x}" y="${NY}" width="${NL}" height="86" rx="12" fill="${c}" fill-opacity="0.05" stroke="${c}" stroke-opacity="0.3"/>
       ${t(x + 18, NY + 28, titre, { taille: 13.5, couleur: TITRE, poids: 700 })}
       ${lignes.map((s, i) => t(x + 18, NY + 50 + i * 18, s, { taille: 12, couleur: TEXTE })).join('')}`;
   });

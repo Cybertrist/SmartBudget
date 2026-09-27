@@ -244,7 +244,7 @@ module.exports = (O) => {
   const TX = 790, TL = 430;
   const totaux = (ty, nom, couleur, periodes, valeurs) => {
     let s = `<rect x="${TX}" y="${ty}" width="${TL}" height="196" rx="16" fill="${CARTE}" stroke="${BORD}"/>
-      <rect x="${TX}" y="${ty + 14}" width="3" height="168" rx="1.5" fill="${couleur}"/>
+      <rect x="${TX}" y="${ty}" width="${TL}" height="196" rx="16" fill="${couleur}" fill-opacity="0.05" stroke="${couleur}" stroke-opacity="0.3"/>
       ${t(TX + 22, ty + 32, nom, { taille: 15, couleur, police: MONO, poids: 700 })}
       ${selon(periodes, (p) => t(TX + TL - 22, ty + 32, p, { taille: 12.5, couleur: TEXTE, ancre: 'end' }))}`;
     [['Entrées', 0], ['Sorties', 1], ['Solde du mois', 2]].forEach(([libelle, n], i) => {

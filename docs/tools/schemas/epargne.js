@@ -159,7 +159,7 @@ module.exports = (O) => {
 
   // ------------------------------------------------------------- les comptes
   const noeud = (x, y, l, titre, sous, couleur, dessin) => `<rect x="${x}" y="${y}" width="${l}" height="70" rx="13" fill="${CARTE}" stroke="${BORD}"/>
-    <rect x="${x}" y="${y + 14}" width="3" height="42" rx="1.5" fill="${couleur}"/>
+    <rect x="${x}" y="${y}" width="${l}" height="70" rx="13" fill="${couleur}" fill-opacity="0.05" stroke="${couleur}" stroke-opacity="0.3"/>
     <g transform="translate(${x + 18},${y + 21})">${dessin(couleur)}</g>
     ${t(x + 58, y + 32, titre, { taille: 14.5, couleur: TITRE, police: MONO, poids: 700 })}
     ${t(x + 58, y + 51, sous, { taille: 12 })}`;
