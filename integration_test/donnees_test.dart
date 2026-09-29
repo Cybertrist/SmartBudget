@@ -255,6 +255,64 @@ void main() {
       expect(await _ops.chercher('AMAZON').timeout(const Duration(seconds: 5)), isNotEmpty);
     });
 
+    test('six amis remboursent la même dépense', () async {
+      final compte = await _comptes.courant();
+      const amis = ['LOUANNE', 'NATHAN', 'ALEXIS', 'CAMILLE', 'LEA', 'HUGO'];
+      await _ops.importer(compte.id, [
+        _op('2026-04-07', 'PAIEMENT PAR CARTE X4057 SPEED PARK VANNES 06/04', -192),
+        for (final (i, a) in amis.indexed) _op('2026-04-${(8 + i).toString().padLeft(2, '0')}', 'VIR SEPA RECU DE $a', 23),
+      ]);
+      final park = await _cherche('PAIEMENT PAR CARTE X4057 SPEED PARK VANNES 06/04');
+      final virements = [for (final a in amis) await _cherche('VIR SEPA RECU DE $a')];
+      await _liens.rembourserPar(park.id, {for (final v in virements) v.id: 2300}).timeout(const Duration(seconds: 5));
+      final liens = await _liens.concernant([park.id]);
+      expect(liens, hasLength(6));
+      expect(liens.fold(0, (s, l) => s + l.montantCentimes), 13800);
+      // 192 − 6 × 23 : elle ne compte plus que pour 54 €.
+      expect(poidsNets([park, ...virements], liens)[park.id], -5400);
+      final b = await _bilan.du(const Mois(2026, 4));
+      expect(b.sorties, 5400);
+      expect(b.entrees, 0, reason: 'Des amis qui rendent leur part ne sont pas un revenu.');
+      // Décocher Nathan : les cinq autres restent.
+      await _liens.rembourserPar(park.id, {for (final v in virements) if (v.id != virements[1].id) v.id: 2300});
+      expect(await _liens.concernant([park.id]), hasLength(5));
+      // Tout délier.
+      await _liens.rembourserPar(park.id, {});
+      expect(await _liens.concernant([park.id]), isEmpty);
+    });
+
+    test('associer depuis la dépense ne dépasse jamais', () async {
+      final compte = await _comptes.courant();
+      await _ops.importer(compte.id, [
+        _op('2026-09-10', 'PAIEMENT PAR CARTE X4057 BOWLING 09/09', -40),
+        _op('2026-09-11', 'PAIEMENT PAR CARTE X4057 CINEMA 10/09', -30),
+        _op('2026-09-12', 'VIR SEPA RECU DE M MARTIN', 30),
+        _op('2026-09-13', 'VIR SEPA RECU DE MME ROUX', 20),
+      ]);
+      final bowling = await _cherche('PAIEMENT PAR CARTE X4057 BOWLING 09/09');
+      final cinema = await _cherche('PAIEMENT PAR CARTE X4057 CINEMA 10/09');
+      final martin = await _cherche('VIR SEPA RECU DE M MARTIN');
+      final roux = await _cherche('VIR SEPA RECU DE MME ROUX');
+      // Plus que la dépense : refusé, et rien n'est écrit.
+      expect(() => _liens.rembourserPar(bowling.id, {martin.id: 3000, roux.id: 2000}), throwsArgumentError);
+      expect(await _liens.concernant([bowling.id]), isEmpty);
+      // Un virement réparti sur deux dépenses : 10 au cinéma, 20 au bowling.
+      await _liens.rembourserPar(cinema.id, {martin.id: 1000});
+      await _liens.rembourserPar(bowling.id, {martin.id: 2000, roux.id: 2000});
+      // Plus que ce qui reste du virement : 21 + 10 dépasse ses 30 €.
+      expect(() => _liens.rembourserPar(bowling.id, {martin.id: 2100, roux.id: 1900}), throwsArgumentError);
+      // Changer le bowling ne touche pas au lien du cinéma.
+      await _liens.rembourserPar(bowling.id, {roux.id: 2000});
+      expect({for (final l in await _liens.concernant([martin.id])) l.depenseId: l.montantCentimes}, {cinema.id: 1000});
+      // Entièrement pris par le cinéma : proposé au bowling, grisé, pas caché.
+      await _liens.rembourserPar(cinema.id, {martin.id: 3000});
+      Future<int?> reste(Operation d) async =>
+          {for (final (o, r) in await _ops.remboursementsPossibles(d)) o.id: r}[martin.id];
+      expect(await reste(bowling), 0);
+      expect(await reste(cinema), 3000, reason: 'Sa part sur le cinéma lui revient toujours.');
+      expect(await _ops.chercher('BOWLING').timeout(const Duration(seconds: 5)), isNotEmpty);
+    });
+
     test('une opération en attente garde son identifiant et ses liens', () async {
       final compte = await _comptes.courant();
       final attente = OperationBrute(uidBanque: 'attente-1', le: DateTime(2026, 9, 14), libelle: 'REM 2 CHQ BORNE', montantCentimes: 50000, enAttente: true);

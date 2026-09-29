@@ -198,7 +198,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.2.3';
+  static const _version = '1.2.4';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 

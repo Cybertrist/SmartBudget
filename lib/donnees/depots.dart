@@ -556,8 +556,9 @@ class DepotOperations {
   /// Les entrées d'argent qui peuvent rembourser une dépense, avec ce qui
   /// reste de chacune une fois ôtées ses parts sur d'autres dépenses :
   /// reçues de deux mois avant à deux mois après elle, hors virements
-  /// internes. Celles déjà entièrement réparties ailleurs n'y sont pas ;
-  /// celles déjà liées à la dépense y sont toujours, même loin d'elle.
+  /// internes. Celles déjà entièrement réparties ailleurs y sont aussi,
+  /// avec un reste à zéro : l'écran les grise plutôt que de les cacher.
+  /// Celles déjà liées à la dépense y sont toujours, même loin d'elle.
   Future<List<(Operation, int)>> remboursementsPossibles(Operation depense) async {
     final db = await _db;
     final l = await db.query(
@@ -578,7 +579,7 @@ class DepotOperations {
     };
     return [
       for (final o in l.map(Operation.lire))
-        if (o.montantCentimes - (ailleurs[o.id] ?? 0) > 0) (o, o.montantCentimes - (ailleurs[o.id] ?? 0)),
+        (o, (o.montantCentimes - (ailleurs[o.id] ?? 0)).clamp(0, o.montantCentimes)),
     ];
   }
 
@@ -708,6 +709,44 @@ class DepotLiens {
       await t.delete('liens', where: 'entree_id = ?', whereArgs: [entreeId]);
       for (final e in parDepense.entries) {
         await t.insert('liens', {'entree_id': entreeId, 'depense_id': e.key, 'montant_centimes': e.value});
+      }
+    });
+  }
+
+  /// Fixe toutes les entrées qui remboursent une dépense : six amis qui
+  /// rendent chacun 23 € d'une sortie à 192 €. Remplace les liens de la
+  /// dépense ; ceux de ces entrées vers d'autres dépenses ne bougent pas.
+  /// Refuse ce qui dépasse la dépense, ou ce qui reste d'une entrée. Une
+  /// table vide délie la dépense de tout.
+  Future<void> rembourserPar(int depenseId, Map<int, int> parEntree) async {
+    final db = await _db;
+    // Tout se lit et se vérifie dans la transaction, par [t], comme dans
+    // [repartir] : passer par la base attendrait la fin de celle-ci.
+    await db.transaction((t) async {
+      Future<Operation?> une(int id) async {
+        final l = await t.query('operations', where: 'id = ?', whereArgs: [id]);
+        return l.isEmpty ? null : Operation.lire(l.first);
+      }
+
+      final depense = await une(depenseId);
+      if (depense == null || depense.entree) throw ArgumentError('Pas une dépense.');
+      final total = parEntree.values.fold(0, (a, b) => a + b);
+      if (total > -depense.montantCentimes) {
+        throw ArgumentError('Les remboursements dépassent la dépense de ${euros(total + depense.montantCentimes)}.');
+      }
+      for (final e in parEntree.entries) {
+        final entree = await une(e.key);
+        if (entree == null || !entree.entree) throw ArgumentError('Pas une entrée d\'argent.');
+        final ailleurs = await _ailleurs(t, entree: e.key, sauf: depenseId);
+        if (e.value <= 0 || e.value + ailleurs > entree.montantCentimes) {
+          throw ArgumentError(ailleurs > 0
+              ? '« ${entree.titre} » rembourse déjà d\'autres dépenses : il n\'en reste que ${euros(entree.montantCentimes - ailleurs)}.'
+              : 'La part de « ${entree.titre} » dépasse le montant reçu.');
+        }
+      }
+      await t.delete('liens', where: 'depense_id = ?', whereArgs: [depenseId]);
+      for (final e in parEntree.entries) {
+        await t.insert('liens', {'entree_id': e.key, 'depense_id': depenseId, 'montant_centimes': e.value});
       }
     });
   }

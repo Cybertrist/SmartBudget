@@ -93,7 +93,26 @@ class Demonstration {
     op(c(18), cb(c(17), 'VINTED'), -18.50);
     op(c(19), 'VIR SEPA RECU VINTED', 24);
 
+    // Le mois dernier, un karting payé pour sept : six amis rendent chacun
+    // leur part, six virements pour une seule dépense.
+    final avant = DateTime(aujourdhui.year, aujourdhui.month - 1, 1);
+    DateTime a(int jour) => DateTime(avant.year, avant.month, jour);
+    const amis = ['M KERJEAN', 'MME LE ROUX', 'M TANGUY', 'MME GUEGAN', 'M RIOU', 'MME LE BRIS'];
+    op(a(7), cb(a(6), 'KARTING PARK VANNES'), -192);
+    for (final (i, ami) in amis.indexed) {
+      op(a(8 + i), 'VIR SEPA RECU DE $ami', 23);
+    }
+
     await const DepotOperations().importer(courant.id, ops);
+
+    // Les six amis remboursent le karting.
+    final duMoisAvant = await const DepotOperations().entre(avant, DateTime(avant.year, avant.month + 1, 1));
+    final karting = duMoisAvant.where((o) => o.libelle.contains('KARTING PARK')).firstOrNull;
+    final parts = {
+      for (final o in duMoisAvant)
+        if (amis.any((ami) => o.libelle == 'VIR SEPA RECU DE $ami')) o.id: 2300,
+    };
+    if (karting != null && parts.isNotEmpty) await const DepotLiens().rembourserPar(karting.id, parts);
 
     // Le chèque rembourse le train et le restaurant.
     const depot = DepotOperations();

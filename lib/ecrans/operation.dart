@@ -328,30 +328,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
             ],
             if (!o.entree && o.interne == null) ...[
               const SizedBox(height: 14),
-              Builder(builder: (context) {
-                final rembourse = lies.where((l) => l.depenseId == o.id).fold(0, (s, l) => s + l.montantCentimes);
-                return Carte(
-                  padding: const EdgeInsets.fromLTRB(18, 6, 18, 6),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _Ligne(
-                        icone: 'link',
-                        libelle: 'Remboursement',
-                        valeur: rembourse == 0 ? 'Aucun' : '${euros(rembourse)} reçus',
-                        couleur: rembourse == 0 ? null : AppColors.vert,
-                        onTap: () => context.push('/operation/${o.id}/rembourse'),
-                      ),
-                      if (rembourse > 0)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Text('Elle ne compte plus que pour ${euros(-o.montantCentimes - rembourse)}.',
-                              style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
-                        ),
-                    ],
-                  ),
-                );
-              }),
+              _BlocRemboursements(depense: o, liens: lies.where((l) => l.depenseId == o.id).toList()),
             ],
             if (o.uidBanque == null) ...[
               const SizedBox(height: 14),
@@ -377,6 +354,8 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                 label: const Text('Supprimer la dépense', style: TextStyle(color: AppColors.alerte, fontWeight: FontWeight.w700)),
               ),
             ],
+    ];
+    final pointer = <Widget>[
             const SizedBox(height: 18),
             // Pointer : tu confirmes que la catégorie est la bonne.
             o.pointee
@@ -466,17 +445,19 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               // En pleine page sur l'écran déplié, deux colonnes : le
-              // classement à gauche, le suivi à droite, et rien ne défile.
+              // classement et le bouton Pointer à gauche, le suivi à droite,
+              // qui garde sa hauteur pour les remboursements dépliés, et
+              // rien ne défile.
               child: deuxColonnes
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: gauche)),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...gauche, ...pointer])),
                         const SizedBox(width: 16),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: droite)),
                       ],
                     )
-                  : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...gauche, const SizedBox(height: 14), ...droite]),
+                  : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...gauche, const SizedBox(height: 14), ...droite, ...pointer]),
             ),
           ],
         ),
@@ -486,13 +467,16 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
 }
 
 class _Ligne extends StatelessWidget {
-  const _Ligne({required this.icone, required this.libelle, required this.valeur, required this.onTap, this.couleur});
+  const _Ligne({required this.icone, required this.libelle, required this.valeur, required this.onTap, this.couleur, this.deplie});
 
   final String icone;
   final String libelle;
   final String valeur;
   final VoidCallback onTap;
   final Color? couleur;
+
+  /// Rien : la ligne mène ailleurs. Sinon, elle déplie un détail sous elle.
+  final bool? deplie;
 
   @override
   Widget build(BuildContext context) => InkWell(
@@ -512,7 +496,13 @@ class _Ligne extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: couleur ?? AppColors.texteSecondaire)),
               ),
-              Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret),
+              deplie == null
+                  ? Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret)
+                  : AnimatedRotation(
+                      turns: deplie! ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(iconeDe('expand_more'), size: 20, color: AppColors.texteDiscret),
+                    ),
             ],
           ),
         ),
@@ -671,6 +661,113 @@ class _BlocRembourse extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Sur la fiche d'une dépense : l'argent reçu qui la rembourse. Un toucher
+/// déplie le détail, une ligne par entrée liée ; sans lien, il mène droit
+/// à l'écran d'association.
+class _BlocRemboursements extends StatefulWidget {
+  const _BlocRemboursements({required this.depense, required this.liens});
+
+  final Operation depense;
+  final List<Lien> liens;
+
+  @override
+  State<_BlocRemboursements> createState() => _EtatBlocRemboursements();
+}
+
+class _EtatBlocRemboursements extends State<_BlocRemboursements> {
+  bool _deplie = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final o = widget.depense;
+    final liens = widget.liens;
+    final recu = liens.fold(0, (s, l) => s + l.montantCentimes);
+    final net = -o.montantCentimes - recu;
+    void associer() => context.push('/operation/${o.id}/rembourse');
+    return Carte(
+      padding: const EdgeInsets.fromLTRB(18, 6, 18, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _Ligne(
+            icone: 'link',
+            libelle: 'Remboursement',
+            valeur: recu == 0 ? 'Aucun' : '${euros(recu)} reçus (${liens.length})',
+            couleur: recu == 0 ? null : AppColors.vert,
+            deplie: recu == 0 ? null : _deplie,
+            onTap: recu == 0 ? associer : () => setState(() => _deplie = !_deplie),
+          ),
+          if (recu > 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(net > 0 ? 'Elle ne compte plus que pour ${euros(net)}.' : 'Elle est entièrement remboursée.',
+                  style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+            ),
+          if (recu > 0 && _deplie) ...[
+            for (final l in liens) _LigneRemboursement(lien: l),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: OutlinedButton.icon(
+                onPressed: associer,
+                icon: Icon(iconeDe('link'), color: const Color(0xFF7FE0A8)),
+                label: const Text('Modifier les remboursements', style: TextStyle(color: Color(0xFF7FE0A8), fontWeight: FontWeight.w700)),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(46),
+                  shape: const StadiumBorder(),
+                  side: const BorderSide(color: Color(0x557FE0A8)),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Une entrée qui rembourse la dépense : qui, quand, et la part qui lui
+/// revient. Un toucher ouvre l'entrée.
+class _LigneRemboursement extends ConsumerWidget {
+  const _LigneRemboursement({required this.lien});
+
+  final Lien lien;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final e = ref.watch(operationProvider(lien.entreeId)).value;
+    return InkWell(
+      onTap: () => context.push('/operation/${lien.entreeId}'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(e?.titre ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                  if (e != null)
+                    Text(
+                      '${jourCourt(e.le)}${lien.montantCentimes < e.montantCentimes ? ' · ${euros(lien.montantCentimes)} sur ${euros(e.montantCentimes)}' : ''}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Montant(lien.montantCentimes, taille: 14.5, signe: true, couleur: AppColors.vert),
+            const SizedBox(width: 4),
+            Icon(iconeDe('chevron_right'), size: 18, color: AppColors.texteDiscret),
+          ],
+        ),
       ),
     );
   }
@@ -943,8 +1040,9 @@ class _EtatLier extends ConsumerState<EcranLier> {
   }
 }
 
-/// Depuis une dépense : choisir l'entrée d'argent qui la rembourse. Les
-/// autres entrées qui la remboursent déjà restent liées.
+/// Depuis une dépense : cocher les entrées d'argent qui la remboursent,
+/// autant qu'il en faut. Six amis qui rendent chacun 23 € d'une sortie à
+/// 192 € : six cases, et la dépense ne compte plus que pour 54 €.
 class EcranChoisirRemboursement extends ConsumerStatefulWidget {
   const EcranChoisirRemboursement({super.key, required this.id});
 
@@ -956,10 +1054,16 @@ class EcranChoisirRemboursement extends ConsumerStatefulWidget {
 
 class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement> {
   Operation? _depense;
+
+  /// Chaque entrée possible, avec ce qu'il en reste une fois ôtées ses
+  /// parts sur d'autres dépenses.
   List<(Operation, int)> _entrees = const [];
-  int? _initial;
-  int? _choix;
-  int _autres = 0;
+
+  /// La part de chaque entrée cochée, telle que tapée.
+  final _parts = <int, TextEditingController>{};
+
+  /// Les liens lus en ouvrant l'écran : sans changement, rien ne s'écrit.
+  Map<int, int> _initial = const {};
   bool _pret = false;
   bool _enCours = false;
   String? _erreur;
@@ -970,6 +1074,16 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
     _charger();
   }
 
+  @override
+  void dispose() {
+    for (final c in _parts.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  static String _texte(int centimes) => euros(centimes).replaceAll(RegExp(r'\s*€'), '');
+
   Future<void> _charger() async {
     if (_erreur != null) setState(() => _erreur = null);
     try {
@@ -979,13 +1093,19 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
         return;
       }
       final entrees = await const DepotOperations().remboursementsPossibles(d);
-      final liens = (await const DepotLiens().concernant([d.id])).where((l) => l.depenseId == d.id).toList();
+      final liens = (await const DepotLiens().concernant([d.id])).where((l) => l.depenseId == d.id);
       if (!mounted) return;
       setState(() {
         _depense = d;
         _entrees = entrees;
-        _initial = _choix = liens.firstOrNull?.entreeId;
-        _autres = liens.length - 1;
+        for (final c in _parts.values) {
+          c.dispose();
+        }
+        _parts.clear();
+        _initial = {for (final l in liens) l.entreeId: l.montantCentimes};
+        for (final e in _initial.entries) {
+          _parts[e.key] = TextEditingController(text: _texte(e.value));
+        }
         _pret = true;
       });
     } catch (e) {
@@ -993,15 +1113,40 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
     }
   }
 
+  int get _total => _parts.values.fold(0, (s, c) => s + (lireEuros(c.text) ?? 0));
+
+  /// Une part cochée qui ne peut pas s'enregistrer : illisible, nulle, ou
+  /// plus grande que ce qui reste de l'entrée.
+  bool _partFausse(int entreeId, int reste) {
+    final c = _parts[entreeId];
+    if (c == null) return false;
+    final v = lireEuros(c.text);
+    return v == null || v <= 0 || v > reste;
+  }
+
+  /// Cocher prend de l'entrée ce qui manque encore à la dépense, sans
+  /// dépasser ce qui reste de l'entrée. Déjà couverte : l'entrée entière,
+  /// et l'écran prévient du dépassement plutôt que de cocher à zéro.
+  void _basculer(Operation e, int reste) => setState(() {
+        final c = _parts.remove(e.id);
+        if (c != null) {
+          c.dispose();
+          return;
+        }
+        final manque = -_depense!.montantCentimes - _total;
+        _parts[e.id] = TextEditingController(text: _texte(manque > 0 ? (reste < manque ? reste : manque) : reste));
+      });
+
   Future<void> _valider() async {
     if (_enCours) return;
-    if (_choix == _initial) {
+    final parts = {for (final e in _parts.entries) e.key: lireEuros(e.value.text) ?? 0};
+    if (parts.length == _initial.length && parts.entries.every((e) => _initial[e.key] == e.value)) {
       context.pop();
       return;
     }
     setState(() => _enCours = true);
     try {
-      await const DepotLiens().rembourser(widget.id, ancienne: _initial, nouvelle: _choix);
+      await const DepotLiens().rembourserPar(widget.id, parts);
       rafraichir(ref);
       if (mounted) context.pop();
     } catch (e) {
@@ -1014,6 +1159,11 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
   @override
   Widget build(BuildContext context) {
     final categories = ref.watch(categoriesProvider).value ?? const <int, Categorie>{};
+    final depense = _depense;
+    final montant = depense == null ? 0 : -depense.montantCentimes;
+    final total = _total;
+    final trop = total > montant;
+    final fausses = _entrees.where((e) => _partFausse(e.$1.id, e.$2)).length;
     final jours = <DateTime, List<(Operation, int)>>{};
     for (final e in _entrees) {
       jours.putIfAbsent(DateTime(e.$1.le.year, e.$1.le.month, e.$1.le.day), () => []).add(e);
@@ -1024,12 +1174,11 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const BarreRetour(titre: 'Associer à un remboursement'),
-            if (_depense != null)
+            if (depense != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
                 child: Text(
-                  'Pour « ${_depense!.titre} », ${euros(-_depense!.montantCentimes)}. Choisis l\'argent reçu qui la rembourse, avant ou après l\'achat.'
-                  '${_autres > 0 ? ' Elle est aussi liée à ${_autres > 1 ? '${pluriel(_autres, 'autre entrée', 'autres entrées')}, qui le restent.' : 'une autre entrée, qui le reste.'}' : ''}',
+                  'Pour « ${depense.titre} », ${euros(montant)}. Coche tout l\'argent reçu qui la rembourse, avant ou après l\'achat.',
                   style: const TextStyle(fontSize: 13.5, height: 1.5, color: AppColors.texteSecondaire),
                 ),
               ),
@@ -1041,7 +1190,7 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                       : _entrees.isEmpty
                           ? const Padding(
                               padding: EdgeInsets.all(32),
-                              child: Text('Aucune entrée d\'argent libre dans les deux mois autour de cette date.',
+                              child: Text('Aucune entrée d\'argent dans les deux mois autour de cette date.',
                                   textAlign: TextAlign.center, style: TextStyle(color: AppColors.texteSecondaire)),
                             )
                           : ListView(
@@ -1054,7 +1203,7 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.texteSecondaire)),
                                   ),
                                   Carte(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                                     child: Column(
                                       children: [
                                         for (var i = 0; i < e.value.length; i++)
@@ -1062,9 +1211,11 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                                             operation: e.value[i].$1,
                                             reste: e.value[i].$2,
                                             categorie: categories[e.value[i].$1.categorieId]?.nom ?? '',
-                                            choisie: _choix == e.value[i].$1.id,
+                                            part: _parts[e.value[i].$1.id],
+                                            fausse: _partFausse(e.value[i].$1.id, e.value[i].$2),
                                             separateur: i > 0,
-                                            onTap: () => setState(() => _choix = _choix == e.value[i].$1.id ? null : e.value[i].$1.id),
+                                            onTap: () => _basculer(e.value[i].$1, e.value[i].$2),
+                                            onPart: () => setState(() {}),
                                           ),
                                       ],
                                     ),
@@ -1074,10 +1225,12 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                               ],
                             ),
             ),
+            if (depense != null && _pret)
+              _Recapitulatif(nombre: _parts.length, total: total, montant: montant),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
               child: FilledButton(
-                onPressed: _pret && !_enCours ? _valider : null,
+                onPressed: _pret && !_enCours && !trop && fausses == 0 ? _valider : null,
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(54),
                   shape: const StadiumBorder(),
@@ -1085,15 +1238,75 @@ class _EtatChoisirRemboursement extends ConsumerState<EcranChoisirRemboursement>
                   foregroundColor: Colors.black,
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
-                child: Text(_choix == null && _initial != null
-                    ? 'Délier'
-                    : _choix == null
-                        ? 'Aucun remboursement'
-                        : 'Valider'),
+                child: Text(trop
+                    ? 'Plus que la dépense'
+                    : fausses > 0
+                        ? fausses > 1 ? '$fausses parts à corriger' : 'Une part à corriger'
+                        : _parts.isEmpty && _initial.isNotEmpty
+                            ? 'Tout délier'
+                            : _parts.isEmpty
+                                ? 'Aucun remboursement'
+                                : 'Valider ${pluriel(_parts.length, 'remboursement')}'),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// En bas de l'écran d'association : combien de cases, pour combien, et
+/// ce que la dépense coûte encore.
+class _Recapitulatif extends StatelessWidget {
+  const _Recapitulatif({required this.nombre, required this.total, required this.montant});
+
+  final int nombre;
+  final int total;
+  final int montant;
+
+  @override
+  Widget build(BuildContext context) {
+    final reste = montant - total;
+    final trop = reste < 0;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+      decoration: BoxDecoration(
+        color: trop ? AppColors.alerte.withValues(alpha: 0.08) : AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: trop ? AppColors.alerte.withValues(alpha: 0.4) : AppColors.trait),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  nombre == 0 ? 'Aucun sélectionné' : '${pluriel(nombre, 'sélectionné')} · ${euros(total)}',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFeatures: chiffres),
+                ),
+              ),
+              Text(
+                trop ? '${euros(-reste)} de trop' : reste == 0 ? 'Couverte' : 'Reste ${euros(reste)}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  fontFeatures: chiffres,
+                  color: trop ? AppColors.alerte : reste == 0 ? AppColors.vert : AppColors.texte,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Jauge(part: montant == 0 ? 0 : (total / montant).clamp(0, 1), couleur: trop ? AppColors.alerte : AppColors.vert, hauteur: 6),
+          if (trop) ...[
+            const SizedBox(height: 8),
+            Text('Le total dépasse la dépense de ${euros(montant)} : baisse une part ou décoche un remboursement.',
+                style: const TextStyle(fontSize: 12.5, height: 1.4, color: AppColors.alerte)),
+          ],
+        ],
       ),
     );
   }
@@ -1104,48 +1317,90 @@ class _LigneChoix extends StatelessWidget {
     required this.operation,
     required this.reste,
     required this.categorie,
-    required this.choisie,
+    required this.part,
+    required this.fausse,
     required this.separateur,
     required this.onTap,
+    required this.onPart,
   });
 
   final Operation operation;
   final int reste;
   final String categorie;
-  final bool choisie;
+
+  /// La part tapée, si la case est cochée.
+  final TextEditingController? part;
+  final bool fausse;
   final bool separateur;
   final VoidCallback onTap;
+  final VoidCallback onPart;
 
   @override
   Widget build(BuildContext context) {
+    final cochee = part != null;
+    // Déjà entièrement répartie sur d'autres dépenses : rien à prendre.
+    final prise = !cochee && reste <= 0;
     final details = [
-      if (categorie.isNotEmpty) categorie,
-      if (operation.enAttente) 'En attente',
-      if (reste < operation.montantCentimes) 'reste ${euros(reste)}',
+      if (prise) 'déjà entièrement affecté ailleurs' else ...[
+        // Cochée, le montant laisse sa place à la part : il passe ici.
+        if (cochee) euros(operation.montantCentimes, signe: true),
+        if (categorie.isNotEmpty) categorie,
+        if (operation.enAttente) 'En attente',
+        if (reste < operation.montantCentimes) 'reste ${euros(reste)}',
+      ],
     ].join(' · ');
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
-        child: Row(
-          children: [
-            Icon(iconeDe(choisie ? 'task_alt' : 'radio_button_unchecked'), color: choisie ? AppColors.vert : AppColors.texteDiscret),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(operation.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                  if (details.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(details, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+    return Opacity(
+      opacity: prise ? 0.4 : 1,
+      child: InkWell(
+        onTap: prise ? null : onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(0, 6, 8, 6),
+          constraints: const BoxConstraints(minHeight: 60),
+          decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
+          child: Row(
+            children: [
+              Checkbox(value: cochee, onChanged: prise ? null : (_) => onTap()),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(operation.titre, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                    if (details.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(details, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: AppColors.texteDiscret)),
+                    ],
+                    if (fausse)
+                      Text('Au plus ${euros(reste)}',
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.alerte)),
                   ],
-                ],
+                ),
               ),
-            ),
-            Montant(operation.montantCentimes, taille: 15.5, signe: true, couleur: AppColors.vert),
-          ],
+              const SizedBox(width: 10),
+              if (cochee)
+                SizedBox(
+                  width: 92,
+                  child: TextField(
+                    controller: part,
+                    // Toucher la part la sélectionne : on tape la nouvelle
+                    // au lieu d'écrire à la suite de l'ancienne.
+                    onTap: () => part!.selection = TextSelection(baseOffset: 0, extentOffset: part!.text.length),
+                    onChanged: (_) => onPart(),
+                    textAlign: TextAlign.right,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontFeatures: chiffres, color: AppColors.vert),
+                    decoration: InputDecoration(
+                      suffixText: '€',
+                      isDense: true,
+                      errorText: fausse ? '' : null,
+                      errorStyle: const TextStyle(height: 0, fontSize: 0),
+                    ),
+                  ),
+                )
+              else
+                Montant(operation.montantCentimes, taille: 15.5, signe: true, couleur: prise ? AppColors.texteDiscret : AppColors.vert),
+            ],
+          ),
         ),
       ),
     );

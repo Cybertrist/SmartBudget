@@ -1,12 +1,12 @@
-// Les versions : huit en quatre jours, empilées l'une sur l'autre.
+// Les versions : neuf en six jours, empilées l'une sur l'autre.
 //
 // Chaque version tombe sur la précédente, comme elle s'installe sur le
 // téléphone : par-dessus, sans rien effacer. En bas, le socle ne bouge
-// jamais : tes données, et la clé de signature, la même de 1.0.0 à 1.2.3
+// jamais : tes données, et la clé de signature, la même de 1.0.0 à 1.2.4
 // (le certificat que donne chaque Release). Un fil monte de la clé et
 // scelle chaque version qui arrive. À gauche, la frise : le temps monte,
-// du jeudi 24 au dimanche 27 septembre. La dernière, 1.2.3, reste allumée,
-// avec ses 83 tests, tous au vert.
+// du jeudi 24 au mardi 29 septembre. La dernière, 1.2.4, reste allumée,
+// avec ses 85 tests, tous au vert.
 module.exports = (O) => {
   const { svg, t, tr, esc, visible, fondu, pilule, P, MONO, SANS, CARTE, BORD, TITRE, TEXTE, DISCRET, FIL, VERT, NEON, BLEU, OR, ROSE, ROUGE, INTERNE } = O;
 
@@ -46,6 +46,7 @@ module.exports = (O) => {
     roue: (c) => `<circle cx="14" cy="12" r="9.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M14 2.5 V21.5 M4.5 12 H23.5 M7.3 5.3 L20.7 18.7 M20.7 5.3 L7.3 18.7" stroke="${c}" stroke-width="1.3"/><path d="M10 27 L14 12 L18 27 M7 27 H21" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="12" r="2" fill="${c}"/>`,
     cloche: (c) => `<path d="M7 20 V13 A7 7 0 0 1 21 13 V20 L23 23 H5 Z" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/><path d="M11.5 25.5 A2.6 2.6 0 0 0 16.5 25.5 M14 3.5 V6" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`,
     deux: (c) => `<rect x="1.5" y="3" width="11.5" height="22" rx="3" fill="none" stroke="${c}" stroke-width="2"/><rect x="15" y="3" width="11.5" height="22" rx="3" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="3 2.4"/><circle cx="7.25" cy="21" r="1.2" fill="${c}"/><circle cx="20.75" cy="21" r="1.2" fill="${c}"/>`,
+    coches: (c) => `<rect x="2.5" y="3" width="10" height="10" rx="2.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M5 8 l2.2 2.2 l3.6 -4" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="2.5" y="16" width="10" height="10" rx="2.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M5 21 l2.2 2.2 l3.6 -4" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 8 H25.5 M16.5 21 H25.5" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`,
     loupe: (c) => `<circle cx="12" cy="12" r="8.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M18.3 18.3 L25.5 25.5" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><path d="M7.5 11 L12 8 L16.5 11 M8.5 12.5 V15.5 M12 12.5 V15.5 M15.5 12.5 V15.5" fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
     bouclier: (c) => `<path d="M14 2.5 L24 6.5 V13 C24 19.5 19.5 24 14 26 C8.5 24 4 19.5 4 13 V6.5 Z" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 14 L12.8 17.3 L18.8 10.8" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`,
     salaire: (c) => `<rect x="3" y="5" width="22" height="20" rx="3" fill="none" stroke="${c}" stroke-width="2"/><path d="M3 11 H25 M9 2.5 V7 M19 2.5 V7" stroke="${c}" stroke-width="2" stroke-linecap="round"/><path d="M14 13.5 V22.5 M10.5 18.5 L14 22.5 L17.5 18.5" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
@@ -53,8 +54,8 @@ module.exports = (O) => {
 
   // De la plus ancienne à la plus récente. [numéro, jour, sous-titre,
   // couleur, icône, puces]
-  const VIOLET = '#B08CFF';
-  const JOURS = [['24 sept.', 'jeudi', VERT], ['25 sept.', 'vendredi', BLEU], ['26 sept.', 'samedi', VIOLET], ['27 sept.', 'dimanche', NEON]];
+  const VIOLET = '#B08CFF', MENTHE = '#7FE0A8';
+  const JOURS = [['24 sept.', 'jeudi', VERT], ['25 sept.', 'vendredi', BLEU], ['26 sept.', 'samedi', VIOLET], ['27 sept.', 'dimanche', NEON], ['29 sept.', 'mardi', MENTHE]];
   const versions = [
     ['1.0.0', 0, 'la première version', VERT, I.banque, [
       'Reliée au Crédit Mutuel de Bretagne par Enable Banking',
@@ -95,7 +96,11 @@ module.exports = (O) => {
     ['1.2.3', 3, 'le mois suit le salaire', NEON, I.salaire, [
       'Le mois commence tout seul le jour où le salaire arrive',
       'Les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois',
-      '83 tests, tous au vert',
+    ]],
+    ['1.2.4', 4, 'plusieurs remboursements', MENTHE, I.coches, [
+      'Une dépense remboursée par plusieurs virements : six amis à 23 € chacun',
+      'Des cases à cocher, et ce qui reste à couvrir sous les yeux',
+      '85 tests, tous au vert',
     ]],
   ];
   const N = versions.length;
@@ -103,8 +108,8 @@ module.exports = (O) => {
   const pose = (i) => arrive(i) + 0.022;       // elle est posée, scellée
 
   // La pile : de bas en haut, au-dessus du socle.
-  const X = 156, XF = 1240, SOCLE = 786, H1 = 62, HP = 104, HN = 140, ECART = 10;
-  const PREC = N - 2; // 1.2.2 : ses six puces sur deux rangs
+  const X = 156, XF = 1240, SOCLE = 858, H1 = 62, HP = 104, HN = 140, ECART = 10;
+  const PREC = versions.findIndex((v) => v[5].length > 3); // 1.2.2 : ses six puces sur deux rangs
   const ys = [];
   let bas = SOCLE - 12;
   versions.forEach((v, i) => {
@@ -117,7 +122,7 @@ module.exports = (O) => {
 
   let corps = '';
   corps += t(60, 52, 'LES VERSIONS', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
-  corps += t(Math.round(66 + tr('LES VERSIONS').length * 10.9 + 24), 52, 'Huit versions en quatre jours. Chacune s’installe par-dessus la précédente, signée par la même clé : rien ne se perd.', { taille: 14 });
+  corps += t(Math.round(66 + tr('LES VERSIONS').length * 10.9 + 24), 52, 'Neuf versions en six jours. Chacune s’installe par-dessus la précédente, signée par la même clé : rien ne se perd.', { taille: 14 });
 
   // Une puce : un point, et son texte sur une ou deux lignes, centré sur cy.
   const puce = (x, cy, s, couleur) => {
@@ -157,9 +162,9 @@ module.exports = (O) => {
       <g><animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite" keyTimes="0;${s};${pose(i)};1" values="0 -34;0 -34;0 0;0 0" calcMode="spline" keySplines="0 0 1 1;0.3 0 0.25 1;0 0 1 1"/>${r}</g></g>`;
   });
 
-  // Les 83 tests de 1.2.3, tous au vert.
+  // Les 85 tests de 1.2.4, tous au vert.
   {
-    const [y] = ys[N - 1], RY = y + 112, RX = X + 58, RL = 820, NT = 83;
+    const [y] = ys[N - 1], RY = y + 112, RX = X + 58, RL = 820, NT = 85;
     const pas = RL / NT, de = pose(N - 1) + 0.03, a = 0.88;
     let ruban = '';
     for (let k = 0; k < NT; k++) {
@@ -168,7 +173,7 @@ module.exports = (O) => {
         <rect x="${x}" y="${RY}" width="${(pas - 2.4).toFixed(1)}" height="13" rx="2.5" fill="${VERT}" opacity="0">${visible(C, q + 0.002, FIN, 0.002)}</rect>`;
     }
     corps += g(pose(N - 1), FIN, ruban);
-    corps += g(a, FIN, t(RX + RL + 14, RY + 11, '83 au vert', { taille: 13, couleur: VERT, police: MONO, poids: 700 }));
+    corps += g(a, FIN, t(RX + RL + 14, RY + 11, '85 au vert', { taille: 13, couleur: VERT, police: MONO, poids: 700 }));
   }
 
   // ------------------------------------------------------------ le socle
@@ -232,7 +237,7 @@ module.exports = (O) => {
       ${t(AX + 14, cy + 17, nom, { taille: 11.5, couleur: TEXTE })}`);
   });
   // Entre deux jours, un trait en travers de la frise.
-  [4, 5, 6].forEach((i) => {
+  [4, 5, 6, 7].forEach((i) => {
     const y = (ys[i][0] + ys[i + 1][0] + ys[i + 1][1]) / 2;
     corps += `<line x1="${AX - 10}" y1="${y}" x2="${AX + 10}" y2="${y}" stroke="${DISCRET}" stroke-width="2"/>`;
   });
@@ -242,8 +247,8 @@ module.exports = (O) => {
     corps += g(pose(i), FIN, `<circle cx="${AX}" cy="${cy}" r="5.5" fill="${c}" filter="url(#halo)"/>`, 0.004);
   });
 
-  corps += t(640, 900, 'Chaque Release donne l’empreinte SHA-256 de l’APK et celle du certificat, pour vérifier avant d’installer.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  corps += t(640, 972, 'Chaque Release donne l’empreinte SHA-256 de l’APK et celle du certificat, pour vérifier avant d’installer.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
 
-  svg('versions.svg', 1280, 926, corps,
-    'Les versions, huit en quatre jours, du jeudi 24 au dimanche 27 septembre 2026, empilées l’une sur l’autre : chacune tombe sur la précédente, comme elle s’installe par-dessus sur le téléphone, sans rien perdre. En bas, le socle ne bouge pas : tes données, comptes, opérations, catégories, règles apprises et liens, et la même clé de signature, certificat SHA-256 55572db2…fabcbef ; un fil monte de la clé et scelle chaque version. Le 24 septembre, 1.0.0, la première version : reliée au Crédit Mutuel de Bretagne par Enable Banking, classement, virements internes, remboursements, récurrences, base chiffrée et écran déplié en volets. 1.0.1, un correctif : le bon numéro de version dans les réglages, qui affichaient encore 0.1.0. 1.0.2 : un groupe d’icônes Sorties et loisirs, grande roue, fête foraine, billets, cinéma, séparé du Sport. 1.0.3 : l’alerte de compte en négatif, le solde relu toutes les six heures, même application fermée, une notification par passage sous zéro. 1.1.0 : la démo, une seconde application installée à côté de la vraie, avec quatre mois d’opérations inventées, sans banque ni empreinte. Le 25 septembre, 1.2.0 : toutes les banques d’Enable Banking, par nom ou par pays, une page guide pour obtenir la clé, les opérations en attente et la synchronisation à chaque ouverture. Le 26 septembre, 1.2.2, l’audit complet : lier un remboursement ne gèle plus l’application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, plus de règle apprise sur le « N » d’un chèque, montants nets partout et récurrences justes sur les mois passés, la fiche d’une opération entière sur l’écran déplié. Le 27 septembre, 1.2.3, la version en cours, le mois suit le salaire : le mois commence tout seul le jour où le salaire arrive, et les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois. 83 tests, tous au vert.');
+  svg('versions.svg', 1280, 998, corps,
+    'Les versions, neuf en six jours, du jeudi 24 au mardi 29 septembre 2026, empilées l’une sur l’autre : chacune tombe sur la précédente, comme elle s’installe par-dessus sur le téléphone, sans rien perdre. En bas, le socle ne bouge pas : tes données, comptes, opérations, catégories, règles apprises et liens, et la même clé de signature, certificat SHA-256 55572db2…fabcbef ; un fil monte de la clé et scelle chaque version. Le 24 septembre, 1.0.0, la première version : reliée au Crédit Mutuel de Bretagne par Enable Banking, classement, virements internes, remboursements, récurrences, base chiffrée et écran déplié en volets. 1.0.1, un correctif : le bon numéro de version dans les réglages, qui affichaient encore 0.1.0. 1.0.2 : un groupe d’icônes Sorties et loisirs, grande roue, fête foraine, billets, cinéma, séparé du Sport. 1.0.3 : l’alerte de compte en négatif, le solde relu toutes les six heures, même application fermée, une notification par passage sous zéro. 1.1.0 : la démo, une seconde application installée à côté de la vraie, avec quatre mois d’opérations inventées, sans banque ni empreinte. Le 25 septembre, 1.2.0 : toutes les banques d’Enable Banking, par nom ou par pays, une page guide pour obtenir la clé, les opérations en attente et la synchronisation à chaque ouverture. Le 26 septembre, 1.2.2, l’audit complet : lier un remboursement ne gèle plus l’application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, plus de règle apprise sur le « N » d’un chèque, montants nets partout et récurrences justes sur les mois passés, la fiche d’une opération entière sur l’écran déplié. Le 27 septembre, 1.2.3, le mois suit le salaire : le mois commence tout seul le jour où le salaire arrive, et les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois. Le 29 septembre, 1.2.4, la version en cours, plusieurs remboursements : une dépense remboursée par plusieurs virements, six amis à 23 euros chacun, avec des cases à cocher et ce qui reste à couvrir sous les yeux. 85 tests, tous au vert.');
 };

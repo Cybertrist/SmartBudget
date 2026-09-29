@@ -527,7 +527,7 @@
   "L'alerte de compte en négatif": "The overdraft alert",
   "Chiffrement et sauvegarde": "Encryption and backup",
   "Remboursements": "Refunds",
-  "Lier depuis la dépense ou depuis l'entrée, sans jamais dépasser, même avec deux écritures au même instant.": "Linking from the expense or from the income, never going over, even with two writes at the same moment.",
+  "Six virements pour une dépense, lier dans les deux sens, jamais au-delà, même avec deux écritures au même instant.": "Six transfers for one expense, linked either way, never over, even with two writes at the same moment.",
   "Synchronisations": "Syncs",
   "Attentes qui passent, changent de montant ou sont levées, un an d'historique : rien ne double, rien ne se perd.": "Pending transactions that get booked, change amount or are lifted, a year of history: nothing doubles, nothing is lost.",
   "Jamais figée": "Never frozen",

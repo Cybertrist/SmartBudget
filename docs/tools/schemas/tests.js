@@ -1,7 +1,7 @@
 // Les tests : la suite qui tourne, un test après l'autre.
 //
-// En haut, la console et un ruban de 83 cases : les 24 tests de logique
-// pure passent d'abord, sans appareil, puis les 59 qui tournent sur un
+// En haut, la console et un ruban de 85 cases : les 24 tests de logique
+// pure passent d'abord, sans appareil, puis les 61 qui tournent sur un
 // émulateur Android, où SQLCipher et le Keystore existent. Le compteur
 // monte, chaque case passe au vert. En bas, les familles : chacune s'allume quand passe un vrai test
 // qui la vérifie, dont le nom s'affiche dans la console.
@@ -39,10 +39,10 @@ module.exports = (O) => {
 
   let corps = '';
   corps += t(60, 52, 'LES TESTS', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
-  corps += t(Math.round(66 + tr('LES TESTS').length * 10.9 + 24), 52, 'Ce que vérifient les 83 tests, famille par famille, et où ils tournent.', { taille: 14 });
+  corps += t(Math.round(66 + tr('LES TESTS').length * 10.9 + 24), 52, 'Ce que vérifient les 85 tests, famille par famille, et où ils tournent.', { taille: 14 });
 
   // ------------------------------------------------------- le déroulé
-  const N = 83, PURS = 24;
+  const N = 85, PURS = 24;
   // L'instant où chaque test passe : la logique pure d'abord, vite, puis
   // l'émulateur, après l'installation de l'application de test.
   const quand = (i) => (i < PURS ? 0.05 + i * 0.0075 : 0.285 + (i - PURS) * 0.0091);
@@ -60,7 +60,7 @@ module.exports = (O) => {
     compteur += `<text x="170" y="150" font-family="${MONO}" font-size="56" font-weight="700" fill="${v === N ? VERT : TITRE}" text-anchor="end" opacity="0">${v}${paliers('opacity', C, etapes)}</text>`;
   }
   corps += compteur;
-  corps += t(178, 150, '/ 83', { taille: 22, couleur: DISCRET, police: MONO, poids: 700 });
+  corps += t(178, 150, '/ 85', { taille: 22, couleur: DISCRET, police: MONO, poids: 700 });
   corps += t(66, 178, 'tests lancés', { taille: 12.5, couleur: TEXTE });
 
   // La console : la commande, le fichier, le dernier test qui compte.
@@ -91,9 +91,10 @@ module.exports = (O) => {
     [53, 'F4 un lien vers une attente que la synchro efface : rien ne gèle, pas de lien orphelin', 'Jamais figée'],
     [56, 'le marchand sort du bruit de la banque', 'Libellés'],
     [58, 'vers le livret : mis de côté', 'Virements internes'],
-    [73, 'le mois suit le salaire tout seul, sauf choix à la main', null],
-    [76, 'le portefeuille vit des retraits et des dépenses en espèces', 'Portefeuille'],
-    [77, 'une sauvegarde chiffrée se relit, avec la bonne phrase seulement', 'Sauvegarde'],
+    [72, 'six amis remboursent la même dépense : 192 € ne comptent plus que pour 54 €', null],
+    [75, 'le mois suit le salaire tout seul, sauf choix à la main', null],
+    [78, 'le portefeuille vit des retraits et des dépenses en espèces', 'Portefeuille'],
+    [79, 'une sauvegarde chiffrée se relit, avec la bonne phrase seulement', 'Sauvegarde'],
   ];
   const ligne = (signe, c, s, de, a, couleur = TITRE) => g(de, a, `${t(KX + 20, KY + 62, signe, { taille: 14, couleur: c, poids: 700 })}
     ${t(KX + 42, KY + 62, s, { taille: 13.5, couleur })}`, 0.003);
@@ -105,7 +106,7 @@ module.exports = (O) => {
   });
   corps += ligne('…', BLEU, 'l’application de test s’installe sur l’émulateur Android', INSTALLE, quand(PURS) - 0.012, TEXTE);
   corps += ligne('✓', VERT, vus.find(([i]) => i === PURS)[1], quand(PURS) - 0.012, quand(30));
-  corps += ligne('✓', VERT, '83 au vert : 24 sans appareil, 59 sur l’émulateur.', TOUT, FIN, VERT);
+  corps += ligne('✓', VERT, '85 au vert : 24 sans appareil, 61 sur l’émulateur.', TOUT, FIN, VERT);
 
   // Le ruban : une case par test.
   const RX = 66, RL = 1148, RY = 196, ECART = 26;
@@ -128,7 +129,7 @@ module.exports = (O) => {
   corps += t(RX, RY + 44, '24', { taille: 12.5, couleur: TITRE, police: MONO, poids: 700 });
   corps += t(RX + 24, RY + 44, 'logique pure, sans appareil', { taille: 12.5 });
   corps += `<path d="M${RX} ${RY + 27} H${finPurs}" stroke="${BLEU}" stroke-opacity="0.7" stroke-width="2"/>`;
-  corps += t(xCase(PURS), RY + 44, '59', { taille: 12.5, couleur: TITRE, police: MONO, poids: 700 });
+  corps += t(xCase(PURS), RY + 44, '61', { taille: 12.5, couleur: TITRE, police: MONO, poids: 700 });
   corps += t(xCase(PURS) + 24, RY + 44, 'sur un émulateur Android, où SQLCipher et le Keystore existent', { taille: 12.5 });
   corps += `<path d="M${xCase(PURS)} ${RY + 27} H${RX + RL}" stroke="${VERT}" stroke-opacity="0.7" stroke-width="2"/>`;
 
@@ -143,10 +144,10 @@ module.exports = (O) => {
     ['Mois budgétaire', 'Le mois suit le salaire, et les espèces d\'un retrait comptent une seule fois, même dépensées le mois suivant.'],
     ['Sauvegarde', 'Tout revient avec la bonne phrase ; une phrase fausse ne touche à rien.'],
     ['Signature', 'Le JWT signé en Dart est, octet pour octet, celui d\'OpenSSL.'],
-    ['Remboursements', 'Lier depuis la dépense ou depuis l\'entrée, sans jamais dépasser, même avec deux écritures au même instant.'],
+    ['Remboursements', 'Six virements pour une dépense, lier dans les deux sens, jamais au-delà, même avec deux écritures au même instant.'],
     ['Synchronisations', 'Attentes qui passent, changent de montant ou sont levées, un an d\'historique : rien ne double, rien ne se perd.'],
     ['Jamais figée', 'Chaque test borne ses accès à la base dans le temps : un verrou mort ferait échouer la suite au lieu de la geler.'],
-    ['Sur appareil', '83 tests : 24 sur la logique pure, 59 sur un émulateur Android, où SQLCipher et le Keystore existent.'],
+    ['Sur appareil', '85 tests : 24 sur la logique pure, 61 sur un émulateur Android, où SQLCipher et le Keystore existent.'],
   ];
   const allume = {};
   for (const [i, , f] of vus) if (f) allume[f] = quand(i);
@@ -174,5 +175,5 @@ module.exports = (O) => {
   });
 
   svg('tests.svg', 1280, BY + BH + 22, corps,
-    'Les tests, lancés un à un. Un compteur monte de 0 à 83 et un ruban de 83 cases passe au vert : d’abord les 24 tests de logique pure, sans appareil, par flutter test, puis les 59 qui tournent sur un émulateur Android, où SQLCipher et le Keystore existent, par flutter test integration_test. Les 83 finissent au vert. Chaque famille s’allume quand passe un test qui la vérifie. Libellés : le marchand sort du bruit de la banque, et sa clé ne change pas d’un mois à l’autre. Virements internes : vers le livret, depuis le livret, un livret au nom inhabituel, et un virement à quelqu’un qui n’en est pas un. Récurrences : un abonnement mensuel reconnu avec sa prochaine date, des courses irrégulières qui n’en sont pas. Classement : le dictionnaire, les corrections apprises et suivies, et une synchronisation relancée qui ne double rien. Bilan : remboursements répartis, remboursement marchand, dépense en espèces retirée des retraits. Portefeuille : 50 euros comptés, un retrait de 20 euros, 12 euros au marché, il en reste 58. Mois budgétaire : le mois suit le salaire, et les espèces d’un retrait comptent une seule fois, même dépensées le mois suivant. Sauvegarde : tout revient avec la bonne phrase, une phrase fausse ne touche à rien. Signature : le JWT signé en Dart est, octet pour octet, celui d’OpenSSL. Remboursements : lier depuis la dépense ou depuis l’entrée, sans jamais dépasser, même avec deux écritures au même instant. Synchronisations : attentes qui passent, changent de montant ou sont levées, un an d’historique, rien ne double, rien ne se perd. Jamais figée : chaque test borne ses accès à la base dans le temps, un verrou mort ferait échouer la suite au lieu de la geler. Sur appareil : 83 tests, 24 sur la logique pure, 59 sur un émulateur Android.');
+    'Les tests, lancés un à un. Un compteur monte de 0 à 85 et un ruban de 85 cases passe au vert : d’abord les 24 tests de logique pure, sans appareil, par flutter test, puis les 61 qui tournent sur un émulateur Android, où SQLCipher et le Keystore existent, par flutter test integration_test. Les 85 finissent au vert. Chaque famille s’allume quand passe un test qui la vérifie. Libellés : le marchand sort du bruit de la banque, et sa clé ne change pas d’un mois à l’autre. Virements internes : vers le livret, depuis le livret, un livret au nom inhabituel, et un virement à quelqu’un qui n’en est pas un. Récurrences : un abonnement mensuel reconnu avec sa prochaine date, des courses irrégulières qui n’en sont pas. Classement : le dictionnaire, les corrections apprises et suivies, et une synchronisation relancée qui ne double rien. Bilan : remboursements répartis, remboursement marchand, dépense en espèces retirée des retraits. Portefeuille : 50 euros comptés, un retrait de 20 euros, 12 euros au marché, il en reste 58. Mois budgétaire : le mois suit le salaire, et les espèces d’un retrait comptent une seule fois, même dépensées le mois suivant. Sauvegarde : tout revient avec la bonne phrase, une phrase fausse ne touche à rien. Signature : le JWT signé en Dart est, octet pour octet, celui d’OpenSSL. Remboursements : six virements pour une dépense, lier dans les deux sens, jamais au-delà, même avec deux écritures au même instant. Synchronisations : attentes qui passent, changent de montant ou sont levées, un an d’historique, rien ne double, rien ne se perd. Jamais figée : chaque test borne ses accès à la base dans le temps, un verrou mort ferait échouer la suite au lieu de la geler. Sur appareil : 85 tests, 24 sur la logique pure, 61 sur un émulateur Android.');
 };

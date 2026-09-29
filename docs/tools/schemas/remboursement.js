@@ -1,7 +1,8 @@
 // Lier un remboursement, dans les deux sens.
 //
 // À gauche, le téléphone : d'abord depuis la dépense (sa fiche, la ligne
-// Remboursement, l'écran « Associer à un remboursement », Valider), puis
+// Remboursement, l'écran « Associer à un remboursement », deux virements
+// cochés, Valider), puis
 // depuis l'entrée (« Lier des dépenses », la jauge Réparti qui se
 // remplit). À droite, les étapes, la frise des dates et ce que le bilan
 // compte avant et après le lien.
@@ -9,7 +10,8 @@
 // Tout suit le code : remboursementsPossibles (deux mois avant la dépense,
 // deux mois après), depensesRemboursables (deux mois avant l'entrée, un
 // mois après ; chaque case cochée propose ce qui reste à répartir),
-// rembourser (la part est le plus petit des deux restes) et calculerBilan (la part
+// rembourserPar (chaque case cochée prend ce qui manque encore, sans dépasser
+// ce qui reste du virement) et calculerBilan (la part
 // liée sort des entrées et se retranche de la dépense, chacune dans son
 // mois).
 module.exports = (O) => {
@@ -23,7 +25,7 @@ module.exports = (O) => {
   // Les instants : A depuis la dépense, B depuis l'entrée.
   const A1 = [0.004, 0.1], A2 = [0.1, 0.3], A3 = [0.3, 0.48];
   const B1 = [0.48, 0.56], B2 = [0.56, 0.84], B3 = [0.84, 0.996];
-  const tapLigne = 0.075, tapChoix = 0.17, tapValider = 0.26;
+  const tapLigne = 0.075, tapChoix = 0.15, tapChoix2 = 0.2, tapValider = 0.26;
   const tapLier = 0.53, tapTrain = 0.6, tapChamp = 0.655, retape = 0.685, tapResto = 0.735, tapBouton = 0.8;
 
   // ---------------------------------------------------------------- téléphone
@@ -45,10 +47,10 @@ module.exports = (O) => {
   // La petite icône carrée des lignes de la fiche.
   const icone = (y, dessin) => `<rect x="${SX + 26}" y="${SY + y - 14}" width="28" height="28" rx="9" fill="#FFFFFF" fill-opacity="0.05"/>
     <g transform="translate(${SX + 30},${SY + y - 10}) scale(0.72)">${dessin(APP.second)}</g>`;
-  const ligne = (y, dessin, libelle, valeur, couleur = APP.second) => `${icone(y, dessin)}
+  const ligne = (y, dessin, libelle, valeur, couleur = APP.second, fleche = '›') => `${icone(y, dessin)}
     ${t(SX + 64, SY + y + 4.5, libelle, { taille: 13, couleur: APP.texte, poids: 600 })}
-    ${t(SX + SL - 40, SY + y + 4.5, valeur, { taille: 12.5, couleur, poids: 700, ancre: 'end' })}
-    ${t(SX + SL - 26, SY + y + 5, '›', { taille: 15, couleur: APP.discret, ancre: 'middle' })}`;
+    ${t(SX + SL - (fleche === '›' ? 40 : 36), SY + y + 4.5, valeur, { taille: valeur.length > 14 ? 11.5 : 12.5, couleur, poids: 700, ancre: 'end' })}
+    ${fleche === '›' ? t(SX + SL - 26, SY + y + 5, '›', { taille: 15, couleur: APP.discret, ancre: 'middle' }) : `<path d="M${SX + SL - 30} ${SY + y - 2} l4 4 l4 -4" fill="none" stroke="${APP.discret}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`}`;
   const interrupteur = (y, libelle, dessin) => `${icone(y, dessin)}
     ${t(SX + 64, SY + y + 4.5, libelle, { taille: 13, couleur: APP.texte, poids: 600 })}
     <rect x="${SX + SL - 70}" y="${SY + y - 11}" width="42" height="22" rx="11" fill="#2A2A2A" stroke="#555555"/>
@@ -90,42 +92,60 @@ module.exports = (O) => {
     ${sep(398)}
     ${interrupteur(420, 'Masquer de l’analyse', oeil)}
     ${carteApp(456, lie ? 92 : 58)}
-    ${ligne(485, P.lien, 'Remboursement', lie ? '45,00 € reçus' : 'Aucun', lie ? VERT : APP.second)}
-    ${lie ? t(SX + 28, SY + 530, 'Elle ne compte plus que pour 45,00 €.', { taille: 12, couleur: APP.discret }) : ''}`;
+    ${ligne(485, P.lien, 'Remboursement', lie ? '60,00 € reçus (2)' : 'Aucun', lie ? VERT : APP.second, lie ? 'v' : '›')}
+    ${lie ? t(SX + 28, SY + 530, 'Elle ne compte plus que pour 30,00 €.', { taille: 12, couleur: APP.discret }) : ''}`;
   ecrans += ecran(A1, `${ficheConcert(false)}
     <rect x="${SX + 12}" y="${SY + 456}" width="${SL - 24}" height="58" rx="16" fill="none" stroke="${VERT}" stroke-opacity="0.7" opacity="0">${visible(C, tapLigne - 0.012, A1[1], 0.003)}</rect>
     ${toucher(SX + 150, SY + 485, C, tapLigne)}`);
   ecrans += ecran(A3, `${ficheConcert(true)}
     <rect x="${SX + 12}" y="${SY + 456}" width="${SL - 24}" height="92" rx="16" fill="none" stroke="${VERT}" stroke-opacity="0.7" filter="url(#halo)"/>`);
 
-  // A2 : « Associer à un remboursement », les entrées autour de la date.
+  // A2 : « Associer à un remboursement », les entrées autour de la date,
+  // à cocher autant qu'il en faut ; le récapitulatif suit, en bas.
   const entrees = [
-    ['Vendredi 25 septembre', 'Salaire', 'Salaire', '+1 850,00 €'],
-    ['Lundi 14 septembre', 'Camille Roux', 'Virements reçus', '+45,00 €'],
-    ['Vendredi 21 août', 'Remise de chèque', 'Remboursements', '+120,00 €'],
+    ['Vendredi 25 septembre', 'Salaire', 'Salaire', '+1 850,00 €', null],
+    ['Mercredi 23 septembre', 'Hugo Lefèvre', 'Virements reçus', '+30,00 €', tapChoix2],
+    ['Lundi 14 septembre', 'Camille Roux', 'Virements reçus', '+30,00 €', tapChoix],
+    ['Vendredi 21 août', 'Remise de chèque', 'déjà entièrement affecté ailleurs', '+120,00 €', 'pris'],
   ];
   let liste = '';
-  entrees.forEach(([jour, nom, sous, montant], i) => {
-    const y = 126 + i * 96;
-    const choisie = i === 1;
-    liste += `${t(SX + 22, SY + y, jour, { taille: 12, couleur: APP.second, poids: 700 })}
+  entrees.forEach(([jour, nom, sous, montant, coche_], i) => {
+    const y = 120 + i * 84;
+    const pris = coche_ === 'pris';
+    liste += `<g opacity="${pris ? 0.4 : 1}">${t(SX + 22, SY + y, jour, { taille: 12, couleur: APP.second, poids: 700 })}
       ${carteApp(y + 10, 62)}
-      <circle cx="${SX + 36}" cy="${SY + y + 41}" r="8.5" fill="none" stroke="${APP.discret}" stroke-width="2"/>
-      ${t(SX + 56, SY + y + 37, nom, { taille: 13.5, couleur: APP.texte, poids: 700 })}
-      ${t(SX + 56, SY + y + 55, sous, { taille: 10.5, couleur: APP.discret })}
-      ${t(SX + SL - 26, SY + y + 45, montant, { taille: 13, couleur: VERT, poids: 700, ancre: 'end' })}`;
-    if (choisie) {
-      liste += durant(tapChoix, A2[1], `<rect x="${SX + 12}" y="${SY + y + 10}" width="${SL - 24}" height="62" rx="16" fill="${VERT}" fill-opacity="0.08" stroke="${VERT}" stroke-opacity="0.6"/>
-        <circle cx="${SX + 36}" cy="${SY + y + 41}" r="10" fill="${VERT}"/>
-        <path d="M${SX + 31} ${SY + y + 41} l3.5 3.5 l6.5 -7" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`);
-      liste += toucher(SX + 120, SY + y + 41, C, tapChoix);
+      ${caseVide(SX + 27, SY + y + 32)}
+      ${t(SX + 56, SY + y + 37, nom, { taille: 13.5, couleur: APP.texte, poids: 700 })}`;
+    if (typeof coche_ === 'number') {
+      liste += durant(A2[0], coche_, `${t(SX + 56, SY + y + 55, sous, { taille: 10.5, couleur: APP.discret })}
+        ${t(SX + SL - 26, SY + y + 45, montant, { taille: 13, couleur: VERT, poids: 700, ancre: 'end' })}`);
+      liste += durant(coche_, A2[1], `${coche(SX + 27, SY + y + 32)}
+        ${t(SX + 56, SY + y + 55, `${montant} · ${sous}`, { taille: 10.5, couleur: APP.discret })}
+        <rect x="${SX + SL - 96}" y="${SY + y + 25}" width="72" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.06"/>
+        ${t(SX + SL - 32, SY + y + 46, '30,00 €', { taille: 13, couleur: VERT, poids: 700, ancre: 'end' })}`);
+      liste += toucher(SX + 36, SY + y + 41, C, coche_);
+    } else {
+      liste += `${t(SX + 56, SY + y + 55, sous, { taille: 10.5, couleur: APP.discret })}
+        ${t(SX + SL - 26, SY + y + 45, montant, { taille: 13, couleur: pris ? APP.discret : VERT, poids: 700, ancre: 'end' })}`;
     }
+    liste += '</g>';
   });
+  // Le récapitulatif : combien de cases, pour combien, et ce qui reste.
+  const RY_ = SY + 456;
+  const recap = (gauche, reste, part, de, a) => durant(de, a, `${t(SX + 28, RY_ + 24, gauche, { taille: 12, couleur: APP.texte, poids: 700 })}
+    ${t(SX + SL - 28, RY_ + 24, reste, { taille: 12, couleur: APP.texte, poids: 800, ancre: 'end' })}
+    <rect x="${SX + 28}" y="${RY_ + 34}" width="${SL - 56}" height="5" rx="2.5" fill="#2A2A2A"/>
+    ${part ? `<rect x="${SX + 28}" y="${RY_ + 34}" width="${((SL - 56) * part).toFixed(1)}" height="5" rx="2.5" fill="${VERT}"/>` : ''}`);
   ecrans += ecran(A2, `${barre('Associer à un remboursement', 15.5)}
-    ${['Pour « Concert », 90,00 €. Choisis l’argent reçu', 'qui la rembourse, avant ou après l’achat.'].map((l, i) => t(SX + 22, SY + 78 + i * 17, l, { taille: 12, couleur: APP.second })).join('')}
+    ${['Pour « Concert », 90,00 €. Coche tout l’argent reçu', 'qui la rembourse, avant ou après l’achat.'].map((l, i) => t(SX + 22, SY + 74 + i * 17, l, { taille: 12, couleur: APP.second })).join('')}
     ${liste}
+    <rect x="${SX + 12}" y="${RY_}" width="${SL - 24}" height="50" rx="14" fill="${APP.carte}" stroke="${APP.trait}"/>
+    ${recap('Aucun sélectionné', 'Reste 90,00 €', 0, A2[0], tapChoix)}
+    ${recap('1 sélectionné · 30,00 €', 'Reste 60,00 €', 1 / 3, tapChoix, tapChoix2)}
+    ${recap('2 sélectionnés · 60,00 €', 'Reste 30,00 €', 2 / 3, tapChoix2, A2[1])}
     ${durant(A2[0], tapChoix, boutonVert('Aucun remboursement'))}
-    ${durant(tapChoix, A2[1], boutonVert('Valider'))}
+    ${durant(tapChoix, tapChoix2, boutonVert('Valider 1 remboursement'))}
+    ${durant(tapChoix2, A2[1], boutonVert('Valider 2 remboursements'))}
     ${toucher(SX + SL / 2, SY + SH - 44, C, tapValider)}`);
 
   // B1 et B3 : la fiche de l'entrée, sa carte « Rembourse ».
@@ -236,8 +256,8 @@ module.exports = (O) => {
   };
   corps += panneau(RX, 'A', 'DEPUIS LA DÉPENSE', ROSE, [0.004, 0.48], [
     ['Sa fiche, ligne « Remboursement »', 'elle dit Aucun tant que rien n’est lié', A1],
-    ['« Associer à un remboursement »', 'l’argent reçu deux mois avant ou après l’achat', A2],
-    ['Choisir l’entrée, puis Valider', 'la part liée : le plus petit des deux restes', A3],
+    ['« Associer à un remboursement »', 'coche chaque virement reçu, deux mois autour', A2],
+    ['« Valider 2 remboursements »', 'le reste à couvrir se lit en bas, sans dépasser', A3],
   ]);
   corps += panneau(RX + 410, 'B', 'DEPUIS L’ENTRÉE', MENTHE, [0.48, 0.996], [
     ['Sa fiche, « Lier des dépenses »', 'dans la carte Rembourse', B1],
@@ -280,10 +300,11 @@ module.exports = (O) => {
   };
   const PA = [0.004, 0.48], PB = [0.48, 0.996];
   corps += fenetre(X(7, 20), X(11, 21), BLEU, 'entrées proposées : deux mois avant la dépense, deux mois après', PA);
-  corps += point(X(9, 14), true, VERT, 'Camille', '+45 €', PA);
+  corps += point(X(9, 14), true, VERT, 'Camille', '+30 €', PA);
+  corps += point(X(9, 23), true, VERT, 'Hugo', '+30 €', PA);
   corps += point(X(9, 20), false, ROSE, 'Concert', '-90 €', PA);
-  corps += lien(X(9, 14), X(9, 20), tapValider, 0.48);
-  corps += `<g opacity="0">${visible(C, tapValider + 0.02, 0.48, 0.004)}${t(X(9, 20) + 30, AXE - 26, 'reçu six jours avant l’achat', { taille: 12, couleur: VERT, poids: 700 })}</g>`;
+  corps += lien(X(9, 14), X(9, 20), tapValider, 0.48) + lien(X(9, 23), X(9, 20), tapValider, 0.48);
+  corps += `<g opacity="0">${visible(C, tapValider + 0.02, 0.48, 0.004)}${t(X(9, 23) + 30, AXE - 26, 'reçus avant et après l’achat', { taille: 12, couleur: VERT, poids: 700 })}</g>`;
   corps += fenetre(X(7, 18), X(10, 19), BLEU, 'dépenses proposées : deux mois avant l’entrée, un mois après', PB);
   corps += point(X(9, 18), true, VERT, 'Lucas', '+500 €', PB);
   corps += point(X(8, 8), false, ROSE, 'Train', '-380 €', PB);
@@ -310,9 +331,9 @@ module.exports = (O) => {
       <rect x="${RX + 24}" y="${y + 9}" width="${w0}" height="8" rx="4" fill="${couleur}">
         ${fondu('width', C, [[0, w0], [s, w0], [s + 0.03, w1], [1, w1]])}</rect></g>`;
   };
-  corps += rangee(LY + 60, 'Concert, dépense de septembre', 90, 45, 90, ROSE, tapValider, PA);
-  corps += rangee(LY + 104, 'Camille Roux, compté en revenu de septembre', 45, 0, 90, VERT, tapValider, PA);
-  corps += `<g opacity="0">${visible(C, tapValider + 0.03, 0.48, 0.006)}${t(RX + 24, LY + 188, 'Les 45 € de Camille ne sont plus un revenu : ils paient la moitié du concert.', { taille: 12.5, couleur: TEXTE })}</g>`;
+  corps += rangee(LY + 60, 'Concert, dépense de septembre', 90, 30, 90, ROSE, tapValider, PA);
+  corps += rangee(LY + 104, 'Camille et Hugo, comptés en revenu de septembre', 60, 0, 90, VERT, tapValider, PA);
+  corps += `<g opacity="0">${visible(C, tapValider + 0.03, 0.48, 0.006)}${t(RX + 24, LY + 188, 'Les 60 € de Camille et Hugo ne sont plus un revenu : ils paient deux places sur trois.', { taille: 12.5, couleur: TEXTE })}</g>`;
   corps += rangee(LY + 56, 'Billet de train, dépense d’août', 380, 80, 500, ROSE, tapBouton, PB);
   corps += rangee(LY + 98, 'Restaurant, dépense d’août', 260, 60, 500, ROSE, tapBouton, PB);
   corps += rangee(LY + 140, 'Lucas Martin, compté en revenu de septembre', 500, 0, 500, VERT, tapBouton, PB);
@@ -321,5 +342,5 @@ module.exports = (O) => {
   corps += t(640, 766, 'Une entrée peut rembourser plusieurs dépenses, une dépense l’être par plusieurs entrées : jamais plus que l’une ou l’autre.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
 
   svg('remboursement.svg', 1280, 792, corps,
-    'Lier un remboursement, dans les deux sens, sur un téléphone animé. A, depuis la dépense : sur la fiche du concert, 90 euros le 20 septembre, la ligne Remboursement dit Aucun ; la toucher ouvre Associer à un remboursement, qui propose l’argent reçu jusqu’à deux mois avant ou après l’achat. On choisit le virement de Camille Roux, 45 euros reçus le 14 septembre, six jours avant l’achat, puis Valider : la part liée est le plus petit des deux restes. La fiche affiche 45 euros reçus, elle ne compte plus que pour 45 euros, et les 45 euros de Camille ne comptent plus comme un revenu. B, depuis l’entrée : sur la fiche du virement de Lucas Martin, 500 euros le 18 septembre, la carte Rembourse propose Lier des dépenses. L’écran liste les dépenses de deux mois avant à un mois après l’entrée ; cocher le billet de train de 380 euros propose 380 euros, corrigés à 300, puis cocher le restaurant de 260 euros propose les 200 qui restent, et la jauge Réparti atteint 500 sur 500. Lier 2 dépenses : le billet ne compte plus que 80 euros, le restaurant 60, tous deux en août, et les 500 euros de Lucas ne sont pas un revenu de septembre. Une entrée peut rembourser plusieurs dépenses et une dépense être remboursée par plusieurs entrées, jamais au-delà de l’une ou de l’autre.');
+    'Lier un remboursement, dans les deux sens, sur un téléphone animé. A, depuis la dépense : sur la fiche du concert, 90 euros le 20 septembre, la ligne Remboursement dit Aucun ; la toucher ouvre Associer à un remboursement, qui propose l’argent reçu jusqu’à deux mois avant ou après l’achat. On coche le virement de Camille Roux, 30 euros reçus le 14 septembre, puis celui de Hugo Lefèvre, 30 euros reçus le 23 septembre ; la remise de chèque, déjà entièrement affectée ailleurs, reste grisée. En bas, le récapitulatif passe de Reste 90 euros à 2 sélectionnés, 60 euros, reste 30 euros. Valider 2 remboursements : la fiche affiche 60 euros reçus (2), elle ne compte plus que pour 30 euros, et les 60 euros de Camille et Hugo ne comptent plus comme un revenu. B, depuis l’entrée : sur la fiche du virement de Lucas Martin, 500 euros le 18 septembre, la carte Rembourse propose Lier des dépenses. L’écran liste les dépenses de deux mois avant à un mois après l’entrée ; cocher le billet de train de 380 euros propose 380 euros, corrigés à 300, puis cocher le restaurant de 260 euros propose les 200 qui restent, et la jauge Réparti atteint 500 sur 500. Lier 2 dépenses : le billet ne compte plus que 80 euros, le restaurant 60, tous deux en août, et les 500 euros de Lucas ne sont pas un revenu de septembre. Une entrée peut rembourser plusieurs dépenses et une dépense être remboursée par plusieurs entrées, jamais au-delà de l’une ou de l’autre.');
 };
