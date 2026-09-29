@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -132,7 +133,7 @@ class _SmartBudgetAppState extends ConsumerState<SmartBudgetApp>
         routerConfig: router,
         // L'animation de lancement se pose par dessus le routeur, le temps
         // qu'elle dure : l'écran d'ouverture est déjà dessous, prêt.
-        builder: (context, enfant) => Stack(children: [?enfant, const AnimationLancement()]),
+        builder: (context, enfant) => _SansClavierFantome(child: Stack(children: [?enfant, const AnimationLancement()])),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -142,5 +143,51 @@ class _SmartBudgetAppState extends ConsumerState<SmartBudgetApp>
         locale: const Locale('fr', 'FR'),
       ),
     );
+  }
+}
+
+/// Le clavier Samsung laisse parfois sa hauteur en mémoire après un verrou
+/// ou un passage en arrière-plan, alors qu'il n'est plus à l'écran : la
+/// moitié basse de l'accueil restait vide. Sans champ en cours de saisie,
+/// il n'y a pas de clavier, quoi qu'en dise Android.
+class _SansClavierFantome extends StatefulWidget {
+  const _SansClavierFantome({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_SansClavierFantome> createState() => _EtatSansClavierFantome();
+}
+
+class _EtatSansClavierFantome extends State<_SansClavierFantome> {
+  bool _saisie = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FocusManager.instance.addListener(_suivre);
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.removeListener(_suivre);
+    super.dispose();
+  }
+
+  /// Le focus change parfois en pleine construction : on attend la fin
+  /// de l'image pour redessiner.
+  void _suivre() {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final saisie = FocusManager.instance.primaryFocus?.context?.findAncestorStateOfType<EditableTextState>() != null;
+      if (mounted && saisie != _saisie) setState(() => _saisie = saisie);
+    });
+    SchedulerBinding.instance.ensureVisualUpdate();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    if (_saisie || mq.viewInsets.bottom == 0) return widget.child;
+    return MediaQuery(data: mq.copyWith(viewInsets: mq.viewInsets.copyWith(bottom: 0)), child: widget.child);
   }
 }

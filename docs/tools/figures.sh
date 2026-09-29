@@ -135,8 +135,8 @@ rendre "$nom.html" "$DOCS/schemas/$nom.png"
 
 grille fonctionnalites 3 \
   "account_balance|Le compte, tout seul|Ton compte courant, lu par la DSP2 via Enable Banking : douze mois d'historique, une synchronisation à chaque ouverture, et une alerte s'il passe en négatif." \
-  "category|Classé sans rien faire|23 catégories, 180 sous-catégories, 250 marchands reconnus. Une correction est apprise et suivie par les prochaines opérations." \
-  "pie_chart|L'anneau des dépenses|Le mois, trois mois ou un an : où part l'argent, catégorie par catégorie, jusqu'à l'opération." \
+  "category|Classé sans rien faire|23 catégories, 180 sous-catégories, plus de 200 marchands reconnus. Une correction est apprise et suivie par les prochaines opérations." \
+  "pie_chart|L'anneau des dépenses|Le mois, ouvert par le salaire, trois mois ou un an : où part l'argent, catégorie par catégorie, jusqu'à l'opération." \
   "sync_alt|Les virements internes à part|Vers le livret, depuis le livret : ni dépense ni revenu, hachurés, hors budget. Mis de côté et pioché, suivis." \
   "link|Les remboursements liés|Un chèque de 500 € réparti sur deux dépenses : elles ne comptent plus que pour leur reste à charge." \
   "autorenew|Les récurrences|Loyer, forfait, abonnements : repérés seuls, réglables à la main, en retard, à venir ou payés." \
@@ -184,7 +184,7 @@ html,body{width:720px;height:132px;overflow:hidden;background:transparent}
    border-radius:18px;border:1.5px solid $5;background:$6}
 .i{width:84px;height:84px;flex-shrink:0;filter:drop-shadow(0 10px 18px rgba(30,215,96,.35))}
 .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px}
-.t b{font-family:Syne,sans-serif;font-weight:800;font-size:22px;letter-spacing:0;color:#F0F4F8;white-space:nowrap}
+.t b{font-family:Syne,sans-serif;font-weight:800;font-size:20px;letter-spacing:1.5px;text-transform:uppercase;color:#F0F4F8;white-space:nowrap}
 .t span{font-family:'JetBrains Mono',monospace;font-size:14px;color:#9AA5B1;letter-spacing:.3px}
 .f{width:58px;height:58px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;$7}
 </style></head><body><div class="w">
@@ -199,8 +199,8 @@ rendre "${1%.png}.html" "$DOCS/$1" 720
 }
 
 if [ "$LANGUE" = en ]; then COMPLETE='full version'; DEMO='demo, no bank'; else COMPLETE='version complète'; DEMO='démo, sans banque'; fi
-bouton telecharger.png SmartBudget.apk 'Télécharger Smart Budget' "$COMPLETE" '#1E4A30'   'linear-gradient(100deg,#0E2016 0%,#0C1712 55%,#0A120E 100%)' 'background:linear-gradient(135deg,#1ED760,#50F48D)' '#04130A'
+bouton telecharger.png SmartBudget.apk 'Smart Budget' "$COMPLETE" '#1E4A30'   'linear-gradient(100deg,#0E2016 0%,#0C1712 55%,#0A120E 100%)' 'background:linear-gradient(135deg,#1ED760,#50F48D)' '#04130A'
 bouton telecharger-demo.png SmartBudget-demo.apk 'Essayer la démo' "$DEMO" '#26382D'   'linear-gradient(100deg,#111A14 0%,#0E1410 55%,#0B100D 100%)' 'border:2px solid #1ED760' '#1ED760'
 
 # Puis la même chose en anglais, dans docs/en/.
-[ -z "$LANGUE" ] && LANGUE=en bash "${BASH_SOURCE[0]}"
+if [ -z "$LANGUE" ]; then LANGUE=en bash "${BASH_SOURCE[0]}"; fi

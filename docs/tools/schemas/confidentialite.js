@@ -207,9 +207,9 @@ module.exports = (O) => {
     <path d="M854 ${RY - 4} l8 8 M862 ${RY - 4} l-8 8" stroke="${VERT}" stroke-width="2.2" stroke-linecap="round"/>
   </g>`;
   ['serveur', 'compte', 'analytique', 'publicité'].forEach((s, k) => {
-    const x = EX + k * 82, l = 74;
+    const x = EX + k * 81, l = 77;
     corps += `<rect x="${x}" y="${RY - 16}" width="${l}" height="32" rx="16" fill="${CARTE}" stroke="${BORD}"/>
-      ${t(x + l / 2, RY + 4.5, s, { taille: 11.5, couleur: TEXTE, ancre: 'middle' })}
+      ${t(x + l / 2, RY + 4.5, s, { taille: 12, couleur: TEXTE, ancre: 'middle' })}
       <line x1="${x + 10}" y1="${RY + 0.5}" x2="${x + 10}" y2="${RY + 0.5}" stroke="${VERT}" stroke-width="1.8">
         ${fondu('x2', C, [[0, x + 10], [S(0) + 0.03 + k * 0.006, x + 10], [S(0) + 0.045 + k * 0.006, x + l - 10], [FIN, x + l - 10], [FIN + 0.005, x + 10], [1, x + 10]])}</line>`;
   });
@@ -335,7 +335,7 @@ module.exports = (O) => {
     });
     return s;
   };
-  corps += colonne(60, 'Ce qui est vrai', vrai, VERT, '✓');
+  corps += colonne(60, 'Ce qui est protégé', vrai, VERT, '✓');
   corps += colonne(652, 'Ce qui ne l’est pas', pas, OR, '!');
   const H = LY + total + 34;
 

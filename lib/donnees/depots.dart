@@ -350,12 +350,8 @@ class DepotOperations {
     return nouvelles;
   }
 
-  /// Fait commencer le mois le jour où le salaire arrive, d'après les six
-  /// derniers mois, tant que le début n'a pas été choisi à la main. Rend
-  /// vrai s'il a changé.
-  Future<bool> ajusterDebutMois() async {
-    const reglages = DepotReglages();
-    if (!await reglages.debutMoisAuto()) return false;
+  /// Les salaires reçus depuis [depuis] : leur date et leur montant.
+  Future<List<(DateTime, int)>> _salaires(DateTime depuis) async {
     final cats = await _categories.parId();
     bool salaire(Operation o) {
       final c = cats[o.categorieId];
@@ -363,15 +359,30 @@ class DepotOperations {
       return racine?.nom == 'Salaire';
     }
 
-    final depuis = DateTime.now().subtract(const Duration(days: 190));
-    final dates = [
+    return [
       for (final o in await entre(depuis, DateTime.now().add(const Duration(days: 1))))
-        if (o.montantCentimes > 0 && !o.masquee && o.interne == null && !o.enAttente && salaire(o)) o.le,
+        if (o.montantCentimes > 0 && !o.masquee && o.interne == null && !o.enAttente && salaire(o)) (o.le, o.montantCentimes),
     ];
-    final jour = jourDuSalaire(dates);
+  }
+
+  /// Règle le jour habituel du salaire, d'après les six derniers mois, tant
+  /// que le début n'a pas été choisi à la main. Rend vrai s'il a changé.
+  Future<bool> ajusterDebutMois() async {
+    const reglages = DepotReglages();
+    if (!await reglages.debutMoisAuto()) return false;
+    final salaires = await _salaires(DateTime.now().subtract(const Duration(days: 190)));
+    final jour = jourDuSalaire([for (final s in salaires) s.$1]);
     if (jour == null || jour == await reglages.debutMois()) return false;
     await reglages.ecrire('debut_mois', '$jour');
     return true;
+  }
+
+  /// Les mois du budget : chaque salaire ouvre le sien le jour où il
+  /// arrive, même en avance pour Noël. Le jour réglé, trouvé tout seul ou
+  /// choisi à la main, n'est qu'un repère autour duquel il tombe.
+  Future<Calendrier> calendrier() async {
+    final debut = await const DepotReglages().debutMois();
+    return Calendrier(debut: debut, ouvertures: ouverturesDuSalaire(await _salaires(DateTime(2000)), debut: debut));
   }
 
   /// La plus ancienne opération encore en attente : la banque doit donner
@@ -389,8 +400,8 @@ class DepotOperations {
 
   /// Les opérations comptées dans [mois] : celles de ses dates, et celles
   /// rattachées à lui à la main.
-  Future<List<Operation>> duMois(Mois mois, {int debut = 1}) async {
-    final (de, a) = mois.bornes(debut: debut);
+  Future<List<Operation>> duMois(Mois mois, Calendrier calendrier) async {
+    final (de, a) = calendrier.bornes(mois);
     final l = await (await _db).query(
       'operations',
       where: '(le >= ? AND le < ? AND mois_compte IS NULL) OR mois_compte = ?',
@@ -464,11 +475,13 @@ class DepotOperations {
   }
 
   /// Les opérations que rien n'a su reconnaître : à toi de dire ce
-  /// qu'elles sont.
+  /// qu'elles sont. Celles déjà liées à un remboursement n'y sont plus :
+  /// en les liant, tu as déjà dit ce qu'elles étaient.
   Future<List<Operation>> aVerifier() async {
     final l = await (await _db).query(
       'operations',
-      where: "origine = ? AND interne IS NULL AND masquee = 0",
+      where: "origine = ? AND interne IS NULL AND masquee = 0 "
+          'AND id NOT IN (SELECT entree_id FROM liens) AND id NOT IN (SELECT depense_id FROM liens)',
       whereArgs: [Origine.defaut.name],
       orderBy: 'le DESC, id DESC',
     );
@@ -839,11 +852,11 @@ class DepotReglages {
 class DepotBilan {
   const DepotBilan();
 
-  Future<Bilan> du(Mois mois) async {
+  Future<Bilan> du(Mois mois, {Calendrier? calendrier}) async {
     const ops = DepotOperations();
     const liens = DepotLiens();
-    final debut = await const DepotReglages().debutMois();
-    final duMois = await ops.duMois(mois, debut: debut);
+    final cal = calendrier ?? await ops.calendrier();
+    final duMois = await ops.duMois(mois, cal);
     final lies = await liens.concernant(duMois.map((o) => o.id));
 
     // Les dépenses d'un autre mois qu'une entrée de celui-ci rembourse, et
@@ -861,7 +874,7 @@ class DepotBilan {
     // mois après : un retrait de ce mois-ci peut être dépensé le suivant,
     // et une dépense de ce mois-ci puiser dans un retrait d'avant.
     final categories = await const DepotCategories().parId();
-    final (de, a) = mois.bornes(debut: debut);
+    final (de, a) = cal.bornes(mois);
     final autour = (await ops.entre(de.subtract(const Duration(days: 124)), a.add(const Duration(days: 63))))
         .where((o) => !o.masquee && o.montantCentimes < 0)
         .toList();
@@ -875,7 +888,8 @@ class DepotBilan {
       operations: [...duMois, ...autres],
       liens: lies,
       categories: categories,
-      debut: debut,
+      debut: cal.debut,
+      calendrier: cal,
       retraitsDepenses: financement,
     );
   }

@@ -212,7 +212,11 @@ module.exports = (O) => {
       ecran += eclat(SY + 408, 196, de, BLEU);
       return;
     }
-    ecran += `<rect x="${SX + 10}" y="${SY + 44}" width="${demi}" height="124" rx="14" fill="none" stroke="${o.sorte === 'rembourse' ? OR : VERT}" stroke-width="1.8" opacity="0">${visible(C, de, de + 0.05, 0.004)}</rect>`;
+    // La carte du budget s'éclaire de la couleur qu'elle prend : verte,
+    // jaune dès 90 %, rouge au-delà.
+    const part = etats[k + 1].sorties / BUDGET;
+    const coulBudget = part >= 1 ? ROUGE : part >= 0.9 ? OR : VERT;
+    ecran += `<rect x="${SX + 10}" y="${SY + 44}" width="${demi}" height="124" rx="14" fill="none" stroke="${coulBudget}" stroke-width="1.8" opacity="0">${visible(C, de, de + 0.05, 0.004)}</rect>`;
     ecran += eclat(SY + 186, 208, de, o.sorte === 'rembourse' ? OR : VERT);
   });
   corps += `<g clip-path="url(#ecranAccueil)">${ecran}</g>`;
@@ -234,11 +238,11 @@ module.exports = (O) => {
       ${lignes.map((l, j) => t(RX + 20, y + 58 + j * 20, l, { taille: 12.5 })).join('')}`;
     for (const k of quand) {
       const de = s(k);
-      corps += `<rect x="${RX}" y="${y}" width="${RL}" height="122" rx="13" fill="none" stroke="${c}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, de, de + 0.06, 0.006)}</rect>`;
+      corps += `<rect x="${RX}" y="${y}" width="${RL}" height="122" rx="13" fill="none" stroke="${i === 0 ? ({ 6: OR, 10: ROUGE }[k] || c) : c}" stroke-width="1.5" filter="url(#halo)" opacity="0">${visible(C, de, de + 0.06, 0.006)}</rect>`;
     }
   });
 
-  corps += t(640, 778, 'Toujours le mois en cours ; il commence le 1er, ou le jour choisi dans les réglages, celui où tombe le salaire.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  corps += t(640, 778, 'Toujours le mois en cours : il s’ouvre le jour où arrive le salaire.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('accueil.svg', 1280, 800, corps,
     `L’accueil, le mois en cours en un coup d’œil, sur un téléphone animé. Onze opérations de septembre y entrent une à une, avec un budget de 1 500 euros. Foncia Loyer, 620 euros, et Carrefour Market, 182,40 euros, comptent. Un virement de 200 euros vers le Livret A est hors budget : il ne compte que dans l’épargne, et le livret passe à 3 060 euros. Le Comptoir, 86,50 euros, et SNCF Connect, 145 euros, comptent. Norauto, 380 euros, marqué imprévu à la main, fait passer la jauge au jaune, au-delà de 90 %. Pharmacie du Port, 30 euros, puis un remboursement de la CPAM de 23,50 euros lié à elle : il n’est pas un revenu, il allège la pharmacie, qui ne pèse plus que 6,50 euros. Leboncoin, 250 euros, est masquée : rien ne bouge. Zalando, 89,99 euros, fait dépasser le budget : la carte passe au rouge et affiche 10,39 euros de dépassement. Spotify, 11,12 euros, compte mais reste hors des cinq premières catégories. À la fin : 1 521,51 euros de sorties, 21,51 euros de dépassement ; les cinq premières catégories sont Logement, Transports, Courses, Shopping, Restaurants et sorties ; la répartition donne Essentiel 953,90 euros, Plaisir 187,61 euros, Épargne 200 euros et Imprévu 380 euros.`);
 };

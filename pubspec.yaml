@@ -1,7 +1,7 @@
 name: smartbudget
 description: "SmartBudget, suivi de budget personnel"
 publish_to: 'none'
-version: 1.2.5+16
+version: 1.2.6+20
 
 environment:
   sdk: ^3.11.0
@@ -27,6 +27,7 @@ dependencies:
 
   # Empreinte
   local_auth: ^2.3.0
+  local_auth_android: ^1.0.56
 
   # Dates et montants en français
   intl: ^0.20.2

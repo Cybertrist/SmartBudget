@@ -144,7 +144,11 @@ class _EtatNouvelleDepense extends ConsumerState<EcranNouvelleDepense> {
             'Catégorie',
             cat == null ? 'Choisir' : (cat.parentId == null ? cat.nom : '${parent!.nom} › ${cat.nom}'),
             () async {
+              // Le champ quitté ne reprend pas la main au retour : le
+              // clavier se rouvrait et cachait le bouton d'ajout.
+              FocusManager.instance.primaryFocus?.unfocus();
               final id = await choisirCategorie(context, ref, genre: Genre.depense);
+              FocusManager.instance.primaryFocus?.unfocus();
               if (id != null) setState(() => _categorie = id);
             },
             couleur: parent == null ? AppColors.vert : Color(parent.couleur),

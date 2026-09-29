@@ -288,7 +288,7 @@ module.exports = (O) => {
   const ops = [
     ['Jeudi 24 septembre', 'Esso Kerlann', -5158, 'car', K.transports],
     ['Mercredi 23 septembre', 'Uber Eats', -1662, 'resto', K.resto],
-    ['Mardi 22 septembre', 'Pharmacie Du Port', -769, 'medical', K.sante],
+    ['Mardi 22 septembre', 'Pharmacie du Port', -769, 'medical', K.sante],
     ['Lundi 21 septembre', 'Lidl Vannes', -3400, 'cart', K.courses],
     ['Samedi 19 septembre', 'Parking Republique', -360, 'car', K.transports],
   ];
@@ -305,11 +305,11 @@ module.exports = (O) => {
   // Logement : son total, sa part, ses sous-catégories.
   const lueur = (id, c) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}" stop-opacity="0.28"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></linearGradient>
     <rect x="${SX}" y="${SY}" width="${SL}" height="260" fill="url(#${id})"/>`;
-  const vides = ['Gaz', 'Eau', 'Assurance habitation', 'Charges diverses', 'Entretien et bricolage', 'Décoration', 'Mobilier', 'Électroménager'];
-  let pastilles = '', pxv = 28, pyv = 458;
+  const vides = ['Gaz', 'Eau', 'Assurance habitation', 'Charges diverses', 'Entretien et bricolage', 'Décoration', 'Mobilier', 'Électroménager', 'Extérieur et jardin', 'Autres'];
+  let pastilles = '', pxv = 28, pyv = 452;
   for (const n of vides) {
     const l = n.length * 5.7 + 22;
-    if (pxv + l > SL - 28) { pxv = 28; pyv += 32; }
+    if (pxv + l > SL - 28) { pxv = 28; pyv += 30; }
     pastilles += `<rect x="${x(pxv)}" y="${y(pyv)}" width="${l}" height="26" rx="13" fill="#1E1E1E" stroke="#FFFFFF" stroke-opacity="0.08"/>
       ${t(x(pxv + l / 2), y(pyv + 17), n, { taille: 10.5, couleur: APP.second, poids: 600, ancre: 'middle' })}`;
     pxv += l + 7;
@@ -335,11 +335,11 @@ module.exports = (O) => {
     <rect x="${x(30 + Math.round((SL - 60) * 0.934))}" y="${y(294)}" width="${Math.round((SL - 60) * 0.066)}" height="7" rx="3.5" fill="#7FC3FF"/>
     ${ligneSous(312, 'Loyer', 'key', 52000)}
     ${ligneSous(362, 'Électricité', 'bolt', 3677)}
-    ${t(x(30), y(444), 'Rien ce mois-ci', { taille: 11, couleur: APP.discret, poids: 600 })}
+    ${t(x(30), y(440), 'Rien ce mois-ci', { taille: 11, couleur: APP.discret, poids: 600 })}
     ${pastilles}`);
 
   // Loyer : ses opérations, jour par jour.
-  const ecranLoyer = page(T.loyer + d, T.foncia + d, `
+  const ecranLoyer = page(T.loyer + d, T.foncia + 0.025, `
     ${lueur('anLueurLoyer', K.logement)}
     ${barre('Loyer')}
     ${t(x(24), y(84), 'Logement  ›  Loyer', { taille: 11.5, couleur: APP.discret })}
@@ -355,7 +355,7 @@ module.exports = (O) => {
     ${t(x(68), y(py + 29), libelle, { taille: 12.5, couleur: APP.texte, poids: 600 })}
     ${t(x(SL - 44), y(py + 29), valeur, { taille: 12, couleur, poids: 700, ancre: 'end' })}
     ${ico('droite', x(SL - 32), y(py + 24), 14, APP.discret)}`;
-  const ecranOperation = page(T.foncia + d, 0.996, `
+  const ecranOperation = page(T.foncia + 0.025, 0.996, `
     ${barre('Foncia Loyer')}
     ${tuile(x(MIL), y(104), 60, 'key', K.logement)}
     ${t(x(MIL), y(170), eur(-52000), { taille: 31, couleur: APP.texte, poids: 800, ancre: 'middle' })}

@@ -20,7 +20,7 @@ module.exports = (O) => {
     { lib: 'CB LE FOURNIL 17/09', mt: '-3,80 €', statut: 'COMPTABILISÉE', id: 'id 7Q2K-0417', sorte: 'connue' },
     { lib: 'CB CARREFOUR MARKET 24/09', mt: '-54,20 €', statut: 'COMPTABILISÉE', id: 'id 7Q3H-2045', sorte: 'remplace' },
     { lib: 'PRLV SEPA FREE MOBILE', mt: '-19,99 €', statut: 'COMPTABILISÉE', id: 'id 7Q3F-1188', sorte: 'nouvelle' },
-    { lib: 'VIR VERS LIVRET A DE COMPTE COURANT', mt: '-100,00 €', statut: 'COMPTABILISÉE', id: 'id 7Q3M-3310', sorte: 'interne' },
+    { lib: 'VIR VERS LIVRET A DE CARTE BANCAIRE', mt: '-100,00 €', statut: 'COMPTABILISÉE', id: 'id 7Q3M-3310', sorte: 'interne' },
     { lib: 'CB SNCF CONNECT 26/09', mt: '-45,00 €', statut: 'EN ATTENTE', id: 'empreinte', sorte: 'attente' },
   ];
   const s = (i) => 0.16 + i * 0.11; // l'instant où chacune est jugée
@@ -118,7 +118,7 @@ module.exports = (O) => {
   const couleurs = { connue: DISCRET, remplace: OR, nouvelle: VERT, interne: INTERNE, attente: VERT };
   const verdicts = {
     connue: ['déjà connue', 'même identifiant : ignorée'],
-    remplace: ['remplace son attente', 'même montant, à 2 jours près'],
+    remplace: ['remplace son attente', 'même marchand, même montant'],
     nouvelle: ['nouvelle · +1', 'classée : Abonnements'],
     interne: ['nouvelle · +1', 'virement interne : Livret A'],
     attente: ['nouvelle · +1', 'en attente, classée : Transports'],
@@ -213,7 +213,7 @@ module.exports = (O) => {
   const faits = [
     ['Quand elle part', ['À l’ouverture, et à chaque retour dans l’appli', 'si la dernière a plus de dix minutes.', 'Sans bruit : un message s’il y a du neuf.']],
     ['Ce qu’elle relit', ['La première fois, les douze derniers mois.', 'Ensuite, depuis la dernière moins sept jours :', 'les retardataires sont rattrapées.']],
-    ['L’accès, 180 jours', ['Accordé par ta banque, puis à renouveler.', 'La carte de la banque prévient quinze jours', 'avant : un toucher, et c’est reparti.']],
+    ['L’accès, 180 jours', ['Accordé par ta banque, puis à renouveler.', 'La carte jaunit quinze jours avant ; ensuite,', '« Relier le compte », avec la même clé.']],
   ];
   const FY = 692, FL = 373, FH = 94;
   faits.forEach(([titre, lignes], k) => {
@@ -231,5 +231,5 @@ module.exports = (O) => {
   corps += t(jx + jl, FY + 40, 'encore 142 jours', { taille: 10.5, couleur: VERT, ancre: 'end' });
 
   svg('synchro.svg', 1280, 806, corps,
-    'La synchronisation à l’ouverture. Le téléphone s’ouvre par l’empreinte, l’accueil affiche Synchronisation…, et l’application demande à la banque les opérations depuis le 18 septembre, la dernière synchronisation moins sept jours. Cinq opérations reviennent. CB LE FOURNIL, 3,80 euros, a un identifiant déjà connu : elle est ignorée, rien ne compte deux fois. CB CARREFOUR MARKET, 54,20 euros, désormais comptabilisée, remplace l’opération en attente du même montant à deux jours près, et garde ce qui avait été fait à la main : le nom Courses de la semaine, la catégorie Courses et la note partagé avec Léa. PRLV SEPA FREE MOBILE, 19,99 euros, est nouvelle et classée dans Abonnements, Forfait mobile. VIR VERS LIVRET A DE COMPTE COURANT, 100 euros, est un virement interne, hors budget, et le Livret A passe de 2 960 à 3 060 euros. CB SNCF CONNECT, 45 euros, arrive en attente, classée dans Transports. Puis le solde est relu et comparé à zéro. Le compteur ne compte que les vraies nouvelles : trois, et l’accueil affiche 3 nouvelles opérations et Mis à jour le 26 sept. Elle part à l’ouverture et à chaque retour si la dernière a plus de dix minutes ; la première fois elle importe douze mois ; l’accès dure 180 jours et la carte de la banque prévient quinze jours avant.');
+    'La synchronisation à l’ouverture. Le téléphone s’ouvre par l’empreinte, l’accueil affiche Synchronisation…, et l’application demande à la banque les opérations depuis le 18 septembre, la dernière synchronisation moins sept jours. Cinq opérations reviennent. CB LE FOURNIL, 3,80 euros, a un identifiant déjà connu : elle est ignorée, rien ne compte deux fois. CB CARREFOUR MARKET, 54,20 euros, désormais comptabilisée, remplace l’opération en attente du même marchand et du même montant, à une semaine près, et garde ce qui avait été fait à la main : le nom Courses de la semaine, la catégorie Courses et la note partagé avec Léa. PRLV SEPA FREE MOBILE, 19,99 euros, est nouvelle et classée dans Abonnements, Forfait mobile. VIR VERS LIVRET A DE CARTE BANCAIRE, 100 euros, est un virement interne, hors budget, et le Livret A passe de 2 960 à 3 060 euros. CB SNCF CONNECT, 45 euros, arrive en attente, classée dans Transports. Puis le solde est relu et comparé à zéro. Le compteur ne compte que les vraies nouvelles : trois, et l’accueil affiche 3 nouvelles opérations et Mis à jour le 26 sept. Elle part à l’ouverture et à chaque retour si la dernière a plus de dix minutes ; la première fois elle importe douze mois ; l’accès dure 180 jours et la carte de la banque prévient quinze jours avant.');
 };

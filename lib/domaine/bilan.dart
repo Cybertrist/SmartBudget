@@ -55,20 +55,22 @@ class Bilan {
 ///
 /// [operations] contient celles du mois, et aussi toute dépense d'un autre
 /// mois qu'une entrée de celui-ci rembourse, et inversement : [liens] les
-/// relie. [categories] donne pour chaque identifiant sa catégorie.
+/// relie. [categories] donne pour chaque identifiant sa catégorie. Les mois
+/// suivent [calendrier] s'il est donné, sinon le jour fixe [debut].
 Bilan calculerBilan({
   required Mois mois,
   required List<Operation> operations,
   required List<Lien> liens,
   required Map<int, Categorie> categories,
   int debut = 1,
+  Calendrier? calendrier,
   Map<int, int>? retraitsDepenses,
 }) {
   final bilan = Bilan(mois);
   final parId = {for (final o in operations) o.id: o};
 
   Mois moisDe(Operation o) =>
-      o.moisCompte != null ? Mois.lire(o.moisCompte!) : Mois.de(o.le, debut: debut);
+      o.moisCompte != null ? Mois.lire(o.moisCompte!) : calendrier?.de(o.le) ?? Mois.de(o.le, debut: debut);
 
   Categorie? racine(int id) {
     final c = categories[id];

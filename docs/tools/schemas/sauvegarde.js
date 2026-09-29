@@ -19,7 +19,8 @@ module.exports = (O) => {
   corps += t(telephones.B + PL / 2, 90, 'UN AUTRE TÉLÉPHONE', { taille: 11.5, couleur: DISCRET, police: MONO, poids: 700, ancre: 'middle', extra: 'letter-spacing="2"' });
 
   // Un écran visible de [de] à [a].
-  const ecran = (de, a, contenu) => `<g opacity="0">${visible(C, de, a, 0.003)}${contenu}</g>`;
+  // Il n'entre qu'une fois l'écran d'avant sorti : aucun fondu ne se superpose.
+  const ecran = (de, a, contenu) => `<g opacity="0">${visible(C, de < 0.01 ? de : de + 0.006, a, 0.003)}${contenu}</g>`;
 
   // Les briques d'écran, pour un téléphone donné.
   const briques = (X) => {
@@ -112,7 +113,7 @@ module.exports = (O) => {
       const by = cy + h - 50;
       s += `${t(SX + SL - 150, by + 23, 'Annuler', { taille: 12.5, couleur: VERT, poids: 700, ancre: 'middle' })}
         <rect x="${SX + SL - 110}" y="${by}" width="88" height="36" rx="18" fill="${VERT}"/>
-        ${t(SX + SL - 66, by + 23, 'Enregistrer', { taille: 12, couleur: '#000000', poids: 800, ancre: 'middle' })}`;
+        ${t(SX + SL - 66, by + 23, nouvelle ? 'Chiffrer' : 'Restaurer', { taille: 12, couleur: '#000000', poids: 800, ancre: 'middle' })}`;
       // Le clavier.
       const ky = SY + SH - 168;
       s += `<rect x="${SX}" y="${ky}" width="${SL}" height="168" fill="#1A1A1A"/>`;

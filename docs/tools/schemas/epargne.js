@@ -149,8 +149,8 @@ module.exports = (O) => {
     ${surtitre(SX + 28, py + 78, 'NOM')}
     ${champ(py + 88, 'Livret A', APP.texte)}
     ${surtitre(SX + 28, py + 140, 'SUR TON RELEVÉ')}
-    ${t(SX + 28, SY + py + 155, 'Le mot du libellé quand tu verses sur ce livret.', { taille: 9.5, couleur: APP.discret })}
-    ${t(SX + 28, SY + py + 168, 'Laisse vide si c’est le nom.', { taille: 9.5, couleur: APP.discret })}
+    ${t(SX + 28, SY + py + 155, 'Le mot du libellé quand tu verses sur ce livret.', { taille: 10.5, couleur: APP.discret })}
+    ${t(SX + 28, SY + py + 169, 'Laisse vide si c’est le nom.', { taille: 10.5, couleur: APP.discret })}
     ${champ(py + 176, 'LIVRET A', '#666666')}
     <rect x="${SX + 14}" y="${SY + SH - 62}" width="${SL - 28}" height="46" rx="23" fill="${VERT}"/>
     ${t(SX + SL / 2, SY + SH - 34, 'Ajouter le livret', { taille: 14.5, couleur: '#000000', poids: 800, ancre: 'middle' })}
@@ -196,6 +196,8 @@ module.exports = (O) => {
   corps += `<rect x="420" y="${LY}" width="800" height="${LH}" rx="14" fill="${CARTE}" stroke="${BORD}"/>`;
   corps += t(444, LY + 28, 'SUR LE COMPTE COURANT', { taille: 12, couleur: DISCRET, police: MONO, poids: 700, extra: 'letter-spacing="2"' });
   corps += t(1196, LY + 28, 'VIR VERS <destination> DE <source>', { taille: 12, couleur: INTERNE, police: MONO, ancre: 'end' });
+  // En attendant le premier virement, le cadre dit ce qu'il va montrer.
+  corps += `<g>${fondu('opacity', C, [[0, 1], [v1 - 0.066, 1], [v1 - 0.062, 0], [0.996, 0], [1, 1]])}${t(820, LY + 104, 'Les virements du compte courant s’afficheront ici, lus un à un.', { taille: 13, couleur: DISCRET, ancre: 'middle' })}</g>`;
   const lignes = [
     ['VIR VERS LIVRET A DE CARTE BANCAIRE', '-200,00 €', 'vers le Livret A, depuis le compte courant', 'mis de côté', VERT, v1],
     ['VIR VERS CARTE BANCAIRE DE LIVRET A', '+100,00 €', 'vers le compte courant, depuis le Livret A', 'pioché', ROUGE, v2],

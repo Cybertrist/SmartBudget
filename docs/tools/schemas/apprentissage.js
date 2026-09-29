@@ -91,8 +91,8 @@ module.exports = (O) => {
     ${t(LX + 54, y + 43, sous, { taille: 9.5, couleur: APP.discret })}
     ${t(LX + LL - 12, y + 27, montant, { taille: 12.5, couleur, poids: 700, ancre: 'end' })}
     ${entree
-      ? action(LX + 54, y + 54, 56, 'Classer', VERT) + action(LX + 116, y + 54, 64, 'Virem…', INTERNE) + action(LX + 186, y + 54, 58, 'Garder', APP.second)
-      : action(LX + 54, y + 54, 84, 'Classer', VERT) + action(LX + 144, y + 54, 100, 'Virement int…', INTERNE)}`;
+      ? action(LX + 54, y + 54, 56, 'Classer', VERT) + action(LX + 116, y + 54, 64, 'Interne', INTERNE) + action(LX + 186, y + 54, 58, 'Garder', APP.second)
+      : action(LX + 54, y + 54, 84, 'Classer', VERT) + action(LX + 144, y + 54, 100, 'Interne', INTERNE)}`;
   const listeY = SY + 124;
   const tete = `${retour('À vérifier')}
     ${t(SX + 18, SY + 74, 'Ces opérations n’ont pas été reconnues.', { taille: 11, couleur: APP.second })}
@@ -121,19 +121,23 @@ module.exports = (O) => {
 
   // Le choix de la catégorie : une carte au centre, Loisirs, puis Hobbies.
   const racines = [
-    ['Courses', COURSES], ['Restaurants et sorties', '#FFC857'], ['Logement', LOGEMENT], ['Transports', '#9B8CFF'],
-    ['Abonnements', '#FF8FD1'], ['Shopping', '#FF9F5A'], ['Santé', '#4DE2D0'], ['Soins et beauté', '#F5A3FF'], ['Loisirs', LOISIRS],
+    ['Courses', COURSES, G.courses], ['Restaurants et sorties', '#FFC857', 'M-5 -10 V10 M-8 -10 V-4 A3 3 0 0 0 -2 -4 V-10 M5 10 V-10 C9 -8 9 -1 5 0'],
+    ['Logement', LOGEMENT, G.logement], ['Transports', '#9B8CFF', 'M-10 3 V-2 L-7 -8 H7 L10 -2 V3 Z M-7 3 V7 M7 3 V7 M-10 -1 H10'],
+    ['Abonnements', '#FF8FD1', 'M8 -4 A9 9 0 1 0 9 3 M8 -10 V-4 H2'], ['Shopping', '#FF9F5A', 'M-8 -4 H8 L7 10 H-7 Z M-4 -4 V-6 A4 4 0 0 1 4 -6 V-4'],
+    ['Santé', '#4DE2D0', 'M-3 -9 H3 V-3 H9 V3 H3 V9 H-3 V3 H-9 V-3 H-3 Z'], ['Soins et beauté', '#F5A3FF', 'M0 -10 C6 -3 8 1 8 4 A8 8 0 0 1 -8 4 C-8 1 -6 -3 0 -10 Z'], ['Loisirs', LOISIRS, G.loisirs],
   ];
-  const DX = SX + 14, DL = SL - 28, DY = SY + 70;
-  const rond = (x, y, c) => `<rect x="${x}" y="${y}" width="24" height="24" rx="7" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-opacity="0.5"/>`;
+  const DX = SX + 14, DL = SL - 28, DY = SY + 118;
+    // Chaque racine a son icône, en traits, comme dans l'application.
+  const rond = (x, y, c, glyphe) => `<rect x="${x}" y="${y}" width="24" height="24" rx="7" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-opacity="0.5"/>
+    <g transform="translate(${x + 12},${y + 12}) scale(0.62)">${typeof glyphe === 'function' ? glyphe(c) : `<path d="${glyphe}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`}</g>`;
   ecran += g(T.choix, T.classe, `
     <rect x="${SX}" y="${SY}" width="${SL}" height="${SH}" fill="#000" fill-opacity="0.7"/>
     <rect x="${DX}" y="${DY}" width="${DL}" height="420" rx="22" fill="${SURFACE}"/>
-    ${g(T.choix, T.sous, `${racines.map(([n, c], i) => `${rond(DX + 16, DY + 16 + i * 44, c)}
+    ${g(T.choix, T.sous, `${racines.map(([n, c, glyphe], i) => `${rond(DX + 16, DY + 16 + i * 44, c, glyphe)}
       ${t(DX + 52, DY + 33 + i * 44, n, { taille: 13, couleur: APP.texte, poids: 700 })}
       <path d="M${DX + DL - 26} ${DY + 25 + i * 44} l5 5 l5 -5" fill="none" stroke="${APP.discret}" stroke-width="1.6"/>`).join('')}
       ${toucher(DX + 80, DY + 16 + 8 * 44 + 12, C, T.loisirs)}`)}
-    ${g(T.sous, T.classe, `${rond(DX + 16, DY + 16, LOISIRS)}
+    ${g(T.sous, T.classe, `${rond(DX + 16, DY + 16, LOISIRS, G.loisirs)}
       ${t(DX + 52, DY + 33, 'Loisirs', { taille: 13, couleur: APP.texte, poids: 700 })}
       <path d="M${DX + DL - 26} ${DY + 30} l5 -5 l5 5" fill="none" stroke="${APP.discret}" stroke-width="1.6"/>
       ${['Sport et activités', 'Sports d’hiver', 'Voyages et vacances', 'Hôtels et hébergement', 'Sorties culturelles', 'Cinéma et concerts', 'Divertissements', 'Hobbies'].map((n, i) => `
@@ -334,5 +338,5 @@ module.exports = (O) => {
   corps += t(RX, 712, 'Renommer ne touche pas à la clé : la règle, le nom et la répétition restent attachés au marchand.', { taille: 13, couleur: DISCRET });
 
   svg('apprentissage.svg', 1280, 740, corps,
-    'À vérifier, et la correction apprise, sur un téléphone animé. L’accueil signale 4 opérations à vérifier. La liste À vérifier montre celles que rien n’a reconnues, chacune avec Classer et Virement interne, et Garder pour une entrée reçue. On classe Sumup Atelier Kernevel du 8 septembre dans Loisirs, Hobbies : la correction devient une règle attachée à la clé du marchand, SUMUP ATELIER KERNEVEL, tirée du libellé PAIEMENT PAR CARTE X0000 SUMUP *ATELIER KERNEVEL 07/09. L’opération est classée à la main et pointée ; celle du 12 août, du même marchand et pas classée à la main, suit la règle, et les deux quittent la liste. On garde ensuite le remboursement de 25 euros reçu, qui quitte la liste lui aussi. Sur la fiche de l’opération, Renommer en Atelier Kernevel renomme toutes les opérations du marchand, passées et à venir. À la synchro suivante, l’opération du 7 octobre arrive déjà classée dans Hobbies par la règle apprise, déjà nommée Atelier Kernevel, sans passer par À vérifier. Une opération classée à la main n’est plus jamais touchée par une règle.');
+    'À vérifier, et la correction apprise, sur un téléphone animé. L’accueil signale 4 opérations à vérifier. La liste À vérifier montre celles que rien n’a reconnues, chacune avec Classer et Interne, et Garder pour une entrée reçue. On classe Sumup Atelier Kernevel du 8 septembre dans Loisirs, Hobbies : la correction devient une règle attachée à la clé du marchand, SUMUP ATELIER KERNEVEL, tirée du libellé PAIEMENT PAR CARTE X0000 SUMUP *ATELIER KERNEVEL 07/09. L’opération est classée à la main et pointée ; celle du 12 août, du même marchand et pas classée à la main, suit la règle, et les deux quittent la liste. On garde ensuite le remboursement de 25 euros reçu, qui quitte la liste lui aussi. Sur la fiche de l’opération, Renommer en Atelier Kernevel renomme toutes les opérations du marchand, passées et à venir. À la synchro suivante, l’opération du 7 octobre arrive déjà classée dans Hobbies par la règle apprise, déjà nommée Atelier Kernevel, sans passer par À vérifier. Une opération classée à la main n’est plus jamais touchée par une règle.');
 };

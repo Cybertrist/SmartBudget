@@ -342,12 +342,32 @@ void main() {
         _op(le(1, 27), 'VIR SEPA SALAIRE ACME 3', 1800),
       ]);
       expect(await _ops.ajusterDebutMois(), isTrue);
-      expect(await _reglages.debutMois(), 26);
+      // Le jour habituel : celui du milieu, pas le plus tôt.
+      expect(await _reglages.debutMois(), 27);
       // Choisi à la main : le salaire ne le déplace plus.
       await _reglages.ecrire('debut_mois_auto', '0');
       await _reglages.ecrire('debut_mois', '1');
       expect(await _ops.ajusterDebutMois(), isFalse);
       expect(await _reglages.debutMois(), 1);
+    });
+
+    test('un salaire versé avant Noël ouvre janvier, pas un second décembre', () async {
+      await _reglages.ecrire('debut_mois', '25');
+      final compte = await _comptes.courant();
+      await _ops.importer(compte.id, [
+        _op('2025-10-24', 'VIR SEPA SALAIRE ACME OCTOBRE', 1629.13),
+        _op('2025-11-25', 'VIR SEPA SALAIRE ACME NOVEMBRE', 1629.13),
+        _op('2025-12-05', 'PAIEMENT PAR CARTE X4057 CARREFOUR 04/12', -40),
+        _op('2025-12-19', 'VIR SEPA SALAIRE ACME DECEMBRE', 2990.75),
+        _op('2025-12-20', 'PAIEMENT PAR CARTE X4057 CARREFOUR 19/12', -60),
+        _op('2026-01-23', 'VIR SEPA SALAIRE ACME JANVIER', 1629.13),
+      ]);
+      final decembre = await _bilan.du(const Mois(2025, 12)).timeout(const Duration(seconds: 5));
+      expect(decembre.entrees, 162913, reason: 'Un seul salaire en décembre.');
+      expect(decembre.sorties, 4000);
+      final janvier = await _bilan.du(const Mois(2026, 1));
+      expect(janvier.entrees, 299075, reason: 'Le salaire du 19 décembre finance janvier.');
+      expect(janvier.sorties, 6000);
     });
 
     test('le mois qui commence le jour de paie', () async {

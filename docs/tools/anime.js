@@ -66,8 +66,36 @@ function svg(nom, largeur, hauteur, corps, titre) {
 <rect width="${largeur}" height="${hauteur}" rx="16" fill="url(#lueur)"/>
 ${corps}
 </svg>`;
-  fs.writeFileSync(path.join(SORTIE, nom), contenu);
-  console.log(`  ${nom}  ${(contenu.length / 1024).toFixed(1)} Ko`);
+  const leger = alleger(contenu);
+  fs.writeFileSync(path.join(SORTIE, nom), leger);
+  console.log(`  ${nom}  ${(leger.length / 1024).toFixed(1)} Ko`);
+}
+
+/// Allège un SVG sans rien changer à ce qu'on voit. Chrome redessine toute
+/// l'image à chaque image d'une animation, et un élément transparent lui
+/// coûte presque autant qu'un visible : pendant qu'il est à opacité 0, il
+/// passe en display none et sort du rendu. Les nombres gardent trois
+/// décimales, largement assez pour un pixel ou un instant.
+function alleger(s) {
+  // Les instants (keyTimes) gardent toute leur précision : arrondis, deux
+  // instants voisins pourraient devenir égaux, et Chrome ignorerait
+  // l'animation.
+  s = s.replace(/(keyTimes="[^"]*")|(\d\.\d{3})\d+/g, (m, instants, court) => instants || court);
+  // Un élément dont le premier enfant anime son opacité.
+  return s.replace(/(<(?:g|rect|circle|path|text|line)\b[^>]*>)(\s*)<animate attributeName="opacity" dur="([\d.]+)s" repeatCount="indefinite" keyTimes="([^"]*)" values="([^"]*)"([^>]*)\/>/g,
+    (m, ouverture, espace, dur, kt, vals, reste) => {
+      const k = kt.split(';'), v = vals.split(';').map(Number);
+      if (k.length !== v.length || v.some(Number.isNaN)) return m;
+      const discret = /calcMode="discrete"/.test(reste);
+      const cache = v.map((x, i) => (discret || i === v.length - 1 ? x === 0 : x === 0 && v[i + 1] === 0));
+      if (!cache.some(Boolean)) return m;
+      // Au départ, l'élément est déjà caché s'il commence transparent. Une
+      // balise fermante sur elle-même n'est pas le parent de l'animation :
+      // l'animation vaut pour le parent, qu'on ne touche pas.
+      const debut = cache[0] && !ouverture.endsWith('/>') ? ouverture.replace(/>$/, ' display="none">') : ouverture;
+      return `${debut}${espace}<animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="${kt}" values="${vals}"${reste}/>`
+        + `<animate attributeName="display" dur="${dur}s" repeatCount="indefinite" keyTimes="${kt}" values="${cache.map((c) => (c ? 'none' : 'inline')).join(';')}" calcMode="discrete"/>`;
+    });
 }
 
 /// Un texte.
@@ -265,7 +293,7 @@ const P = {
   const qs = [
     ['Virement interne ?', 'VIR VERS … DE …', 'non', 0.3],
     ['Règle apprise ?', 'une correction passée', 'non', 0.42],
-    ['Dictionnaire', '250 marchands connus', 'oui', 0.54],
+    ['Dictionnaire', 'plus de 200 marchands', 'oui', 0.54],
     ['À classer', 'si rien ne répond', 'saut', 0.66],
   ];
   const l = 268, y = 206, h = 86;
@@ -328,7 +356,7 @@ const P = {
   const a = 60;
   corps += col(a, 'Un virement vers le livret', INTERNE);
   corps += t(a + 22, 158, 'VIR VERS LIVRET A', { taille: 12.5, couleur: TITRE, police: MONO });
-  corps += t(a + 22, 176, 'DE COMPTE COURANT', { taille: 12.5, couleur: TITRE, police: MONO });
+  corps += t(a + 22, 176, 'DE CARTE BANCAIRE', { taille: 12.5, couleur: TITRE, police: MONO });
   corps += `<rect x="${a + 22}" y="198" width="120" height="58" rx="11" fill="#0F151D" stroke="${BORD}"/>${t(a + 82, 222, 'Compte', { taille: 12, ancre: 'middle' })}${t(a + 82, 240, 'courant', { taille: 12, ancre: 'middle' })}`;
   corps += `<rect x="${a + 228}" y="198" width="120" height="58" rx="11" fill="#0F151D" stroke="${BLEU}" stroke-opacity="0.5"/>${t(a + 288, 231, 'Livret A', { taille: 12.5, couleur: BLEU, ancre: 'middle' })}`;
   corps += fil(`M${a + 144} 227 H${a + 226}`);
@@ -349,8 +377,9 @@ const P = {
       <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${TITRE}" text-anchor="end">${tr(`-${total} €`)}${paliers('opacity', C, [[0, 1], [debut + 0.12, 0], [0.95, 1]])}</text>
       <text x="${b + 348}" y="${y}" font-family="${MONO}" font-size="13.5" font-weight="700" fill="${ROSE}" text-anchor="end" opacity="0">${tr(`reste ${reste} €`)}${paliers('opacity', C, [[0, 0], [debut + 0.12, 1], [0.95, 0]])}</text>
       <rect x="${b + 22}" y="${y + 10}" width="${L}" height="9" rx="4.5" fill="#1D2530"/>
+      <rect x="${b + 22}" y="${y + 10}" width="${L}" height="9" rx="4.5" fill="none" stroke="${ROSE}" stroke-opacity="0.55" stroke-dasharray="3 3" opacity="0">${visible(C, debut + 0.02, 0.95)}</rect>
       <rect x="${b + 22}" y="${y + 10}" width="${w0}" height="9" rx="4.5" fill="${ROSE}">${fondu('width', C, [[0, w0], [debut, w0], [debut + 0.12, w1], [0.95, w1], [0.99, w0], [1, w0]])}</rect>
-      <g opacity="0">${visible(C, debut + 0.02, 0.95)}${t(b + 22, y + 38, `${part} € du chèque`, { taille: 11.5, couleur: ROSE })}</g>`;
+      <g opacity="0">${visible(C, debut + 0.02, 0.95)}${t(b + 348, y + 38, `${part} € remboursés par le chèque`, { taille: 11.5, couleur: TEXTE, ancre: 'end' })}</g>`;
   };
   corps += barre(222, 'Billet de train', 380, 80, 300, 0.12);
   corps += barre(286, 'Restaurant', 260, 60, 200, 0.3);
@@ -375,7 +404,7 @@ const P = {
   corps += t(c + 22, 396, 'Le même billet ne compte qu’une fois.', { taille: 12, couleur: DISCRET });
 
   svg('mouvements.svg', 1280, 440, corps,
-    'Trois pièges d’un relevé, et comment l’application les défait. Un virement vers le livret A, lu dans VIR VERS LIVRET A DE COMPTE COURANT : l’argent passe du compte courant au livret, il est hors budget, compté 200 euros mis de côté, et le budget reste inchangé. Un chèque de 500 euros qui rembourse : 300 euros vont au billet de train de 380 euros, dont il reste 80, et 200 au restaurant de 260 euros, dont il reste 60 ; le chèque ne compte pas comme un revenu. Des espèces : un retrait de 50 euros, puis 12 euros au marché ; les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38 euros, et les sorties du mois restent 50 euros, pas 62.');
+    'Trois pièges d’un relevé, et comment l’application les défait. Un virement vers le livret A, lu dans VIR VERS LIVRET A DE CARTE BANCAIRE : l’argent passe du compte courant au livret, il est hors budget, compté 200 euros mis de côté, et le budget reste inchangé. Un chèque de 500 euros qui rembourse : 300 euros vont au billet de train de 380 euros, dont il reste 80, et 200 au restaurant de 260 euros, dont il reste 60 ; le chèque ne compte pas comme un revenu. Des espèces : un retrait de 50 euros, puis 12 euros au marché ; les retraits tombent à 38, les courses montent à 12, le portefeuille passe de 50 à 38 euros, et les sorties du mois restent 50 euros, pas 62.');
 }
 
 // ------------------------------------------------------------------------
@@ -405,7 +434,7 @@ const P = {
   corps += `<rect x="60" y="364" width="1160" height="1" fill="${BORD}"/>`;
   corps += carte(60, 392, L, H, 'Ta phrase', 'choisie à l’export', OR, { icone: P.phrase, allume: [0.5, 0.75], cycle: C });
   corps += carte(360, 392, L, H, 'PBKDF2', '210 000 tours, sel', OR, { icone: P.cadenas, allume: [0.6, 0.85], cycle: C });
-  corps += carte(660, 392, 560, H, 'smartbudget-2026-09-24.sbx', 'AES-GCM : SBEX1 · sel 16 · nonce 12 · chiffré · MAC 16, relisible ailleurs', OR, { icone: P.fichier, allume: [0.7, 0.95], cycle: C });
+  corps += carte(660, 392, 560, H, 'smartbudget-2026-09-26.sbx', 'AES-GCM : SBEX1 · sel 16 · nonce 12 · chiffré · MAC 16, relisible ailleurs', OR, { icone: P.fichier, allume: [0.7, 0.95], cycle: C });
   corps += fil('M310 430 H360 M610 430 H660');
   corps += t(640, 508, 'Hors de la veille du solde, toutes les six heures, la clé n’entre en mémoire qu’après l’empreinte.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('chiffrement.svg', 1280, 530, corps,
@@ -421,8 +450,8 @@ const P = {
   // Les cinq pages de la pile.
   const pages = [
     ['VUE D’ENSEMBLE', 'Analyse', 'anneau'],
-    ['SEPTEMBRE', 'Dépenses', ['Logement', 'Courses', 'Transports', 'Restaurants']],
-    ['DÉPENSES', 'Logement', ['Loyer', 'Électricité']],
+    ['SEPTEMBRE', 'Sorties', ['Logement', 'Courses', 'Transports', 'Restaurants']],
+    ['SEPTEMBRE', 'Logement', ['Loyer', 'Électricité']],
     ['LOGEMENT', 'Loyer', ['Foncia Loyer']],
     ['LOYER', 'Foncia Loyer', 'operation'],
   ];
@@ -464,7 +493,8 @@ const P = {
   for (let i = 0; i < 5; i++) bande += volet(i, i * pas);
   // Les lignes surlignées, dans le volet de gauche, au moment où elles s'ouvrent.
   const surligne = (i, k, de, a) => `<rect x="${i * pas + 18}" y="${Y0 + 94 + k * 48}" width="${V - 36}" height="44" rx="11" fill="${couleurs[i]}" fill-opacity="0.10" stroke="${couleurs[i]}" stroke-opacity="0.7" opacity="0">${visible(C, de, a)}</rect>`;
-  bande += surligne(1, 0, 0.12, 0.3) + surligne(2, 0, 0.28, 0.44) + surligne(3, 0, 0.44, 0.7);
+  // Chaque ligne reste surlignée tant que la page qu'elle ouvre est ouverte.
+  bande += surligne(1, 0, 0.12, 0.87) + surligne(2, 0, 0.28, 0.75) + surligne(3, 0, 0.44, 0.63);
   let corps = '';
   corps += t(60, 52, 'L’ÉCRAN DÉPLIÉ', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
   corps += t(222, 52, 'Toucher une ligne pousse tout vers la gauche. Glisser depuis le bord referme le dernier volet.', { taille: 14 });
@@ -516,19 +546,21 @@ const P = {
   corps += t(px, Y0 + 12, 'PAGES OUVERTES', { taille: 11, couleur: DISCRET, police: MONO, extra: 'letter-spacing="2"' });
   // Le fil qui relie les pages, de la plus ancienne à la plus récente.
   corps += `<line x1="${px + 14}" y1="${py + ph / 2}" x2="${px + 14}" y2="${py + ph / 2}" stroke="${FIL}" stroke-width="2">
-    ${fondu('y2', C, instants.map((ins, i) => [ins, py + ph / 2 + (nombres[i] - 1) * pas_]))}</line>`;
-  pages.forEach((p, k) => {
+    ${fondu('y2', C, instants.map((ins, i) => [ins, py + ph / 2 + (nombres[i] - 2) * pas_]))}</line>`;
+  // L'analyse occupe les deux premiers volets : c'est une seule page.
+  const pile = [pages[0], ...pages.slice(2)];
+  pile.forEach((p, k) => {
     const y = py + k * pas_;
-    const op = nombres.map((n) => (k < n ? 1 : 0));
+    const op = nombres.map((n) => (k < n - 1 ? 1 : 0));
     corps += `<g>${fondu('opacity', C, instants.map((ins, i) => [ins, op[i]]))}
-      <circle cx="${px + 14}" cy="${y + ph / 2}" r="5" fill="${FOND}" stroke="${couleurs[k]}" stroke-width="2"/>
+      <circle cx="${px + 14}" cy="${y + ph / 2}" r="5" fill="${FOND}" stroke="${BLEU}" stroke-width="2"/>
       <rect x="${px + 30}" y="${y}" width="${pl - 30}" height="${ph}" rx="9" fill="${CARTE}" stroke="${BORD}"/>
       ${t(px + 44, y + 24, p[1], { taille: 13, couleur: TITRE })}
     </g>`;
   });
   corps += t(640, 440, 'Les deux dernières pages ouvertes se montrent côte à côte ; la ligne ouverte à droite reste surlignée à gauche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
   svg('volets.svg', 1280, 462, corps,
-    'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Toucher Logement dans la liste des dépenses pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes s’allonge puis se vide.');
+    'L’écran déplié. Une tablette avec son rail à gauche montre deux volets côte à côte. Sur l’analyse, l’anneau à gauche et les sorties à droite, toucher Logement pousse tout vers la gauche et ouvre Logement à droite ; puis Loyer ; puis l’opération Foncia Loyer. La ligne ouverte reste surlignée dans le volet de gauche. Le geste retour, un toucher vert qui file du bord droit vers la gauche, referme les volets un à un, jusqu’à l’analyse. À droite, la liste des pages ouvertes, Analyse, Logement, Loyer, Foncia Loyer, s’allonge puis se vide.');
 }
 
 // ------------------------------------------------------------------------
@@ -615,7 +647,11 @@ const P = {
     corps += `<g opacity="${i === 0 ? 1 : 0}">${paliers('opacity', C, [[0, i === 0 ? 1 : 0], ...(i === 0 ? [] : [[de, 1]]), ...(a < 1 ? [[a, 0]] : [])])}
       ${t(px + pw / 2, 172, heure, { taille: 44, couleur: TITRE, poids: 300, ancre: 'middle' })}</g>`;
   });
-  corps += t(px + pw / 2, 198, 'Écran verrouillé', { taille: 12, couleur: DISCRET, ancre: 'middle' });
+  // Le jour, sous l'heure : lundi, mardi, puis mercredi.
+  const jours = [['Lundi · écran verrouillé', 0, instant(3)], ['Mardi · écran verrouillé', instant(3), instant(7)], ['Mercredi · écran verrouillé', instant(7), 1]];
+  for (const [jour, de, a] of jours) {
+    corps += `<g opacity="${de === 0 ? 1 : 0}">${paliers('opacity', C, [[0, de === 0 ? 1 : 0], ...(de === 0 ? [] : [[de, 1]]), ...(a < 1 ? [[a, 0]] : [])])}${t(px + pw / 2, 198, jour, { taille: 12, couleur: DISCRET, ancre: 'middle' })}</g>`;
+  }
   const s = instant(3);
   corps += `<g opacity="0">
     ${fondu('opacity', C, [[0, 0], [s, 0], [s + 0.02, 1], [fin, 1], [0.98, 0], [1, 0]])}
@@ -624,7 +660,7 @@ const P = {
     <rect x="${px + 20}" y="222" width="${pw - 40}" height="78" rx="18" fill="#1A2230" stroke="${ROUGE}" stroke-opacity="0.45"/>
     <circle cx="${px + 46}" cy="248" r="13" fill="${ROUGE}" fill-opacity="0.18" stroke="${ROUGE}"/>
     <path d="M${px + 40} 254 v-4 M${px + 46} 254 v-9 M${px + 52} 254 v-13" stroke="${ROUGE}" stroke-width="3" stroke-linecap="round"/>
-    ${t(px + 68, 244, 'Smart Budget · maintenant', { taille: 10.5, couleur: DISCRET })}
+    ${t(px + 68, 244, 'Smart Budget · mardi 00:04', { taille: 10.5, couleur: DISCRET })}
     ${t(px + 68, 262, 'Compte courant en négatif', { taille: 13, couleur: TITRE, poids: 700 })}
     ${t(px + 68, 282, `Ton compte courant est à ${montant(-4210)}.`, { taille: 12, couleur: TEXTE })}
   </g>`;
@@ -689,7 +725,8 @@ const pastille = (x, y, initiales, couleur) =>
   const SX = PX + 12, SY = PY + 16, SL = PL - 24, SH = PH - 32;
   let corps = '';
   corps += t(60, 52, 'CHOISIR ET RELIER SA BANQUE', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
-  corps += t(360, 52, 'Tout part des réglages. Une dizaine de minutes la première fois, puis plus rien à faire pendant 180 jours.', { taille: 14 });
+  // Le sous-titre suit la longueur du titre, qui change en anglais.
+  corps += t(Math.round(66 + tr('CHOISIR ET RELIER SA BANQUE').length * 10.9 + 24), 52, 'Tout part des réglages. Une dizaine de minutes la première fois, puis plus rien à faire pendant 180 jours.', { taille: 14 });
 
   // Le téléphone.
   corps += `<rect x="${PX}" y="${PY}" width="${PL}" height="${PH}" rx="40" fill="#07090C" stroke="#2F3A47" stroke-width="2"/>
@@ -711,14 +748,15 @@ const pastille = (x, y, initiales, couleur) =>
     <g transform="translate(${SX + 34},${SY + 100})">${P.banque(VERT)}</g>
     ${t(SX + 80, SY + 110, 'Ta banque', { taille: 15, couleur: APP.texte, poids: 800 })}
     ${t(SX + 80, SY + 128, 'Choisis ta banque, puis', { taille: 11.5, couleur: APP.second })}
-    ${t(SX + 80, SY + 144, 'SmartBudget te guide pour la relier.', { taille: 11.5, couleur: APP.second })}
-    ${pilule(SX + 28, SY + 170, 170, 40, 'Choisir la banque', VERT)}
+    ${t(SX + 80, SY + 143, 'SmartBudget te guide', { taille: 11.5, couleur: APP.second })}
+    ${t(SX + 80, SY + 158, 'pour la relier.', { taille: 11.5, couleur: APP.second })}
+    ${pilule(SX + 28, SY + 178, 170, 40, 'Choisir la banque', VERT)}
     ${carteApp(SY + 256, 170)}
     ${t(SX + 30, SY + 286, 'BUDGET', { taille: 11, couleur: APP.second, poids: 700, extra: 'letter-spacing="2"' })}
-    ${['Budget mensuel', 'Objectif d’épargne', 'Le mois commence le'].map((s, i) =>
+    ${['Budget mensuel', 'Objectif d’épargne', 'Début du mois'].map((s, i) =>
       `<line x1="${SX + 28}" y1="${SY + 300 + i * 40}" x2="${SX + SL - 28}" y2="${SY + 300 + i * 40}" stroke="${APP.trait}"/>
       ${t(SX + 30, SY + 326 + i * 40, s, { taille: 13, couleur: APP.texte, poids: 600 })}`).join('')}
-    ${toucher(SX + 113, SY + 190, C, dans(0, 0.7))}
+    ${toucher(SX + 113, SY + 198, C, dans(0, 0.7))}
   </g>`;
 
   // 2. La liste des banques : la recherche filtre, le doigt choisit.
@@ -826,7 +864,7 @@ const pastille = (x, y, initiales, couleur) =>
     ${carteApp(SY + 76, 168)}
     <rect x="${SX + 28}" y="${SY + 94}" width="40" height="40" rx="12" fill="${VERT}" fill-opacity="0.14" stroke="${VERT}" stroke-opacity="0.5"/>
     <g transform="translate(${SX + 34},${SY + 100})">${P.banque(VERT)}</g>
-    ${t(SX + 80, SY + 110, 'Crédit Mutuel de Bretagne', { taille: 13.5, couleur: APP.texte, poids: 800 })}
+    ${t(SX + 80, SY + 110, 'Crédit Mutuel de Bretagne', { taille: 12.5, couleur: APP.texte, poids: 800 })}
     ${t(SX + 80, SY + 128, 'Synchronisé aujourd’hui', { taille: 11.5, couleur: VERT })}
     ${t(SX + 80, SY + 144, 'accès encore 180 jours', { taille: 11.5, couleur: VERT })}
     ${pilule(SX + 28, SY + 172, 128, 38, 'Synchroniser', VERT)}

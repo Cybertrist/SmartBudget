@@ -210,11 +210,81 @@ void main() {
   group('jour du salaire', () {
     DateTime d(int m, int j) => DateTime(2026, m, j);
     test('un salaire du 28 ouvre le mois le 28', () => expect(jourDuSalaire([d(6, 28), d(7, 28), d(8, 28)]), 28));
-    test('versé avant un week-end, le plus tôt compte', () => expect(jourDuSalaire([d(6, 28), d(7, 26), d(8, 28)]), 26));
+    test('un salaire en avance ne déplace pas le jour habituel', () => expect(jourDuSalaire([d(6, 28), d(7, 26), d(8, 28)]), 28));
     test('le 30 ou le 31 ouvre le mois le 28', () => expect(jourDuSalaire([d(6, 30), d(7, 31)]), 28));
     test('un salaire en retard, le 2, reste la fin du mois précédent', () => expect(jourDuSalaire([d(6, 28), d(8, 2), d(8, 28)]), 28));
-    test('un salaire en début de mois', () => expect(jourDuSalaire([d(6, 3), d(7, 2), d(8, 3)]), 2));
+    test('un salaire en début de mois', () => expect(jourDuSalaire([d(6, 3), d(7, 2), d(8, 3)]), 3));
     test('un seul salaire ne suffit pas', () => expect(jourDuSalaire([d(8, 28)]), isNull));
+  });
+
+  group('chaque salaire ouvre son mois', () {
+    // Le cas vu sur le Fold : le salaire tombe vers le 25, mais celui de
+    // décembre est arrivé le 19, avant Noël.
+    final salaires = [
+      (DateTime(2025, 10, 24), 162913),
+      (DateTime(2025, 11, 25), 162913),
+      (DateTime(2025, 12, 19), 299075),
+      (DateTime(2026, 1, 23), 162913),
+      (DateTime(2026, 2, 25), 162913),
+    ];
+    final cal = Calendrier(debut: 25, ouvertures: ouverturesDuSalaire(salaires, debut: 25));
+
+    test('le salaire du 19 décembre ouvre janvier', () {
+      expect(cal.de(DateTime(2025, 12, 19)), const Mois(2026, 1));
+      expect(cal.de(DateTime(2025, 12, 18)), const Mois(2025, 12));
+    });
+
+    test('décembre ne compte qu’un salaire', () {
+      expect(cal.bornes(const Mois(2025, 12)), (DateTime(2025, 11, 25), DateTime(2025, 12, 19)));
+      expect(cal.bornes(const Mois(2026, 1)), (DateTime(2025, 12, 19), DateTime(2026, 1, 23)));
+    });
+
+    test('sans salaire encore arrivé, le mois suit le jour habituel', () {
+      expect(cal.debutDe(const Mois(2026, 4)), DateTime(2026, 3, 25));
+    });
+
+    test('une prime ou un remboursement rangé en salaire n’ouvre rien', () {
+      final avecPrime = [...salaires, (DateTime(2026, 1, 8), 15000)];
+      expect(ouverturesDuSalaire(avecPrime, debut: 25), ouverturesDuSalaire(salaires, debut: 25));
+    });
+
+    test('un gros versement loin du jour habituel n’ouvre rien', () {
+      final loin = [...salaires, (DateTime(2026, 1, 10), 162913)];
+      expect(ouverturesDuSalaire(loin, debut: 25), ouverturesDuSalaire(salaires, debut: 25));
+    });
+
+    test('deux salaires pour le même mois : le premier l’ouvre', () {
+      final double = [...salaires, (DateTime(2025, 11, 27), 162913)];
+      expect(ouverturesDuSalaire(double, debut: 25)[const Mois(2025, 12)], DateTime(2025, 11, 25));
+    });
+
+    test('un salaire du 28 ouvre le mois suivant, même réglé au 1er', () {
+      final o = ouverturesDuSalaire([(DateTime(2026, 5, 28), 100000), (DateTime(2026, 6, 29), 100000)], debut: 1);
+      expect(o, {const Mois(2026, 6): DateTime(2026, 5, 28), const Mois(2026, 7): DateTime(2026, 6, 29)});
+    });
+
+    test('un salaire de début de mois ouvre le mois du même nom', () {
+      expect(Mois.de(DateTime(2026, 10, 5), debut: 3), const Mois(2026, 10));
+      expect(Mois.de(DateTime(2026, 10, 2), debut: 3), const Mois(2026, 9));
+      final debutDeMois = Calendrier(
+        debut: 3,
+        ouvertures: ouverturesDuSalaire(
+            [(DateTime(2026, 9, 3), 100000), (DateTime(2026, 10, 2), 100000), (DateTime(2026, 11, 3), 100000)],
+            debut: 3),
+      );
+      // Arrivé un jour plus tôt, le 2 octobre, il ouvre quand même octobre.
+      expect(debutDeMois.de(DateTime(2026, 10, 2)), const Mois(2026, 10));
+      expect(debutDeMois.de(DateTime(2026, 10, 1)), const Mois(2026, 9));
+      expect(debutDeMois.bornes(const Mois(2026, 10)), (DateTime(2026, 10, 2), DateTime(2026, 11, 3)));
+    });
+
+    test('chaque jour tombe dans un mois, et un seul', () {
+      for (var d = DateTime(2025, 6, 1); d.isBefore(DateTime(2026, 8, 1)); d = DateTime(d.year, d.month, d.day + 1)) {
+        final m = cal.de(d);
+        final (de, a) = cal.bornes(m);
+        expect(!d.isBefore(de) && d.isBefore(a), isTrue, reason: '$d, mois $m, de $de à $a');
+      }
+    });
   });
 
   group("espèces d'un mois sur l'autre", () {

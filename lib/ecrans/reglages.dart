@@ -100,7 +100,7 @@ class EcranReglages extends ConsumerWidget {
                 () => fixerMontant(context, ref, cle: 'budget', titre: 'Budget du mois')),
             ligne('savings', 'Objectif d\'épargne', objectif == 0 ? 'Non fixé' : euros(objectif, centimesSiRond: false),
                 () => fixerMontant(context, ref, cle: 'objectif_epargne', titre: 'Objectif d\'épargne')),
-            ligne('calendar_month', 'Le mois commence le', '${debut == 1 ? '1er' : '$debut'}${debutAuto ? ' · salaire' : ''}',
+            ligne('calendar_month', 'Début du mois', '${debutAuto ? 'Salaire, vers' : 'Vers'} le ${debut == 1 ? '1er' : '$debut'}',
                 () => _choisirDebut(context, ref, debut, debutAuto)),
           ]),
           const SizedBox(height: 14),
@@ -198,7 +198,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.2.5';
+  static const _version = '1.2.6';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 
@@ -251,7 +251,7 @@ class EcranReglages extends ConsumerWidget {
                             children: [
                               Text('Le jour du salaire', style: TextStyle(fontWeight: FontWeight.w700)),
                               SizedBox(height: 2),
-                              Text('Repéré tout seul dans tes opérations, et suivi quand il change.',
+                              Text('Chaque salaire ouvre son mois le jour où il arrive, même en avance. Le jour habituel est repéré tout seul.',
                                   style: TextStyle(fontSize: 12.5, color: AppColors.texteSecondaire)),
                             ],
                           ),

@@ -49,7 +49,7 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
     final parent = cat.parentId == null ? cat : cats[cat.parentId]!;
     final couleur = Color(parent.couleur);
     final nature = o.nature ?? cat.nature;
-    final moisOp = Mois.de(o.le, debut: ref.watch(debutMoisProvider).value ?? 1);
+    final moisOp = (ref.watch(calendrierProvider).value ?? Calendrier(debut: ref.watch(debutMoisProvider).value ?? 1)).de(o.le);
     final moisCompte = o.moisCompte == null ? moisOp : Mois.lire(o.moisCompte!);
     final lies = liens.value ?? const <Lien>[];
     final cle = cleMarchand(o.libelle);

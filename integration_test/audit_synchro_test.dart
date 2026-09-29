@@ -372,7 +372,10 @@ void main() {
         final top = c.parentId == null ? c : cats[c.parentId]!;
         if (top.genre == Genre.revenu || top.genre == Genre.depense) attendu += o.montantCentimes;
       }
-      var obtenu = 0;
+      // Le salaire du 5 ouvre chaque mois : ce qui précède le 5 octobre 2025
+      // revient à septembre, qui entre dans la somme.
+      final septembre = await _w(_bilan.du(const Mois(2025, 9)));
+      var obtenu = septembre.solde + septembre.rembourses;
       for (var m = 0; m < 12; m++) {
         final b = await _w(_bilan.du(Mois(m < 3 ? 2025 : 2026, m < 3 ? 10 + m : m - 2)));
         obtenu += b.solde + b.rembourses;

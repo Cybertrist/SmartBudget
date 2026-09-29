@@ -7,6 +7,7 @@ import '../config/theme.dart';
 import '../domaine/bilan.dart';
 import '../domaine/libelle.dart';
 import '../domaine/modeles.dart';
+import '../domaine/mois.dart';
 import '../domaine/recurrences.dart';
 import '../providers/donnees.dart';
 import '../widgets/base.dart';
@@ -491,8 +492,8 @@ class _Recurrences extends ConsumerWidget {
     final maintenant = DateTime.now();
     final aujourdhui = DateTime(maintenant.year, maintenant.month, maintenant.day);
     final liste = r.value!;
-    final debut = ref.watch(debutMoisProvider).value ?? 1;
-    final (de, a) = mois.bornes(debut: debut);
+    final calendrier = ref.watch(calendrierProvider).value ?? Calendrier(debut: ref.watch(debutMoisProvider).value ?? 1);
+    final (de, a) = calendrier.bornes(mois);
     final enCours = mois == ref.watch(moisCourantProvider);
 
     // Payée : une opération de ce marchand compte dans le mois affiché, à
@@ -622,7 +623,7 @@ class _Recurrences extends ConsumerWidget {
                     (
                       x,
                       passages[x.cle]!.fold<int>(0, (s, o) => s + o.montantCentimes),
-                      'le ${passages[x.cle]!.map((o) => o.le.day).join(', ')}',
+                      _joursPayes(passages[x.cle]!),
                     ),
                 ],
                 AppColors.vert,
@@ -656,4 +657,13 @@ class _PiluleRembourses extends StatelessWidget {
           ],
         ),
       );
+}
+
+/// Les jours où une récurrence a été payée dans le mois. Plusieurs
+/// prélèvements le même jour (un abonnement et ses options, par exemple)
+/// se comptent au lieu de répéter le jour : « 3 fois, le 10 ».
+String _joursPayes(List<Operation> passages) {
+  final jours = {for (final o in passages) o.le.day}.toList()..sort();
+  final dates = 'le ${jours.join(', ')}';
+  return passages.length > jours.length ? '${passages.length} fois, $dates' : dates;
 }

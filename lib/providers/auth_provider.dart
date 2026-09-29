@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' show FocusManager;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
 
 import '../config/essais.dart';
 import '../donnees/base.dart';
@@ -28,6 +30,23 @@ class AuthService {
     try {
       authentifie = await _auth.authenticate(
         localizedReason: 'Déverrouille SmartBudget',
+        // Tous les textes de la fenêtre d'Android sont donnés : laissé vide,
+        // le titre prenait ce que le système trouvait, jusqu'au nom d'une
+        // autre application.
+        authMessages: const [
+          AndroidAuthMessages(
+            signInTitle: 'SmartBudget',
+            biometricHint: 'Pose ton doigt sur le capteur',
+            biometricNotRecognized: 'Empreinte non reconnue, réessaie',
+            biometricSuccess: 'Empreinte reconnue',
+            biometricRequiredTitle: 'Aucune empreinte enregistrée',
+            deviceCredentialsRequiredTitle: "Aucun verrou d'écran",
+            deviceCredentialsSetupDescription: 'Ajoute un code ou une empreinte dans les réglages Android.',
+            goToSettingsButton: 'Réglages',
+            goToSettingsDescription: 'Ajoute une empreinte dans les réglages Android.',
+            cancelButton: 'Annuler',
+          ),
+        ],
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: false,
@@ -107,6 +126,11 @@ class AuthService {
 
   /// Referme tout : la connexion à la base, puis les clés.
   Future<void> lock() async {
+    // Le clavier se range d'abord, l'appli encore au premier plan : laissé
+    // ouvert sous l'écran de verrouillage, sa hauteur restait en mémoire
+    // et coupait l'accueil en deux au retour.
+    FocusManager.instance.primaryFocus?.unfocus();
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
     EtatVerrou.instance.setUnlocked(false);
     await Base.instance.fermer();
     KeyVault.instance.lock();

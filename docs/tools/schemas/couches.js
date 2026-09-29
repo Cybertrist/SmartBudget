@@ -1,7 +1,8 @@
 // Les six couches de l'application, traversées par une écriture.
 //
 // À gauche, le téléphone : sur « Associer à un remboursement », le
-// virement de Camille Roux est choisi, et le doigt touche « Valider ». Au
+// virement de Camille Roux est coché pour 45 €, et le doigt touche
+// « Valider 1 remboursement ». Au
 // milieu, les couches et la base, en une colonne. Des flèches numérotées
 // vont d'une carte à l'autre dans l'ordre du code : en vert, à gauche,
 // l'écriture qui descend ; en bleu, à droite, la relecture qui remonte.
@@ -10,7 +11,8 @@
 // descente, que l'écran fait sans eux ; banque/ reste hors du trajet.
 //
 // Tout suit le code : EcranChoisirRemboursement._valider appelle
-// DepotLiens().rembourser (donnees/depots.dart), dont la base ne s'ouvre
+// DepotLiens().rembourserPar (donnees/depots.dart), qui remplace les liens
+// de la dépense en une transaction, et dont la base ne s'ouvre
 // qu'avec la clé du KeyVault (donnees/base.dart), puis rafraichir(ref)
 // monte versionProvider (providers/donnees.dart) ; bilanProvider relit par
 // DepotBilan.du, qui passe le mois à calculerBilan (domaine/bilan.dart).
@@ -42,9 +44,9 @@ module.exports = (O) => {
   const surtitre = (y, s) => t(SX + 28, SY + y, s, { taille: 10.5, couleur: APP.second, poids: 700, extra: 'letter-spacing="1.5"' });
   const icone = (y, dessin) => `<rect x="${SX + 26}" y="${SY + y - 14}" width="28" height="28" rx="9" fill="#FFFFFF" fill-opacity="0.05"/>
     <g transform="translate(${SX + 30},${SY + y - 10}) scale(0.72)">${dessin(APP.second)}</g>`;
-  const ligne = (y, dessin, libelle, valeur, couleur = APP.second) => `${icone(y, dessin)}
-    ${t(SX + 64, SY + y + 4.5, libelle, { taille: 13, couleur: APP.texte, poids: 600 })}
-    ${t(SX + SL - 40, SY + y + 4.5, valeur, { taille: 12.5, couleur, poids: 700, ancre: 'end' })}
+  const ligne = (y, dessin, libelle, valeur, couleur = APP.second, petit = false) => `${icone(y, dessin)}
+    ${t(SX + 64, SY + y + 4.5, libelle, { taille: petit ? 12.5 : 13, couleur: APP.texte, poids: 600 })}
+    ${t(SX + SL - 40, SY + y + 4.5, valeur, { taille: petit ? 11 : 12.5, couleur, poids: 700, ancre: 'end' })}
     ${t(SX + SL - 26, SY + y + 5, '›', { taille: 15, couleur: APP.discret, ancre: 'middle' })}`;
   const sep = (y) => `<line x1="${SX + 26}" y1="${SY + y}" x2="${SX + SL - 26}" y2="${SY + y}" stroke="${APP.trait}"/>`;
   const note = (c) => `<path d="M11 21 V7 L22 5 V18" fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="8" cy="21" r="3.2" fill="${c}"/><circle cx="19" cy="18" r="3.2" fill="${c}"/>`;
@@ -52,33 +54,46 @@ module.exports = (O) => {
   const oeil = (c) => `<path d="M3 14 C7 7 21 7 25 14 C21 21 7 21 3 14 Z M6 5 L22 23" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/>`;
   const etiquette = (c) => `<path d="M4 6 H15 L24 14 L15 22 H4 Z" fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="9" cy="14" r="1.8" fill="${c}"/>`;
 
-  // A : « Associer à un remboursement », Camille Roux choisie.
+  // A : « Associer à un remboursement », à cases à cocher : Camille Roux
+  // cochée pour 45 €, le récapitulatif en bas.
   const entrees = [
-    ['Vendredi 25 septembre', 'Salaire', 'Salaire', '+1 850,00 €'],
-    ['Lundi 14 septembre', 'Camille Roux', 'Virements reçus', '+45,00 €'],
+    ['Vendredi 25 septembre', 'Salaire', 'Salaire', '+1 850,00 €', false],
+    ['Lundi 14 septembre', 'Camille Roux', 'Virements reçus', '+45,00 €', true],
+    ['Vendredi 21 août', 'Remise de chèque', 'déjà entièrement affecté ailleurs', '+120,00 €', 'pris'],
   ];
   const choisir = (enCours) => {
     let s = `${barre('Associer à un remboursement', 15)}
-      ${['Pour « Concert », 90,00 €. Choisis l’argent reçu', 'qui la rembourse, avant ou après l’achat.'].map((l, i) => t(SX + 22, SY + 78 + i * 17, l, { taille: 12, couleur: APP.second })).join('')}`;
-    entrees.forEach(([jour, nom, sous, montant], i) => {
+      ${['Pour « Concert », 90,00 €. Coche tout', 'l’argent reçu qui la rembourse, avant ou', 'après l’achat.'].map((l, i) => t(SX + 22, SY + 74 + i * 16, l, { taille: 12, couleur: APP.second })).join('')}`;
+    entrees.forEach(([jour, nom, sous, montant, coche], i) => {
       const y = 136 + i * 96;
-      s += `${t(SX + 22, SY + y, jour, { taille: 12, couleur: APP.second, poids: 700 })}
+      const pris = coche === 'pris';
+      s += `<g opacity="${pris ? 0.4 : 1}">${t(SX + 22, SY + y, jour, { taille: 12, couleur: APP.second, poids: 700 })}
         ${carteApp(y + 10, 62)}
-        ${t(SX + 56, SY + y + 37, nom, { taille: 13.5, couleur: APP.texte, poids: 700 })}
-        ${t(SX + 56, SY + y + 55, sous, { taille: 10.5, couleur: APP.discret })}
-        ${t(SX + SL - 26, SY + y + 45, montant, { taille: 13, couleur: VERT, poids: 700, ancre: 'end' })}`;
-      s += i === 1
-        ? `<rect x="${SX + 12}" y="${SY + y + 10}" width="${SL - 24}" height="62" rx="16" fill="${VERT}" fill-opacity="0.08" stroke="${VERT}" stroke-opacity="0.6"/>
-          <circle cx="${SX + 36}" cy="${SY + y + 41}" r="10" fill="${VERT}"/>
-          <path d="M${SX + 31} ${SY + y + 41} l3.5 3.5 l6.5 -7" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`
-        : `<circle cx="${SX + 36}" cy="${SY + y + 41}" r="8.5" fill="none" stroke="${APP.discret}" stroke-width="2"/>`;
+        ${t(SX + 56, SY + y + 37, nom, { taille: 13.5, couleur: APP.texte, poids: 700 })}`;
+      s += coche === true
+        ? `<rect x="${SX + 27}" y="${SY + y + 32}" width="18" height="18" rx="4" fill="${VERT}"/>
+          <path d="M${SX + 31} ${SY + y + 41} l3.5 3.5 l7 -7.5" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          ${t(SX + 56, SY + y + 55, `${montant} · ${sous}`, { taille: 10.5, couleur: APP.discret })}
+          <rect x="${SX + SL - 96}" y="${SY + y + 25}" width="72" height="32" rx="8" fill="#FFFFFF" fill-opacity="0.06"/>
+          ${t(SX + SL - 32, SY + y + 46, '45,00 €', { taille: 13, couleur: VERT, poids: 700, ancre: 'end' })}`
+        : `<rect x="${SX + 28}" y="${SY + y + 33}" width="16" height="16" rx="3.5" fill="none" stroke="${APP.second}" stroke-width="2"/>
+          ${t(SX + 56, SY + y + 55, sous, { taille: 10.5, couleur: APP.discret })}
+          ${t(SX + SL - 26, SY + y + 45, montant, { taille: 13, couleur: pris ? APP.discret : VERT, poids: 700, ancre: 'end' })}`;
+      s += '</g>';
     });
+    // Le récapitulatif : combien de cases, pour combien, et ce qui reste.
+    const RY = SY + 456;
+    s += `<rect x="${SX + 12}" y="${RY}" width="${SL - 24}" height="50" rx="14" fill="${APP.carte}" stroke="${APP.trait}"/>
+      ${t(SX + 28, RY + 24, '1 sélectionné · 45,00 €', { taille: 12, couleur: APP.texte, poids: 700 })}
+      ${t(SX + SL - 28, RY + 24, 'Reste 45,00 €', { taille: 12, couleur: APP.texte, poids: 800, ancre: 'end' })}
+      <rect x="${SX + 28}" y="${RY + 34}" width="${SL - 56}" height="5" rx="2.5" fill="#2A2A2A"/>
+      <rect x="${SX + 28}" y="${RY + 34}" width="${(SL - 56) / 2}" height="5" rx="2.5" fill="${VERT}"/>`;
     // Le bouton, grisé tant que l'écriture n'est pas revenue.
     s += `<g opacity="${enCours ? 0.4 : 1}"><rect x="${SX + 14}" y="${SY + SH - 68}" width="${SL - 28}" height="48" rx="24" fill="${VERT}"/>
-      ${t(SX + SL / 2, SY + SH - 39, 'Valider', { taille: 14.5, couleur: '#000000', poids: 800, ancre: 'middle' })}</g>`;
+      ${t(SX + SL / 2, SY + SH - 39, 'Valider 1 remboursement', { taille: 14.5, couleur: '#000000', poids: 800, ancre: 'middle' })}</g>`;
     if (enCours) {
-      s += `<circle cx="${SX + SL / 2}" cy="${SY + SH - 100}" r="9" fill="none" stroke="${VERT}" stroke-width="2.4" stroke-dasharray="40 17">
-        <animateTransform attributeName="transform" type="rotate" from="0 ${SX + SL / 2} ${SY + SH - 100}" to="360 ${SX + SL / 2} ${SY + SH - 100}" dur="0.9s" repeatCount="indefinite"/></circle>`;
+      s += `<circle cx="${SX + SL / 2}" cy="${SY + 426}" r="9" fill="none" stroke="${VERT}" stroke-width="2.4" stroke-dasharray="40 17">
+        <animateTransform attributeName="transform" type="rotate" from="0 ${SX + SL / 2} ${SY + 426}" to="360 ${SX + SL / 2} ${SY + 426}" dur="0.9s" repeatCount="indefinite"/></circle>`;
     }
     return s;
   };
@@ -103,13 +118,14 @@ module.exports = (O) => {
     <rect x="${SX + SL - 70}" y="${SY + 409}" width="42" height="22" rx="11" fill="#2A2A2A" stroke="#555555"/>
     <circle cx="${SX + SL - 59}" cy="${SY + 420}" r="6.5" fill="#8A8A8A"/>
     ${carteApp(456, lie ? 92 : 58)}
-    ${ligne(485, P.lien, 'Remboursement', lie ? '45,00 € reçus' : 'Aucun', lie ? VERT : APP.second)}
+    ${ligne(485, P.lien, 'Remboursement', lie ? '45,00 € reçus (1)' : 'Aucun', lie ? VERT : APP.second, lie)}
     ${lie ? t(SX + 28, SY + 530, 'Elle ne compte plus que pour 45,00 €.', { taille: 12, couleur: APP.discret }) : ''}`;
   let ecrans = '';
-  ecrans += ecran(0, TAP + 0.03, choisir(false) + toucher(SX + SL / 2, SY + SH - 44, C, TAP));
+  // L'écran A revient en fin de cycle, après la fiche : jamais d'écran vide.
+  ecrans += `<g>${fondu('opacity', C, [[0, 1], [TAP + 0.03, 1], [TAP + 0.034, 0], [0.99, 0], [0.994, 1], [1, 1]])}${choisir(false)}</g>${toucher(SX + SL / 2, SY + SH - 44, C, TAP)}`;
   ecrans += ecran(TAP + 0.03, POP, choisir(true));
   ecrans += ecran(POP, REDESSIN, fiche(false));
-  ecrans += ecran(REDESSIN, FIN, `${fiche(true)}
+  ecrans += ecran(REDESSIN, 0.986, `${fiche(true)}
     <rect x="${SX + 12}" y="${SY + 456}" width="${SL - 24}" height="92" rx="16" fill="none" stroke="${VERT}" stroke-opacity="0.7" filter="url(#halo)"/>`);
   corps += `<g clip-path="url(#ecranCouches)">${ecrans}</g>`;
 
@@ -213,15 +229,15 @@ module.exports = (O) => {
   // [numéro, points, couleur, [de, a], étiquette (une ou deux lignes), où la poser (0..1)]
   const fleches = [
     ['1', droit(PD + 2, Ky('ecrans', 18), G - 2), NEON, E1, ['toucher Valider'], 0.5],
-    ['2', arc(G - 2, Ky('ecrans', 82), Ky('donnees', 20), 488), NEON, E2, ['DepotLiens().rembourser()'], 0.5],
+    ['2', arc(G - 2, Ky('ecrans', 82), Ky('donnees', 20), 488), NEON, E2, ['DepotLiens()', '.rembourserPar()'], 0.5],
     ['3', arc(G - 2, Ky('donnees', 70), Ky('security', 40), 530), NEON, E3, ['la clé de', 'la base'], 0.5],
-    ['4', arc(G - 2, Ky('donnees', 44), Ky('base', 31), 430), NEON, E4, ['INSERT INTO liens'], 0.75],
+    ['4', arc(G - 2, Ky('donnees', 44), Ky('base', 31), 430), NEON, E4, ['DELETE, INSERT', 'INTO liens'], 0.75],
     ['5', arc(D + 2, Ky('ecrans', 84), Ky('providers', 16), 1058), BLEU, E5, ['rafraichir(ref)', 'version + 1'], 0.5],
     ['6', arc(D + 2, Ky('providers', 70), Ky('donnees', 24), 1178), BLEU, E6a, ['DepotBilan.du'], 0.5],
     ['6', arc(D + 2, Ky('donnees', 78), Ky('base', 31), 1110), BLEU, E6b, ['SELECT'], 0.5],
     ['7', arc(D + 2, Ky('donnees', 8), Ky('domaine', 40), 1058), BLEU, E7, ['calculerBilan()'], 0.5],
     ['8', arc(D + 2, Ky('providers', 44), Ky('ecrans', 56), 1168), BLEU, E8a, [], 0.5],
-    ['8', droit(G - 2, Ky('ecrans', 52), PD + 2), BLEU, E8b, ['la fiche se redessine :', '45,00 € reçus'], 0.5],
+    ['8', droit(G - 2, Ky('ecrans', 52), PD + 2), BLEU, E8b, ['la fiche se redessine :', '45,00 € reçus (1)'], 0.5],
   ];
   let traits = '', billes = '', etiquettes = '';
   for (const [n, p, c, [de, a], lignes, ou] of fleches) {
@@ -266,5 +282,5 @@ module.exports = (O) => {
   corps += t(640, H - 24, 'Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
 
   svg('couches.svg', 1280, H, corps,
-    'Les six couches de SmartBudget, traversées par une écriture, étape par étape. ecrans : lisent des providers, écrivent par des dépôts, jamais de SQL ; sur l’écran déplié, les pages deviennent des volets. providers : Riverpod, une écriture monte un numéro de version et tout ce qui lit la base se relit, d’un seul appel. domaine : du Dart pur, testé sans appareil, qui lit un libellé, reconnaît un virement interne, classe, détecte les récurrences et fait le bilan. donnees : le seul endroit où s’écrit du SQL, avec les dépôts, le schéma et ses migrations, la sauvegarde et le jeu d’essai. security : le trousseau, clé maîtresse dans le Keystore, dérivations HKDF, verrou ; rien ne lit un fichier en passant outre. smartbudget.db : SQLite chiffré par SQLCipher, schéma en version 6. banque : Enable Banking, JWT signé, session, opérations, solde ; la clé privée n’est déchiffrée que le temps d’un appel ; elle est hors de ce trajet. Sur le téléphone, on associe au concert de 90 euros le virement de 45 euros de Camille Roux. En vert, l’écriture qui descend : 1, toucher Valider ; 2, ecrans appelle DepotLiens().rembourser() dans donnees, sans passer par providers ni domaine, grisés ; 3, donnees tient de security la clé de la base ; 4, INSERT INTO liens dans smartbudget.db, dans une transaction. En bleu, la relecture qui remonte : 5, ecrans appelle rafraichir(ref), et la version de providers monte d’un cran ; 6, providers relit par DepotBilan.du, qui fait un SELECT dans smartbudget.db ; 7, donnees passe le mois à calculerBilan() dans domaine ; 8, providers rend la nouvelle valeur à ecrans, et la fiche du concert se redessine : 45 euros reçus. Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.');
+    'Les six couches de SmartBudget, traversées par une écriture, étape par étape. ecrans : lisent des providers, écrivent par des dépôts, jamais de SQL ; sur l’écran déplié, les pages deviennent des volets. providers : Riverpod, une écriture monte un numéro de version et tout ce qui lit la base se relit, d’un seul appel. domaine : du Dart pur, testé sans appareil, qui lit un libellé, reconnaît un virement interne, classe, détecte les récurrences et fait le bilan. donnees : le seul endroit où s’écrit du SQL, avec les dépôts, le schéma et ses migrations, la sauvegarde et le jeu d’essai. security : le trousseau, clé maîtresse dans le Keystore, dérivations HKDF, verrou ; rien ne lit un fichier en passant outre. smartbudget.db : SQLite chiffré par SQLCipher, schéma en version 6. banque : Enable Banking, JWT signé, session, opérations, solde ; la clé privée n’est déchiffrée que le temps d’un appel ; elle est hors de ce trajet. Sur le téléphone, l’écran Associer à un remboursement du concert de 90 euros : on a coché le virement de Camille Roux pour 45 euros, la remise de chèque, déjà entièrement affectée ailleurs, reste grisée ; le récapitulatif dit 1 sélectionné, 45 euros, reste 45 euros. En vert, l’écriture qui descend : 1, toucher Valider 1 remboursement ; 2, ecrans appelle DepotLiens().rembourserPar() dans donnees, sans passer par providers ni domaine, grisés ; 3, donnees tient de security la clé de la base ; 4, dans une transaction, les liens du concert sont remplacés dans smartbudget.db : DELETE, puis INSERT INTO liens. En bleu, la relecture qui remonte : 5, ecrans appelle rafraichir(ref), et la version de providers monte d’un cran ; 6, providers relit par DepotBilan.du, qui fait un SELECT dans smartbudget.db ; 7, donnees passe le mois à calculerBilan() dans domaine ; 8, providers rend la nouvelle valeur à ecrans, et la fiche du concert se redessine : 45 euros reçus (1). Un écran n’écrit jamais de SQL, et rien n’ouvre la base sans passer par le trousseau.');
 };

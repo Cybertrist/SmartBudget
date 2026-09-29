@@ -119,6 +119,22 @@ class MainActivity : FlutterFragmentActivity() {
         retenirLien(intent)
     }
 
+    /**
+     * Au retour, la place prise par le clavier et les barres est redonnée
+     * à Flutter : après l'écran de verrouillage ou la demande d'empreinte,
+     * le clavier Samsung laissait parfois sa hauteur en mémoire, et la
+     * moitié de l'accueil restait vide.
+     */
+    override fun onResume() {
+        super.onResume()
+        window.decorView.post { window.decorView.requestApplyInsets() }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) window.decorView.requestApplyInsets()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         retenirLien(intent)

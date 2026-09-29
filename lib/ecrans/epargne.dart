@@ -73,7 +73,7 @@ class EcranEpargne extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Mis de côté au total', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
+                    const Text('Au total', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.texteSecondaire)),
                     const SizedBox(height: 6),
                     Montant(total, taille: 46),
                     const SizedBox(height: 10),
@@ -245,7 +245,7 @@ class LigneVirement extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(v == null || o.nom != null ? o.titre : '${nom(v.source)} → ${nom(v.destination)}',
-                      maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                      maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 3),
                   Text('${jourCourt(o.le)} · ${pioche ? 'pioché' : (o.interne == SensInterne.versEpargne ? 'mis de côté' : 'entre comptes')}',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: couleur)),

@@ -39,7 +39,11 @@ Chaque commande fait la version française, puis l'anglaise dans `docs/en/`.
   opération, les virements, remboursements et espèces, le chiffrement,
   l'écran déplié, la veille du solde, puis le parcours pour choisir et relier sa banque et ce qu'il faut faire sur le portail d'Enable Banking. Les quinze autres ont chacun leur fichier dans `schemas/`, avec leur traduction à côté (`<nom>.en.json`) : l'accueil, l'analyse, la synchronisation, À vérifier et les règles apprises, les récurrences, les remboursements, l'épargne, le mois budgétaire, la sauvegarde, les tests, la pile, les couches, le modèle de données, la confidentialité et les versions. Les animations sont en SMIL, que GitHub joue dans une
   balise `<img>`. Pas de police externe : un SVG en `<img>` n'a pas le droit
-  d'aller la chercher.
+  d'aller la chercher. Avant d'écrire un fichier, `alleger()` le rend plus léger à
+  jouer sans changer une image : un élément passe en `display="none"`
+  tant qu'il est transparent (Chrome redessine tout le SVG à chaque image
+  d'une animation, et un élément invisible lui coûte presque autant qu'un
+  visible), et les nombres gardent trois décimales, sauf les instants.
 
 ## Les captures
 

@@ -19,9 +19,18 @@ final debutMoisProvider = FutureProvider<int>((ref) async {
   return const DepotReglages().debutMois();
 });
 
-/// Le mois budgétaire en cours : avec un début au 25, le 26 septembre est
-/// déjà en octobre.
-final moisCourantProvider = Provider<Mois>((ref) => Mois.de(DateTime.now(), debut: ref.watch(debutMoisProvider).value ?? 1));
+/// Les mois du budget : chacun commence le jour où son salaire arrive.
+final calendrierProvider = FutureProvider<Calendrier>((ref) async {
+  ref.watch(versionProvider);
+  return const DepotOperations().calendrier();
+});
+
+/// Le mois budgétaire en cours : ouvert par le dernier salaire, le 26
+/// septembre est déjà en octobre.
+final moisCourantProvider = Provider<Mois>((ref) {
+  final calendrier = ref.watch(calendrierProvider).value;
+  return calendrier?.de(DateTime.now()) ?? Mois.de(DateTime.now(), debut: ref.watch(debutMoisProvider).value ?? 1);
+});
 
 /// Le mois affiché, partagé par tous les écrans.
 final moisProvider = StateProvider<Mois>((ref) => ref.watch(moisCourantProvider));
@@ -38,7 +47,7 @@ final categoriesProvider = FutureProvider<Map<int, Categorie>>((ref) async {
 
 final bilanProvider = FutureProvider.family<Bilan, Mois>((ref, mois) async {
   ref.watch(versionProvider);
-  return const DepotBilan().du(mois);
+  return const DepotBilan().du(mois, calendrier: await ref.watch(calendrierProvider.future));
 });
 
 /// Le bilan de la période choisie, qui se termine au mois affiché.
@@ -53,8 +62,7 @@ final bilanPeriodeProvider = FutureProvider<Bilan>((ref) async {
 
 final operationsMoisProvider = FutureProvider.family<List<Operation>, Mois>((ref, mois) async {
   ref.watch(versionProvider);
-  final debut = await const DepotReglages().debutMois();
-  return const DepotOperations().duMois(mois, debut: debut);
+  return const DepotOperations().duMois(mois, await ref.watch(calendrierProvider.future));
 });
 
 /// Les mois de la période choisie, du plus récent au plus ancien.

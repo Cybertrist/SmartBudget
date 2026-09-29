@@ -147,7 +147,7 @@ class _LigneAVerifier extends ConsumerWidget {
               const SizedBox(width: 52),
               Expanded(child: _Action(texte: 'Classer', icone: 'label', couleur: AppColors.vert, onTap: classer)),
               const SizedBox(width: 8),
-              Expanded(child: _Action(texte: 'Virement interne', icone: 'sync_alt', couleur: AppColors.interne, onTap: interne)),
+              Expanded(child: _Action(texte: 'Interne', icone: 'sync_alt', couleur: AppColors.interne, onTap: interne)),
               // Une entrée reçue peut garder ce qui est proposé.
               if (o.entree) ...[
                 const SizedBox(width: 8),
