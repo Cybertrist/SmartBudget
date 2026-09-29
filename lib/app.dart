@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,6 +37,28 @@ class _SmartBudgetAppState extends ConsumerState<SmartBudgetApp>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     EtatVerrou.instance.addListener(_surVerrou);
+    _orienter();
+  }
+
+  /// Vrai quand l'appli est bloquée en portrait.
+  bool? _portrait;
+
+  /// L'écran extérieur du Fold, comme un téléphone, reste en portrait :
+  /// couché, il n'a plus la place de rien. L'écran intérieur tourne
+  /// librement. On regarde l'écran lui-même, pas la fenêtre, et on
+  /// recommence à chaque pliage ou dépliage.
+  void _orienter() {
+    final ecran = WidgetsBinding.instance.platformDispatcher.views.first.display;
+    final etroit = ecran.size.shortestSide / ecran.devicePixelRatio < 600;
+    if (etroit == _portrait) return;
+    _portrait = etroit;
+    SystemChrome.setPreferredOrientations(etroit ? const [DeviceOrientation.portraitUp] : const []);
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _orienter();
   }
 
   @override
