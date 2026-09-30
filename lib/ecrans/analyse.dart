@@ -509,7 +509,8 @@ class _Recurrences extends ConsumerWidget {
     List<DateTime> attendus(Recurrence x) {
       final l = <DateTime>[];
       for (var d = x.prochaine; d.isBefore(a) && l.length < 6; d = suivante(d, x.frequence)) {
-        if (!d.isBefore(de)) l.add(d);
+        // Arrêtée : plus rien d'attendu à partir de sa fin.
+        if (!d.isBefore(de) && x.attendueLe(d)) l.add(d);
       }
       return l;
     }

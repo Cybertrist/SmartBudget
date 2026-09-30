@@ -391,6 +391,29 @@ void main() {
       expect(r.map((x) => x.libelle), contains(startsWith('Free Mobile')));
     });
 
+    test('une récurrence arrêtée n’est plus attendue, et reprend si elle repasse', () async {
+      final compte = await _comptes.courant();
+      await _ops.importer(compte.id, [
+        for (final m in [5, 6, 7, 8, 9]) _op('2026-0$m-10', 'PRLV SEPA CANAL PLUS', -28.99),
+      ]);
+      Future<Recurrence?> canal(DateTime maintenant) async =>
+          (await _ops.recurrences(maintenant: maintenant)).where((r) => r.libelle.startsWith('Canal')).firstOrNull;
+      final avant = await canal(DateTime(2026, 9, 20));
+      expect(avant, isNotNull);
+      expect(avant!.fin, isNull);
+      await _ops.arreterRecurrence(avant.cle, DateTime(2026, 9, 20));
+      final arretee = (await canal(DateTime(2026, 9, 20)))!;
+      expect(arretee.fin, DateTime(2026, 9, 20));
+      expect(arretee.attendueLe(DateTime(2026, 10, 10)), isFalse, reason: 'Plus attendue en octobre.');
+      expect(arretee.attendueLe(DateTime(2026, 9, 10)), isTrue, reason: 'Toujours payée en septembre.');
+      // Repassée en octobre : elle a repris toute seule.
+      await _ops.importer(compte.id, [_op('2026-10-10', 'PRLV SEPA CANAL PLUS', -28.99)]);
+      expect((await canal(DateTime(2026, 10, 12)))!.fin, isNull);
+      // Et « Reprendre » efface l'arrêt.
+      await _ops.arreterRecurrence(avant.cle, null);
+      expect((await canal(DateTime(2026, 9, 20)))!.fin, isNull);
+    });
+
     test('le portefeuille vit des retraits et des dépenses en espèces', () async {
       final compte = await _comptes.courant();
       await _ops.importer(compte.id, [_op('2026-09-01', 'RETRAIT DAB VANNES', -30)]);

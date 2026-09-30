@@ -217,6 +217,16 @@ void main() {
     test('un seul salaire ne suffit pas', () => expect(jourDuSalaire([d(8, 28)]), isNull));
   });
 
+  test('le plafond d’un livret se devine d’après son nom', () {
+    expect(plafondParDefaut('Livret jeune'), 160000);
+    expect(plafondParDefaut('Livret CMB'), 2295000);
+    expect(plafondParDefaut('Livret A'), 2295000);
+    expect(plafondParDefaut('LDDS'), 1200000);
+    expect(plafondParDefaut('LEP'), 1000000);
+    expect(plafondParDefaut('Assurance vie'), isNull);
+    expect(plafondParDefaut('PEA'), isNull);
+  });
+
   group('chaque salaire ouvre son mois', () {
     // Le cas vu sur le Fold : le salaire tombe vers le 25, mais celui de
     // décembre est arrivé le 19, avant Noël.

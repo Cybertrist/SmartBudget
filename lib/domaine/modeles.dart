@@ -225,3 +225,18 @@ class Lien {
   final int depenseId;
   final int montantCentimes;
 }
+
+/// Le plafond réglementaire d'un livret, en centimes, deviné d'après son
+/// nom : Livret jeune 1 600 €, LDDS 12 000 €, LEP 10 000 €, et 22 950 €
+/// pour un Livret A comme pour tout autre livret. Une assurance vie, un
+/// PEA ou un compte-titres n'en ont pas : rien. Il se corrige à la main.
+int? plafondParDefaut(String nom) {
+  final n = nom.toLowerCase();
+  if (n.contains('jeune')) return 160000;
+  if (n.contains('ldd') || n.contains('durable')) return 1200000;
+  if (RegExp(r'\blep\b').hasMatch(n) || n.contains('populaire')) return 1000000;
+  if (n.contains('assurance') || n.contains('pea') || n.contains('titre') || n.contains('bourse')) return null;
+  if (n.contains('pel')) return 6120000;
+  if (n.contains('livret')) return 2295000;
+  return null;
+}

@@ -1,11 +1,11 @@
-// Les versions : onze en sept jours, empilées l'une sur l'autre.
+// Les versions : douze en sept jours, empilées l'une sur l'autre.
 //
 // Chaque version tombe sur la précédente, comme elle s'installe sur le
 // téléphone : par-dessus, sans rien effacer. En bas, le socle ne bouge
-// jamais : tes données, et la clé de signature, la même de 1.0.0 à 1.2.6
+// jamais : tes données, et la clé de signature, la même de 1.0.0 à 1.2.7
 // (le certificat que donne chaque Release). Un fil monte de la clé et
 // scelle chaque version qui arrive. À gauche, la frise : le temps monte,
-// du jeudi 24 au mercredi 30 septembre. La dernière, 1.2.6, reste allumée,
+// du jeudi 24 au mercredi 30 septembre. La dernière, 1.2.7, reste allumée,
 // avec ses 95 tests, tous au vert.
 module.exports = (O) => {
   const { svg, t, tr, esc, visible, fondu, pilule, P, MONO, SANS, CARTE, BORD, TITRE, TEXTE, DISCRET, FIL, VERT, NEON, BLEU, OR, ROSE, ROUGE, INTERNE } = O;
@@ -50,6 +50,7 @@ module.exports = (O) => {
     portrait: (c) => `<rect x="8" y="2.5" width="12" height="23" rx="3" fill="none" stroke="${c}" stroke-width="2"/><path d="M12 21.5 H16" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/><path d="M3 9 A11 11 0 0 1 6 5 M25 19 A11 11 0 0 1 22 23" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/><path d="M2 5 L25.5 23.5" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`,
     loupe: (c) => `<circle cx="12" cy="12" r="8.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M18.3 18.3 L25.5 25.5" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><path d="M7.5 11 L12 8 L16.5 11 M8.5 12.5 V15.5 M12 12.5 V15.5 M15.5 12.5 V15.5" fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
     bouclier: (c) => `<path d="M14 2.5 L24 6.5 V13 C24 19.5 19.5 24 14 26 C8.5 24 4 19.5 4 13 V6.5 Z" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 14 L12.8 17.3 L18.8 10.8" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`,
+    plafond: (c) => `<rect x="3" y="4" width="22" height="20" rx="3" fill="none" stroke="${c}" stroke-width="2"/><path d="M3 9 H25" stroke="${c}" stroke-width="2" stroke-dasharray="3 2.5"/><rect x="7" y="13" width="14" height="7" rx="1.5" fill="${c}" fill-opacity="0.45" stroke="${c}" stroke-width="1.6"/>`,
     cadeau: (c) => `<rect x="3.5" y="11" width="21" height="14" rx="2.5" fill="none" stroke="${c}" stroke-width="2"/><rect x="2" y="7" width="24" height="5" rx="1.5" fill="none" stroke="${c}" stroke-width="2"/><path d="M14 7 V25" stroke="${c}" stroke-width="2"/><path d="M14 7 C11 2 6.5 3 8 6.5 C9 7.5 12 7 14 7 C16 7 19 7.5 20 6.5 C21.5 3 17 2 14 7 Z" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/>`,
     salaire: (c) => `<rect x="3" y="5" width="22" height="20" rx="3" fill="none" stroke="${c}" stroke-width="2"/><path d="M3 11 H25 M9 2.5 V7 M19 2.5 V7" stroke="${c}" stroke-width="2" stroke-linecap="round"/><path d="M14 13.5 V22.5 M10.5 18.5 L14 22.5 L17.5 18.5" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
   };
@@ -109,11 +110,13 @@ module.exports = (O) => {
     ]],
     ['1.2.6', 5, 'chaque salaire, son mois', AZUR, I.cadeau, [
       'Chaque salaire ouvre son mois, même versé en avance pour Noël',
-      'Un mois qui s’ouvre dans la première quinzaine porte le nom de ce mois-là',
-      'L’accueil n’est plus coupé en deux après un verrouillage pendant une saisie',
-      'Récurrences payées : « 3 fois, le 10 » plutôt que le jour répété',
-      'À vérifier : les opérations déjà liées en sortent, le bouton dit « Interne »',
-      'La fenêtre de l’empreinte a tous ses textes, sous le titre SmartBudget',
+      'L’accueil n’est plus coupé en deux après un verrou',
+      'À vérifier sans les opérations déjà liées',
+    ]],
+    ['1.2.7', 5, 'plafonds et récurrences', OR, I.plafond, [
+      'Chaque livret se mesure à son plafond : Livret jeune 1 600 €, Livret A 22 950 €',
+      'Une récurrence s’arrête à partir d’aujourd’hui, et reprend si elle repasse',
+      'Opérations : tout l’historique, depuis la première',
     ]],
   ];
   const N = versions.length;
@@ -121,7 +124,7 @@ module.exports = (O) => {
   const pose = (i) => arrive(i) + 0.022;       // elle est posée, scellée
 
   // La pile : de bas en haut, au-dessus du socle.
-  const X = 156, XF = 1240, SOCLE = 1002, H1 = 62, HP = 104, HN = 140, ECART = 10;
+  const X = 156, XF = 1240, SOCLE = 1074, H1 = 62, HP = 104, HN = 140, ECART = 10;
   const PREC = versions.findIndex((v) => v[5].length > 3); // 1.2.2 : ses six puces sur deux rangs
   const ys = [];
   let bas = SOCLE - 12;
@@ -135,7 +138,7 @@ module.exports = (O) => {
 
   let corps = '';
   corps += t(60, 52, 'LES VERSIONS', { taille: 13, couleur: VERT, police: MONO, poids: 700, extra: 'letter-spacing="3"' });
-  corps += t(Math.round(66 + tr('LES VERSIONS').length * 10.9 + 24), 52, 'Onze versions en sept jours. Chacune s’installe par-dessus la précédente, signée par la même clé : rien ne se perd.', { taille: 14 });
+  corps += t(Math.round(66 + tr('LES VERSIONS').length * 10.9 + 24), 52, 'Douze versions en sept jours. Chacune s’installe par-dessus la précédente, signée par la même clé : rien ne se perd.', { taille: 14 });
 
   // Une puce : un point, et son texte sur une ou deux lignes, centré sur cy.
   const puce = (x, cy, s, couleur) => {
@@ -175,9 +178,9 @@ module.exports = (O) => {
       <g><animateTransform attributeName="transform" type="translate" dur="${C}s" repeatCount="indefinite" keyTimes="0;${s};${pose(i)};1" values="0 -34;0 -34;0 0;0 0" calcMode="spline" keySplines="0 0 1 1;0.3 0 0.25 1;0 0 1 1"/>${r}</g></g>`;
   });
 
-  // Les 95 tests de 1.2.6, tous au vert.
+  // Les 97 tests de 1.2.7, tous au vert.
   {
-    const [y] = ys[N - 1], RY = y + 112, RX = X + 58, RL = 820, NT = 95;
+    const [y] = ys[N - 1], RY = y + 112, RX = X + 58, RL = 820, NT = 97;
     const pas = RL / NT, de = pose(N - 1) + 0.03, a = 0.88;
     let ruban = '';
     for (let k = 0; k < NT; k++) {
@@ -186,7 +189,7 @@ module.exports = (O) => {
         <rect x="${x}" y="${RY}" width="${(pas - 2.4).toFixed(1)}" height="13" rx="2.5" fill="${VERT}" opacity="0">${visible(C, q + 0.002, FIN, 0.002)}</rect>`;
     }
     corps += g(pose(N - 1), FIN, ruban);
-    corps += g(a, FIN, t(RX + RL + 14, RY + 11, '95 au vert', { taille: 13, couleur: VERT, police: MONO, poids: 700 }));
+    corps += g(a, FIN, t(RX + RL + 14, RY + 11, '97 au vert', { taille: 13, couleur: VERT, police: MONO, poids: 700 }));
   }
 
   // ------------------------------------------------------------ le socle
@@ -260,8 +263,8 @@ module.exports = (O) => {
     corps += g(pose(i), FIN, `<circle cx="${AX}" cy="${cy}" r="5.5" fill="${c}" filter="url(#halo)"/>`, 0.004);
   });
 
-  corps += t(640, 1116, 'Chaque Release donne l’empreinte SHA-256 de l’APK et celle du certificat, pour vérifier avant d’installer.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
+  corps += t(640, 1188, 'Chaque Release donne l’empreinte SHA-256 de l’APK et celle du certificat, pour vérifier avant d’installer.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
 
-  svg('versions.svg', 1280, 1142, corps,
-    'Les versions, onze en sept jours, du jeudi 24 au mercredi 30 septembre 2026, empilées l’une sur l’autre : chacune tombe sur la précédente, comme elle s’installe par-dessus sur le téléphone, sans rien perdre. En bas, le socle ne bouge pas : tes données, comptes, opérations, catégories, règles apprises et liens, et la même clé de signature, certificat SHA-256 55572db2…fabcbef ; un fil monte de la clé et scelle chaque version. Le 24 septembre, 1.0.0, la première version : reliée au Crédit Mutuel de Bretagne par Enable Banking, classement, virements internes, remboursements, récurrences, base chiffrée et écran déplié en volets. 1.0.1, un correctif : le bon numéro de version dans les réglages, qui affichaient encore 0.1.0. 1.0.2 : un groupe d’icônes Sorties et loisirs, grande roue, fête foraine, billets, cinéma, séparé du Sport. 1.0.3 : l’alerte de compte en négatif, le solde relu toutes les six heures, même application fermée, une notification par passage sous zéro. 1.1.0 : la démo, une seconde application installée à côté de la vraie, avec quatre mois d’opérations inventées, sans banque ni empreinte. Le 25 septembre, 1.2.0 : toutes les banques d’Enable Banking, par nom ou par pays, une page guide pour obtenir la clé, les opérations en attente et la synchronisation à chaque ouverture. Le 26 septembre, 1.2.2, l’audit complet : lier un remboursement ne gèle plus l’application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, plus de règle apprise sur le « N » d’un chèque, montants nets partout et récurrences justes sur les mois passés, la fiche d’une opération entière sur l’écran déplié. Le 27 septembre, 1.2.3, le mois suit le salaire : le mois commence tout seul le jour où le salaire arrive, et les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois. Le 29 septembre, 1.2.4, plusieurs remboursements : une dépense remboursée par plusieurs virements, six amis à 23 euros chacun, avec des cases à cocher et ce qui reste à couvrir sous les yeux. Le même jour, 1.2.5 : l’écran extérieur du Fold reste en portrait, comme un téléphone, et l’écran intérieur tourne toujours librement. Le 30 septembre, 1.2.6, la version en cours, chaque salaire, son mois : chaque salaire ouvre son mois, même versé en avance pour Noël ; un mois qui s’ouvre dans la première quinzaine porte le nom de ce mois-là ; l’accueil n’est plus coupé en deux après un verrouillage pendant une saisie ; les récurrences payées disent « 3 fois, le 10 » plutôt que de répéter le jour ; les opérations déjà liées sortent d’À vérifier, dont le bouton dit « Interne » ; la fenêtre de l’empreinte a tous ses textes, sous le titre SmartBudget. 95 tests, tous au vert.');
+  svg('versions.svg', 1280, 1214, corps,
+    'Les versions, douze en sept jours, du jeudi 24 au mercredi 30 septembre 2026, empilées l’une sur l’autre : chacune tombe sur la précédente, comme elle s’installe par-dessus sur le téléphone, sans rien perdre. En bas, le socle ne bouge pas : tes données, comptes, opérations, catégories, règles apprises et liens, et la même clé de signature, certificat SHA-256 55572db2…fabcbef ; un fil monte de la clé et scelle chaque version. Le 24 septembre, 1.0.0, la première version : reliée au Crédit Mutuel de Bretagne par Enable Banking, classement, virements internes, remboursements, récurrences, base chiffrée et écran déplié en volets. 1.0.1, un correctif : le bon numéro de version dans les réglages, qui affichaient encore 0.1.0. 1.0.2 : un groupe d’icônes Sorties et loisirs, grande roue, fête foraine, billets, cinéma, séparé du Sport. 1.0.3 : l’alerte de compte en négatif, le solde relu toutes les six heures, même application fermée, une notification par passage sous zéro. 1.1.0 : la démo, une seconde application installée à côté de la vraie, avec quatre mois d’opérations inventées, sans banque ni empreinte. Le 25 septembre, 1.2.0 : toutes les banques d’Enable Banking, par nom ou par pays, une page guide pour obtenir la clé, les opérations en attente et la synchronisation à chaque ouverture. Le 26 septembre, 1.2.2, l’audit complet : lier un remboursement ne gèle plus l’application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, plus de règle apprise sur le « N » d’un chèque, montants nets partout et récurrences justes sur les mois passés, la fiche d’une opération entière sur l’écran déplié. Le 27 septembre, 1.2.3, le mois suit le salaire : le mois commence tout seul le jour où le salaire arrive, et les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois. Le 29 septembre, 1.2.4, plusieurs remboursements : une dépense remboursée par plusieurs virements, six amis à 23 euros chacun, avec des cases à cocher et ce qui reste à couvrir sous les yeux. Le même jour, 1.2.5 : l’écran extérieur du Fold reste en portrait, comme un téléphone, et l’écran intérieur tourne toujours librement. Le 30 septembre, 1.2.6, chaque salaire, son mois : chaque salaire ouvre son mois, même versé en avance pour Noël, l’accueil n’est plus coupé en deux après un verrou, et À vérifier ne garde plus les opérations déjà liées. Le même jour, 1.2.7, la version en cours, plafonds et récurrences : chaque livret se mesure à son plafond, Livret jeune 1 600 euros, Livret A 22 950 euros ; une récurrence s’arrête à partir d’aujourd’hui et reprend si elle repasse ; Opérations montre tout l’historique. 97 tests, tous au vert.');
 };

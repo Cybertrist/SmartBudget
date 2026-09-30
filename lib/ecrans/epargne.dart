@@ -33,19 +33,9 @@ class EcranEpargne extends ConsumerWidget {
     if (!comptes.hasValue || !bilan.hasValue || !ops.hasValue) return const Center(child: CircularProgressIndicator());
     final livrets = comptes.value!.where((c) => c.nature == NatureCompte.livret).toList();
     final total = livrets.fold<int>(0, (s, c) => s + c.soldeCentimes);
-    // Des parts arrondies qui font 100 : le reste va aux plus grosses
-    // décimales, pas 60 + 31 + 10.
-    final parts = <int, int>{};
-    if (total > 0) {
-      final exactes = {for (final l in livrets) l.id: l.soldeCentimes * 100 / total};
-      exactes.forEach((id, v) => parts[id] = v.floor());
-      final reste = 100 - parts.values.fold(0, (a, b) => a + b);
-      double decimale(int id) => exactes[id]! - exactes[id]!.floor();
-      final ordre = exactes.keys.toList()..sort((x, y) => decimale(y).compareTo(decimale(x)));
-      for (final id in ordre.take(reste.clamp(0, ordre.length).toInt())) {
-        parts[id] = parts[id]! + 1;
-      }
-    }
+    // Chaque livret se mesure à son plafond : un Livret jeune à 1 500 €
+    // est plein à 94 %, pas « 15 % de l'épargne ».
+    final plafonds = ref.watch(plafondsProvider).value ?? const <int, int?>{};
     final b = bilan.value!;
     final mouvements = ops.value!.where((o) => o.interne != null && o.interne != SensInterne.entreComptes).toList();
 
@@ -127,16 +117,20 @@ class EcranEpargne extends ConsumerWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(l.nom, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                                        Text(total == 0 ? '' : '${parts[l.id]} % de l\'épargne',
-                                            style: const TextStyle(fontSize: 12, color: AppColors.texteDiscret)),
+                                        Text(_remplissage(l.soldeCentimes, plafonds[l.id]),
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: plafonds[l.id] != null && l.soldeCentimes >= plafonds[l.id]! ? AppColors.vert : AppColors.texteDiscret)),
                                       ],
                                     ),
                                   ),
                                   Montant(l.soldeCentimes),
                                 ],
                               ),
-                              const SizedBox(height: 10),
-                              Jauge(part: total == 0 ? 0 : l.soldeCentimes / total, couleur: AppColors.epargne, hauteur: 5),
+                              if (plafonds[l.id] case final plafond?) ...[
+                                const SizedBox(height: 10),
+                                Jauge(part: plafond <= 0 ? 0 : (l.soldeCentimes / plafond).clamp(0, 1).toDouble(), couleur: AppColors.epargne, hauteur: 5),
+                              ],
                             ],
                           ),
                         ),
@@ -199,9 +193,12 @@ class _Chiffre extends StatelessWidget {
 
 /// Un virement interne dans une liste : d'où, vers où, le libellé brut.
 class LigneVirement extends ConsumerWidget {
-  const LigneVirement({super.key, required this.operation});
+  const LigneVirement({super.key, required this.operation, this.separateur = true});
 
   final Operation operation;
+
+  /// Le trait au-dessus : sans lui en tête de carte, où il doublait le bord.
+  final bool separateur;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -223,7 +220,7 @@ class LigneVirement extends ConsumerWidget {
       onTap: () => ouvrirPage(context, '/operation/${o.id}'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))),
+        decoration: separateur ? const BoxDecoration(border: Border(top: BorderSide(color: AppColors.trait))) : null,
         child: Row(
           children: [
             AvecCoche(
@@ -351,21 +348,38 @@ class EcranInternes extends ConsumerWidget {
 /// Ajouter un livret : son nom, son solde, et comment la banque l'appelle.
 Future<void> modifierSolde(BuildContext context, WidgetRef ref, Compte livret) async {
   var supprimer = false;
+  var plafond = false;
   final v = await demanderMontant(
     context,
     titre: livret.nom,
     aide: 'Le solde actuel, tel que ta banque l\'affiche.',
     initial: livret.soldeCentimes,
     gauche: Builder(
-      builder: (ctx) => TextButton(
-        onPressed: () {
-          supprimer = true;
-          Navigator.pop(ctx);
-        },
-        child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte)),
+      builder: (ctx) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton(
+            onPressed: () {
+              supprimer = true;
+              Navigator.pop(ctx);
+            },
+            child: const Text('Supprimer', style: TextStyle(color: AppColors.alerte)),
+          ),
+          TextButton(
+            onPressed: () {
+              plafond = true;
+              Navigator.pop(ctx);
+            },
+            child: const Text('Plafond'),
+          ),
+        ],
       ),
     ),
   );
+  if (plafond) {
+    if (context.mounted) await _modifierPlafond(context, ref, livret);
+    return;
+  }
   if (supprimer) {
     if (!context.mounted) return;
     final ok = await showDialog<bool>(
@@ -420,5 +434,29 @@ Future<void> modifierPortefeuille(BuildContext context, WidgetRef ref, Compte? p
   }
   if (v == null) return;
   await const DepotComptes().fixerPortefeuille(v);
+  rafraichir(ref);
+}
+
+/// Où en est un livret de son plafond : « 94 % du plafond de 1 600 € ».
+String _remplissage(int solde, int? plafond) {
+  if (plafond == null || plafond <= 0) return 'Sans plafond';
+  if (solde >= plafond) return 'Plafond de ${euros(plafond, centimesSiRond: false)} atteint';
+  return '${(solde * 100 / plafond).floor()} % du plafond de ${euros(plafond, centimesSiRond: false)}';
+}
+
+/// Le plafond d'un livret, deviné d'après son nom, se corrige ici. Vide :
+/// le livret n'en a pas, comme une assurance vie.
+Future<void> _modifierPlafond(BuildContext context, WidgetRef ref, Compte livret) async {
+  final actuel = (await ref.read(plafondsProvider.future))[livret.id];
+  if (!context.mounted) return;
+  final v = await demanderMontant(
+    context,
+    titre: 'Plafond · ${livret.nom}',
+    aide: 'Livret A 22 950 €, LDDS 12 000 €, LEP 10 000 €, Livret jeune 1 600 €. Laisse vide s\'il n\'y en a pas.',
+    initial: actuel,
+    vide: true,
+  );
+  if (v == null) return;
+  await const DepotReglages().fixerPlafond(livret.id, v == 0 ? null : v);
   rafraichir(ref);
 }

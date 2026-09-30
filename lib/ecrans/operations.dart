@@ -11,8 +11,9 @@ import '../widgets/base.dart';
 import 'categorie.dart';
 import 'epargne.dart';
 
-/// Toutes les opérations du mois, jour par jour. Sur l'écran déplié, elles
-/// occupent le volet à côté du mois : ce que l'accueil ne montre pas déjà.
+/// Toutes les opérations, de tous les temps, jour par jour. Ouvertes
+/// depuis l'anneau de l'analyse, seulement les entrées ou les sorties de
+/// sa période. Sur l'écran déplié, elles occupent le volet à côté du mois.
 class EcranOperations extends ConsumerStatefulWidget {
   const EcranOperations({super.key, this.dansVolet = false, this.genre});
 
@@ -45,10 +46,15 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
   @override
   Widget build(BuildContext context) {
     final dansVolet = widget.dansVolet;
-    // Toute la période choisie dans l'analyse : sur un an, la liste
-    // remonte les douze mois. Une recherche, elle, fouille tout.
+    // Sans filtre, tout, depuis la première opération. Les entrées ou les
+    // sorties de l'anneau suivent la période de l'analyse. Une recherche
+    // fouille tout.
     final recherche = _texte.trim().length >= 2;
-    final ops = recherche ? ref.watch(rechercheProvider(_texte)) : ref.watch(operationsPeriodeProvider);
+    final ops = recherche
+        ? ref.watch(rechercheProvider(_texte))
+        : widget.genre == null
+            ? ref.watch(toutesOperationsProvider)
+            : ref.watch(operationsPeriodeProvider);
     final periode = ref.watch(libellePeriodeProvider);
     final categories = ref.watch(categoriesProvider);
     if (!categories.hasValue) return const Center(child: CircularProgressIndicator());
@@ -65,10 +71,8 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
       jours.putIfAbsent(DateTime(o.le.year, o.le.month, o.le.day), () => []).add(o);
     }
 
-    final liste = ListView(
-      padding: const EdgeInsets.only(bottom: 40),
-      children: [
-        EnTetePage(surtitre: recherche ? (genre == null ? 'Toutes les opérations' : 'Recherche dans toutes les opérations') : periode, titre: switch (genre) {
+    final entetes = <Widget>[
+        EnTetePage(surtitre: genre == null ? 'Toutes les opérations' : (recherche ? 'Recherche dans toutes les opérations' : periode), titre: switch (genre) {
           Genre.revenu => 'Entrées',
           Genre.depense => 'Sorties',
           _ => 'Opérations',
@@ -134,11 +138,14 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
         if (jours.isEmpty && ops.hasValue && !ops.isLoading)
           Padding(
             padding: const EdgeInsets.all(32),
-            child: Text(recherche ? 'Rien ne correspond à « ${_texte.trim()} ».' : 'Aucune opération sur la période.',
+            child: Text(recherche ? 'Rien ne correspond à « ${_texte.trim()} ».' : genre == null ? 'Aucune opération.' : 'Aucune opération sur la période.',
                 textAlign: TextAlign.center, style: const TextStyle(color: AppColors.texteSecondaire)),
           ),
-        for (final e in jours.entries)
-          Padding(
+    ];
+    // Des centaines de jours sur des années : chacun ne se construit
+    // qu'au moment d'apparaître.
+    final parJour = jours.entries.toList();
+    Widget unJour(MapEntry<DateTime, List<Operation>> e) => Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,7 +165,7 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
                     children: [
                       for (var i = 0; i < e.value.length; i++)
                         if (e.value[i].interne != null)
-                          LigneVirement(operation: e.value[i])
+                          LigneVirement(operation: e.value[i], separateur: i > 0)
                         else
                           Builder(builder: (_) {
                             final o = e.value[i];
@@ -171,8 +178,11 @@ class _EtatOperations extends ConsumerState<EcranOperations> {
                 ),
               ],
             ),
-          ),
-      ],
+          );
+    final liste = ListView.builder(
+      padding: const EdgeInsets.only(bottom: 40),
+      itemCount: entetes.length + parJour.length,
+      itemBuilder: (_, i) => i < entetes.length ? entetes[i] : unJour(parJour[i - entetes.length]),
     );
     return dansVolet ? SafeArea(child: liste) : Scaffold(body: SafeArea(child: liste));
   }

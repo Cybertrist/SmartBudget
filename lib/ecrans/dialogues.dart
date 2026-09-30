@@ -83,10 +83,18 @@ Future<T?> carteSaisie<T>(
                       const SizedBox(height: 12),
                       champ(ctx, valider),
                       const SizedBox(height: 12),
-                      Row(
+                      // Les actions de gauche d'un côté, Annuler et le bouton
+                      // de l'autre ; s'ils ne tiennent pas sur une ligne, les
+                      // seconds passent dessous, à droite.
+                      OverflowBar(
+                        alignment: gauche == null ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
+                        overflowAlignment: OverflowBarAlignment.end,
+                        overflowSpacing: 6,
                         children: [
                           ?gauche,
-                          const Spacer(),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
                           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
                           const SizedBox(width: 8),
                           FilledButton(
@@ -102,6 +110,8 @@ Future<T?> carteSaisie<T>(
                               textStyle: const TextStyle(fontWeight: FontWeight.w800),
                             ),
                             child: Text(bouton),
+                          ),
+                            ],
                           ),
                         ],
                       ),

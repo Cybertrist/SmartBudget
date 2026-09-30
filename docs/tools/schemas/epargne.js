@@ -47,7 +47,7 @@ module.exports = (O) => {
     let s = `<rect x="${SX}" y="${SY}" width="${SL}" height="220" fill="url(#lueurEpargne)"/>
       ${surtitre(SX + 20, 40, 'SUR TES LIVRETS')}
       ${t(SX + 20, SY + 72, 'Épargne', { taille: 26, couleur: APP.texte, poids: 800 })}
-      ${t(SX + 20, SY + 104, 'Mis de côté au total', { taille: 12, couleur: APP.second, poids: 600 })}
+      ${t(SX + 20, SY + 104, 'Au total', { taille: 12, couleur: APP.second, poids: 600 })}
       ${t(SX + 20, SY + 144, e.total, { taille: 34, couleur: APP.texte, poids: 800 })}
       ${t(SX + 20, SY + 170, e.mois, { taille: 12.5, couleur: e.couleurMois, poids: 700 })}`;
     // Mis de côté, pioché.
@@ -80,34 +80,38 @@ module.exports = (O) => {
       s += t(SX + 28, SY + yM + 52, 'Aucun virement vers ou depuis un livret', { taille: 11.5, couleur: APP.second }) +
         t(SX + 28, SY + yM + 68, 'ce mois-ci.', { taille: 11.5, couleur: APP.second });
     }
+    // Comme dans l'appli : le libellé sur deux lignes plutôt que coupé,
+    // et pas de trait au-dessus du premier.
     e.mouvements.forEach(([titre, detail, montant, couleur], i) => {
-      const y = yM + 36 + i * 52;
-      s += `<line x1="${SX + 28}" y1="${SY + y}" x2="${SX + SL - 28}" y2="${SY + y}" stroke="${APP.trait}"/>
-        ${echange(SX + 28, SY + y + 10, 32)}
-        ${t(SX + 70, SY + y + 24, titre, { taille: 12, couleur: APP.texte, poids: 700 })}
-        ${t(SX + 70, SY + y + 40, detail, { taille: 10.5, couleur, poids: 700 })}
+      const y = yM + 34 + i * 62;
+      const [de, vers] = titre.split(' → ');
+      s += `${i > 0 ? `<line x1="${SX + 28}" y1="${SY + y - 4}" x2="${SX + SL - 28}" y2="${SY + y - 4}" stroke="${APP.trait}"/>` : ''}
+        ${echange(SX + 28, SY + y + 12, 32)}
+        ${t(SX + 70, SY + y + 16, `${de} →`, { taille: 12, couleur: APP.texte, poids: 700 })}
+        ${t(SX + 70, SY + y + 31, vers, { taille: 12, couleur: APP.texte, poids: 700 })}
+        ${t(SX + 70, SY + y + 47, detail, { taille: 10.5, couleur, poids: 700 })}
         ${t(SX + SL - 26, SY + y + 31, montant, { taille: 12, couleur, poids: 700, ancre: 'end' })}`;
     });
     return s;
   };
   const avant = {
     total: '1 800,00 €', mois: 'Rien de déplacé ce mois-ci', couleurMois: APP.second, misDeCote: '0,00 €', pioche: '0,00 €',
-    livrets: [['LDDS', '100 % de l’épargne', '1 800,00 €', 1]], mouvements: [],
+    livrets: [['LDDS', '15 % du plafond de 12 000 €', '1 800,00 €', 0.15]], mouvements: [],
   };
-  const mdc = ['Compte courant → Liv…', '15 sept. · mis de côté', '+200,00 €', VERT];
-  const pio = ['Livret A → Compte c…', '22 sept. · pioché', '+100,00 €', ROUGE];
+  const mdc = ['Compte courant → Livret A', '15 sept. · mis de côté', '+200,00 €', VERT];
+  const pio = ['Livret A → Compte courant', '22 sept. · pioché', '+100,00 €', ROUGE];
   const etats = [
     [E3[0], v1, {
       total: '5 000,00 €', mois: 'Rien de déplacé ce mois-ci', couleurMois: APP.second, misDeCote: '0,00 €', pioche: '0,00 €',
-      livrets: [['LDDS', '36 % de l’épargne', '1 800,00 €', 0.36], ['Livret A', '64 % de l’épargne', '3 200,00 €', 0.64]], mouvements: [],
+      livrets: [['LDDS', '15 % du plafond de 12 000 €', '1 800,00 €', 0.15], ['Livret A', '13 % du plafond de 22 950 €', '3 200,00 €', 0.139]], mouvements: [],
     }],
     [v1, v2, {
       total: '5 200,00 €', mois: '+200,00 € ce mois-ci', couleurMois: VERT, misDeCote: '+200,00 €', pioche: '0,00 €',
-      livrets: [['LDDS', '35 % de l’épargne', '1 800,00 €', 0.346], ['Livret A', '65 % de l’épargne', '3 400,00 €', 0.654]], mouvements: [mdc],
+      livrets: [['LDDS', '15 % du plafond de 12 000 €', '1 800,00 €', 0.15], ['Livret A', '14 % du plafond de 22 950 €', '3 400,00 €', 0.148]], mouvements: [mdc],
     }],
     [v2, E3[1], {
       total: '5 100,00 €', mois: '+100,00 € ce mois-ci', couleurMois: VERT, misDeCote: '+200,00 €', pioche: '-100,00 €',
-      livrets: [['LDDS', '35 % de l’épargne', '1 800,00 €', 0.353], ['Livret A', '65 % de l’épargne', '3 300,00 €', 0.647]], mouvements: [pio, mdc],
+      livrets: [['LDDS', '15 % du plafond de 12 000 €', '1 800,00 €', 0.15], ['Livret A', '14 % du plafond de 22 950 €', '3 300,00 €', 0.144]], mouvements: [pio, mdc],
     }],
   ];
 
@@ -251,5 +255,5 @@ module.exports = (O) => {
   corps += t(640, 766, 'Seuls les virements arrivés après le solde saisi le font bouger. Toucher un livret corrige son solde, tel que ta banque l’affiche.', { taille: 13, couleur: DISCRET, ancre: 'middle' });
 
   svg('epargne.svg', 1280, 792, corps,
-    'L’épargne et les livrets, sur un téléphone animé. La banque ne partage par la DSP2 que le compte courant : les livrets ne passent pas par elle et se saisissent à la main. Sur l’écran Épargne, où seul le LDDS de 1 800 euros existe, toucher Ajouter ouvre Nouveau livret : le solde actuel, 3 200 euros, le type Livret A, le nom, et le mot qui le désigne sur le relevé, puis Ajouter le livret. Ensuite, chaque virement lu sur le compte courant fait vivre son solde. VIR VERS LIVRET A DE CARTE BANCAIRE, 200 euros, va vers le Livret A depuis le compte courant : mis de côté, le livret passe à 3 400 euros. VIR VERS CARTE BANCAIRE DE LIVRET A, 100 euros, revient au compte courant : pioché, le livret passe à 3 300 euros. Un paiement chez Carrefour Market de 64,30 euros, lui, est une dépense. Le budget du mois ne compte que ces 64,30 euros de dépenses et aucun revenu : les virements internes restent hors budget. L’écran Épargne affiche 5 100 euros au total, plus 100 euros ce mois-ci, 200 euros mis de côté, 100 euros piochés, le Livret A à 65 pour cent de l’épargne et les deux mouvements repérés. Seuls les virements arrivés après le solde saisi le font bouger, et toucher un livret corrige son solde.');
+    'L’épargne et les livrets, sur un téléphone animé. La banque ne partage par la DSP2 que le compte courant : les livrets ne passent pas par elle et se saisissent à la main. Sur l’écran Épargne, où seul le LDDS de 1 800 euros existe, toucher Ajouter ouvre Nouveau livret : le solde actuel, 3 200 euros, le type Livret A, le nom, et le mot qui le désigne sur le relevé, puis Ajouter le livret. Ensuite, chaque virement lu sur le compte courant fait vivre son solde. VIR VERS LIVRET A DE CARTE BANCAIRE, 200 euros, va vers le Livret A depuis le compte courant : mis de côté, le livret passe à 3 400 euros. VIR VERS CARTE BANCAIRE DE LIVRET A, 100 euros, revient au compte courant : pioché, le livret passe à 3 300 euros. Un paiement chez Carrefour Market de 64,30 euros, lui, est une dépense. Le budget du mois ne compte que ces 64,30 euros de dépenses et aucun revenu : les virements internes restent hors budget. L’écran Épargne affiche 5 100 euros au total, plus 100 euros ce mois-ci, 200 euros mis de côté, 100 euros piochés, le Livret A à 14 pour cent de son plafond de 22 950 euros et les deux mouvements repérés. Seuls les virements arrivés après le solde saisi le font bouger, et toucher un livret corrige son solde.');
 };

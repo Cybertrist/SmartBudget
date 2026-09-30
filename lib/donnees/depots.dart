@@ -655,6 +655,11 @@ class DepotOperations {
     };
     // Une récurrence porte le nom choisi pour son marchand, s'il y en a un.
     final titres = {for (final o in ops) o.id: o.titre};
+    // Celles arrêtées à la main, et depuis quand.
+    final fins = {
+      for (final e in (await const DepotReglages().commencantPar(_fin)).entries)
+        e.key.substring(_fin.length): ?DateTime.tryParse(e.value),
+    };
     return [
       for (final r in appliquerChoix(
         detecterRecurrences(passages).where((r) => !forcees.contains(r.cle)).toList(),
@@ -670,11 +675,19 @@ class DepotOperations {
           prochaine: r.prochaine,
           nombre: r.nombre,
           derniereId: r.derniereId,
+          // Repassée depuis son arrêt : elle a repris, l'arrêt ne compte plus.
+          fin: fins[r.cle] != null && r.derniere.isBefore(fins[r.cle]!) ? fins[r.cle] : null,
         ),
     ];
   }
 
   static const _repetition = 'repetition:';
+  static const _fin = 'fin_recurrence:';
+
+  /// Arrête une récurrence à [le] : elle n'est plus attendue à partir de
+  /// ce jour, et reste payée dans les mois d'avant. Sans date, elle reprend.
+  Future<void> arreterRecurrence(String cleMarchand, DateTime? le) => const DepotReglages()
+      .ecrire('$_fin$cleMarchand', le == null ? null : DateTime(le.year, le.month, le.day).toIso8601String().substring(0, 10));
 
   /// Fixe la répétition d'un marchand : toutes ses opérations suivent.
   /// [frequence] à null : ce marchand ne revient pas, quoi qu'en dise la
@@ -838,6 +851,23 @@ class DepotReglages {
     final l = await (await _db).query('reglages', where: 'cle LIKE ?', whereArgs: ['$prefixe%']);
     return {for (final r in l) if (r['valeur'] != null) r['cle']! as String: r['valeur']! as String};
   }
+
+  /// Le plafond de chaque livret : celui fixé à la main, sinon celui que
+  /// son nom laisse deviner. Rien : le livret n'en a pas.
+  Future<Map<int, int?>> plafonds(List<Compte> livrets) async {
+    final fixes = await commencantPar('plafond:');
+    return {
+      for (final l in livrets)
+        l.id: switch (fixes['plafond:${l.id}']) {
+          null => plafondParDefaut(l.nom),
+          'aucun' => null,
+          final v => int.tryParse(v),
+        },
+    };
+  }
+
+  /// Fixe le plafond d'un livret, ou dit qu'il n'en a pas.
+  Future<void> fixerPlafond(int livretId, int? centimes) => ecrire('plafond:$livretId', centimes == null ? 'aucun' : '$centimes');
 
   /// Le début du mois suit-il le salaire tout seul ? Oui, tant qu'on n'a
   /// pas choisi un jour à la main.

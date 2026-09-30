@@ -129,6 +129,18 @@ final comptesProvider = FutureProvider<List<Compte>>((ref) async {
   ];
 });
 
+/// Le plafond de chaque livret, rien pour ceux qui n'en ont pas.
+final plafondsProvider = FutureProvider<Map<int, int?>>((ref) async {
+  final comptes = await ref.watch(comptesProvider.future);
+  return const DepotReglages().plafonds([for (final c in comptes) if (c.nature == NatureCompte.livret) c]);
+});
+
+/// Toutes les opérations, de la plus récente à la plus ancienne.
+final toutesOperationsProvider = FutureProvider<List<Operation>>((ref) async {
+  ref.watch(versionProvider);
+  return const DepotOperations().entre(DateTime(2000), DateTime.now().add(const Duration(days: 400)));
+});
+
 final recurrencesProvider = FutureProvider<List<Recurrence>>((ref) async {
   ref.watch(versionProvider);
   return const DepotOperations().recurrences();

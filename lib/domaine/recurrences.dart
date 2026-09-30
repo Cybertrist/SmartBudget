@@ -41,6 +41,7 @@ class Recurrence {
     required this.prochaine,
     required this.nombre,
     this.derniereId,
+    this.fin,
   });
 
   final String cle;
@@ -57,6 +58,13 @@ class Recurrence {
 
   /// La dernière opération passée, qu'on ouvre en touchant la récurrence.
   final int? derniereId;
+
+  /// Arrêtée à cette date : plus attendue à partir de ce jour, mais payée
+  /// dans les mois d'avant. Un nouveau passage après elle la relance.
+  final DateTime? fin;
+
+  /// Encore attendue à cette date.
+  bool attendueLe(DateTime d) => fin == null || d.isBefore(fin!);
 
   /// Attendue depuis plus de [grace] jours sans être passée.
   bool enRetard(DateTime maintenant, {int grace = 4}) =>
