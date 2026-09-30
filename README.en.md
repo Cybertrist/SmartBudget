@@ -17,7 +17,7 @@ It reads the current account over PSD2, files every transaction under its catego
 
 It came from a simple wish: stop spending without looking, and stop dipping into savings. The model is Bankin; the style is Spotify's, plain and dark, with a single green. The app itself is in French; this page is its English description, and button names are given as they appear on screen, with their meaning in brackets.
 
-https://github.com/user-attachments/assets/e2f27db1-a676-440a-884d-9d08108cca76
+https://github.com/user-attachments/assets/bcc6762e-e221-409c-a078-4d0a4eabe267
 
 <img src="docs/en/sections/s00.png" alt="00 Contents" width="100%">
 
