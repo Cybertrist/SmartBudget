@@ -17,7 +17,7 @@ Elle lit le compte courant par la DSP2, range chaque opération dans sa catégor
 
 Elle est née d'une envie simple : arrêter de dépenser sans regarder, et de piocher dans l'épargne. Le modèle, c'est Bankin ; le style, celui de Spotify, sobre et sombre, avec un seul vert.
 
-https://github.com/user-attachments/assets/9e788264-1c64-426d-96f9-1e3de44b65f7
+https://github.com/user-attachments/assets/a276cc4f-2d9d-4476-b3a3-6dcc519663b4
 
 <img src="docs/sections/s00.png" alt="00 Sommaire" width="100%">
 
