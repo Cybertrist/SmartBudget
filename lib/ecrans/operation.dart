@@ -253,16 +253,12 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                     _Ligne(
                       icone: 'autorenew',
                       libelle: 'Répétition',
-                      valeur: repetition == null
-                          ? 'Aucune'
-                          : repetition.fin != null
-                              ? 'Arrêtée le ${jourCourt(repetition.fin!)}'
-                              : repetition.frequence.libelle,
+                      valeur: repetition == null ? 'Aucune' : repetition.frequence.libelle,
                       couleur: repetition == null || repetition.fin != null ? null : AppColors.vert,
                       onTap: () async {
                         // Un enregistrement, pour distinguer « aucune » d'une feuille
-                        // refermée ; un booléen pour arrêter (vrai) ou reprendre (faux).
-                        final choix = await carteChoix<Object>(
+                        // refermée.
+                        final choix = await carteChoix<(Frequence?,)>(
                           context,
                           builder: (ctx) => SafeArea(
                             child: SingleChildScrollView(
@@ -274,28 +270,6 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                                   child: Text('Toutes les opérations « ${joli(cle)} » suivent ce choix.',
                                       textAlign: TextAlign.center, style: const TextStyle(fontSize: 13.5, color: AppColors.texteSecondaire)),
                                 ),
-                                // Un abonnement résilié : il reste payé dans les mois
-                                // passés, mais n'est plus attendu. Aucune, elle, l'efface
-                                // de tout l'historique.
-                                if (repetition != null)
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                                    child: OutlinedButton.icon(
-                                      onPressed: () => Navigator.pop(ctx, repetition.fin == null),
-                                      icon: Icon(iconeDe(repetition.fin == null ? 'cancel' : 'autorenew'),
-                                          color: repetition.fin == null ? AppColors.alerte : AppColors.vert),
-                                      label: Text(
-                                          repetition.fin == null ? "Ne plus l'attendre à partir d'aujourd'hui" : 'Reprendre la récurrence',
-                                          style: TextStyle(
-                                              color: repetition.fin == null ? AppColors.alerte : AppColors.vert, fontWeight: FontWeight.w700)),
-                                      style: OutlinedButton.styleFrom(
-                                        minimumSize: const Size.fromHeight(48),
-                                        shape: const StadiumBorder(),
-                                        side: BorderSide(
-                                            color: (repetition.fin == null ? AppColors.alerte : AppColors.vert).withValues(alpha: 0.4)),
-                                      ),
-                                    ),
-                                  ),
                                 for (final (f, texte) in [(null, 'Aucune'), for (final f in Frequence.values) (f, f.libelle)])
                                   ListTile(
                                     title: Text(texte, style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -307,13 +281,17 @@ class _EtatOperation extends ConsumerState<EcranOperation> {
                             ),
                           ),
                         );
-                        switch (choix) {
-                          case (Frequence? f,):
-                            await modifier(() => const DepotOperations().choisirRepetition(cle, f));
-                          case bool arreter:
-                            await modifier(() => const DepotOperations().arreterRecurrence(cle, arreter ? DateTime.now() : null));
-                        }
+                        if (choix != null) await modifier(() => const DepotOperations().choisirRepetition(cle, choix.$1));
                       },
+                    ),
+                  // Un abonnement résilié : il garde sa fréquence et reste payé dans
+                  // les mois passés, mais n'est plus attendu à partir d'aujourd'hui.
+                  if (repetition != null)
+                    _Bascule(
+                      icone: 'cancel',
+                      libelle: 'Ne sera plus une récurrence',
+                      valeur: repetition.fin != null,
+                      onChanged: (v) => modifier(() => const DepotOperations().arreterRecurrence(cle, v ? DateTime.now() : null)),
                     ),
                   // Une entrée qui rembourse une dépense n'est pas un revenu :
                   // rangée dans « Remboursements », elle sort des entrées.
