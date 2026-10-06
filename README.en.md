@@ -34,13 +34,13 @@ https://github.com/user-attachments/assets/a1c15bd8-526b-4aa4-b319-7e51335aed04
 <a href="#alerte"><img src="docs/en/sommaire/08.png" alt="08 The alert" width="31%"></a>
 <a href="#deplie"><img src="docs/en/sommaire/09.png" alt="09 The unfolded screen" width="31%"></a>
 <br>
-<a href="#chiffrement"><img src="docs/en/sommaire/10.png" alt="10 Encryption" width="31%"></a>
-<a href="#confidentialite"><img src="docs/en/sommaire/11.png" alt="11 Privacy" width="31%"></a>
-<a href="#architecture"><img src="docs/en/sommaire/12.png" alt="12 Architecture" width="31%"></a>
+<a href="#widgets"><img src="docs/en/sommaire/10.png" alt="10 The widgets" width="31%"></a>
+<a href="#chiffrement"><img src="docs/en/sommaire/11.png" alt="11 Encryption" width="31%"></a>
+<a href="#confidentialite"><img src="docs/en/sommaire/12.png" alt="12 Privacy" width="31%"></a>
 <br>
-<a href="#tests"><img src="docs/en/sommaire/13.png" alt="13 Tests" width="31%"></a>
-<a href="#versions"><img src="docs/en/sommaire/14.png" alt="14 Versions" width="31%"></a>
-<a href="#licence"><img src="docs/en/sommaire/15.png" alt="15 Licence" width="31%"></a>
+<a href="#architecture"><img src="docs/en/sommaire/13.png" alt="13 Architecture" width="31%"></a>
+<a href="#tests"><img src="docs/en/sommaire/14.png" alt="14 Tests" width="31%"></a>
+<a href="#versions"><img src="docs/en/sommaire/15.png" alt="15 Releases and licence" width="31%"></a>
 </p>
 
 <a id="fonctionnalites"></a>
@@ -80,11 +80,11 @@ The APKs are not on the Play Store: Android asks, once, to allow installs from t
 <summary><b>Check the downloaded file, or build it yourself</b></summary>
 
 ```
-# SHA-256 of SmartBudget.apk, version 1.2.8
-ea23a7a17264bee017874dfc8acdc378d74a73d1524ef3fcbf0963a821cc4791
+# SHA-256 of SmartBudget.apk, version 1.2.9
+4e3c366fe81db617867cce34c05067fd1b442d505302e9bf57de08ebf54741f3
 
-# SHA-256 of SmartBudget-demo.apk, version 1.2.8
-a1ecc3e9bb0153513733247c6e263b1a4f7f4ea9d897069c4debf02ac77ab535
+# SHA-256 of SmartBudget-demo.apk, version 1.2.9
+9379e180bf719df05d0a1cd63b3c5ae480ff3c12124f18c42550c12a625aa8a8
 
 # SHA-256 of the signing certificate, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -252,8 +252,22 @@ SmartBudget sends only one notification: **"Compte courant en négatif"** (curre
 
 A phone screen stretched over eight inches no longer looks like anything. On the open Fold, pages form one wide page showing its last two panes: you go down from the analysis to a single transaction without ever losing where you came from, and Samsung's back gesture closes the last pane. Every page fits at once, without scrolling; a transaction opened on its own switches to two columns. Inputs open in a card above the keyboard, never in a sheet sliding up from the bottom.
 
+<a id="widgets"></a>
+<img src="docs/en/sections/s10.png" alt="10 The widgets" width="100%">
+
+Seven widgets for the home screen: the month reads without opening the app. Long-press the home screen, **Widgets**, then **Smart Budget**.
+
+<img src="docs/en/schemas/widgets.png" alt="The seven home screen widgets, filled with the sample data. Analysis, 2 × 2: the ring of the month's spending, €708.62 in October, one slice and one icon per category. Budget, 2 × 2: €791.38 left out of €1,500, and its gauge. Savings, 2 × 2: the dial, €4,560.00, 76% of the €6,000 goal. My accounts, 4 × 2: €5,844.52 in total, of which €1,284.52 on the current account and €4,560.00 in savings, updated on 6 October. Spending this month, 4 × 2: the category bar, then Housing €520.00, Shopping €83.30 and To sort €34.99. Coming up, 4 × 2: -€615.44 expected, including EDF on 8 October, Basic Fit on the 10th and Spotify on the 14th. Cash expense, 4 × 1: one tap opens the form. Each widget is an image that SmartBudget composes with its own tiles, colours and typeface, then hands to Android. The widgets themselves are in French, like the app." width="100%">
+
+- **Drawn by the app itself.** An Android widget can only show a few simple views. So SmartBudget composes each widget off screen, with its own tiles, colours and typeface, takes a picture of it, and hands the picture to Android: the ring in the widget is the one from the analysis, to the pixel.
+- **A tap opens the right page**, behind the fingerprint: the analysis, the savings, the home screen, or straight to the form for a cash expense.
+- **Up to date at every opening.** The pictures are redrawn when the app opens, comes back to the foreground, or when its data changes. With the app closed, a widget keeps the figures from the last time it was opened.
+- **A widget that has just been placed** waits for the next opening: it shows “Ouvre SmartBudget pour remplir ce widget”, open SmartBudget to fill this widget.
+
+**The price of a widget.** A picture is a plain image, outside the encrypted database, that the home screen shows without a fingerprint: anyone holding the unlocked phone can read the amounts. So only the widgets actually placed are pictured; removing a widget deletes its picture, and **Tout effacer** (erase everything) deletes them all. With no widget, nothing leaves the database. The **Cash expense** widget carries no figure at all.
+
 <a id="chiffrement"></a>
-<img src="docs/en/sections/s10.png" alt="10 Encryption and backup" width="100%">
+<img src="docs/en/sections/s11.png" alt="11 Encryption and backup" width="100%">
 
 <img src="docs/en/schemas/chiffrement.svg" alt="Encryption. The fingerprint loads the 32-byte master key from the Android Keystore. HKDF-SHA256 derives two keys from it: one opens the SQLCipher database, the other encrypts the Enable Banking private key with AES-GCM. Separately, the backup: a passphrase chosen at export goes through 210,000 rounds of PBKDF2 and encrypts, with AES-GCM, a .sbx file readable on another phone. Outside the balance watch, which loads it every six hours just long enough to read the balance, the key only enters memory after the fingerprint." width="100%">
 
@@ -264,12 +278,12 @@ The master key is drawn at random on first launch and never leaves the Android K
 Settings, Backup, **Exporter, chiffré** (export, encrypted): the passphrase is typed twice, so a typo never locks the file. The file can travel anywhere: without the passphrase it is unreadable. On another phone, **Restaurer une sauvegarde** (restore a backup) replaces everything in a single transaction; a wrong passphrase touches nothing. The bank key, encrypted by the old phone's master key, cannot be read there: it is dropped, and importing it again relinks the account.
 
 <a id="confidentialite"></a>
-<img src="docs/en/sections/s11.png" alt="11 Privacy model" width="100%">
+<img src="docs/en/sections/s12.png" alt="12 Privacy model" width="100%">
 
 <img src="docs/en/schemas/confidentialite.svg" alt="The privacy model. In the centre, the phone; the only link leaving it goes to Enable Banking, then to the bank, read only, for 180 days of access; nothing goes to a server, a sign-up, analytics or ads. A curious eye tries every door, and they hold. No server of mine: the app only talks to Enable Banking, to read the account. The database is encrypted by SQLCipher; its key lives in the Keystore and is only loaded after the fingerprint, apart from the balance watch. The bank key is encrypted twice, with AES-GCM under a derived key, inside a database that is itself encrypted. PSD2 only grants reading: no transfer can leave the app, and access expires after 180 days. The screen is protected: screenshots blocked, recent-apps preview hidden, Android backup refused. Then, honestly, what stays open. Enable Banking sees the transactions while passing them on: it is the licensed aggregator that reads the bank. An open app shows everything: the fingerprint guards access, not your shoulder. A backup travels and is only as strong as its passphrase; without the passphrase, it is lost, for everyone. Losing the phone means losing the data that was not backed up: the key is copied nowhere. The balance watch runs without the fingerprint: every six hours, the key is loaded just long enough to read the balance, and the alert shows the amount on the lock screen. The fingerprint can be turned off in the settings; the data stays encrypted, but opens without proof." width="100%">
 
 <a id="architecture"></a>
-<img src="docs/en/sections/s12.png" alt="12 Architecture" width="100%">
+<img src="docs/en/sections/s13.png" alt="13 Architecture" width="100%">
 
 <img src="docs/en/schemas/stack.svg" alt="The SmartBudget stack. Underneath, Flutter 3: the whole app, in Dart, one codebase for the phone and the unfolded screen. On top, five sockets, what the app serves, and each package stacks onto its own. The screen: flutter_riverpod for state, a write reloads everything that depends on it, in a single call; go_router for navigation and the lock guard on every page; intl for dates and amounts, French style; material_symbols_icons, five hundred icons rounded like the interface. The database: sqflite_sqlcipher, SQLite encrypted by SQLCipher, schema version 6, lossless migrations. The key: flutter_secure_storage, the master key in the Android Keystore, never on disk in the clear; cryptography, HKDF to derive keys, AES-GCM for the bank key and the backup, PBKDF2 for the passphrase; local_auth, the fingerprint, which loads the key, without it the database stays unreadable. The bank: pointycastle, the RS256 signature of requests, in Dart, byte for byte the one OpenSSL makes. The watch: workmanager, the balance watch every six hours, even with the app closed; flutter_local_notifications, the one notification, the current account gone overdrawn. Two paths run through them. On opening, the fingerprint loads the key, the key opens the database, the screen fills up. Every six hours, the watch loads the key, signs its request, reads the balance at the bank, and warns if it goes overdrawn." width="100%">
 
@@ -280,7 +294,7 @@ Settings, Backup, **Exporter, chiffré** (export, encrypted): the passphrase is 
 Amounts are integers, in cents: a float never touches money. The domain knows neither Flutter nor the database, which makes it testable without a device.
 
 <a id="tests"></a>
-<img src="docs/en/sections/s13.png" alt="13 Tests" width="100%">
+<img src="docs/en/sections/s14.png" alt="14 Tests" width="100%">
 
 <img src="docs/en/schemas/tests.svg" alt="The tests, run one by one. A counter climbs from 0 to 97 and a strip of 97 cells turns green: first the 34 pure-logic tests, with no device, through flutter test, then the 63 that run on an Android emulator, where SQLCipher and the Keystore exist, through flutter test integration_test. All 97 end up green. Each family lights up when a test that checks it passes. Labels: the merchant comes out of the bank’s noise, and its key does not change from one month to the next. Internal transfers: to savings, from savings, a savings account with an unusual name, and a transfer to someone that is not one. Recurrences: a monthly subscription found with its next date, irregular groceries that are not one. Categorising: the dictionary, corrections learned and followed, and a repeated sync that doubles nothing. Balance: split refunds, merchant refund, cash expense taken off the withdrawals. Wallet: 50 euros counted, a 20 euro withdrawal, 12 euros at the market, 58 left. Budget month: each salary opens its month, even when paid early for Christmas, a bonus opens none, and cash from a withdrawal counts only once. Backup: everything comes back with the right passphrase, a wrong one touches nothing. Signature: the JWT signed in Dart is, byte for byte, the one OpenSSL makes. Refunds: six transfers for one expense, linked either way, never over, even with two writes at the same moment. Syncs: pending transactions that get booked, change amount or are lifted, a year of history, nothing doubles, nothing is lost. Never frozen: every test puts a time limit on its database access, a deadlock would fail the suite instead of freezing it. On device: 97 tests, 34 on pure logic, 63 on an Android emulator." width="100%">
 
@@ -292,14 +306,13 @@ flutter test integration_test -d emulator-5554 # the encrypted database, on an e
 ```
 
 <a id="versions"></a>
-<img src="docs/en/sections/s14.png" alt="14 Versions" width="100%">
+<img src="docs/en/sections/s15.png" alt="15 Releases and licence" width="100%">
 
-<img src="docs/en/schemas/versions.svg" alt="The releases, thirteen in eleven days, from Thursday 24 September to Sunday 4 October 2026, stacked one on top of the other: each one drops onto the previous one, just as it installs over it on the phone, without losing anything. At the bottom, the base never moves: your data, accounts, transactions, categories, learnt rules and links, and the same signing key, SHA-256 certificate 55572db2…fabcbef; a thread rises from the key and seals each release. On 24 September, 1.0.0, the first release: linked to Crédit Mutuel de Bretagne through Enable Banking, categorisation, internal transfers, refunds, recurring payments, an encrypted database and the unfolded screen in panes. 1.0.1, a small fix: the right version number in the settings, which still showed 0.1.0. 1.0.2: a Going out and leisure icon group, Ferris wheel, funfair, tickets, cinema, apart from Sport. 1.0.3: the overdrawn account alert, the balance read again every six hours, even with the app closed, one notification each time it drops below zero. 1.1.0: the demo, a second app installed alongside the real one, with four months of made-up transactions, no bank and no fingerprint. On 25 September, 1.2.0: every bank on Enable Banking, by name or by country, a guide page to get the key, pending transactions and a sync every time the app opens. On 26 September, 1.2.2, the full audit: linking a refund no longer freezes the app, it locks again after a trip to the background, the sync keeps the links of pending transactions, no more rule learnt from the “N” of a cheque, net amounts everywhere and correct recurring payments for past months, a transaction’s page fits whole on the unfolded screen. On 27 September, 1.2.3, the month follows the salary: the month starts by itself on the day the salary arrives, and cash withdrawn one month and spent the next no longer counts twice. On 29 September, 1.2.4, several refunds: one expense refunded by several transfers, six friends at 23 euros each, with checkboxes and what is left to cover right in view. The same day, 1.2.5: the Fold’s cover screen stays upright, like a phone, and the inner screen still rotates freely. On 30 September, 1.2.6, each salary, its month: each salary opens its month, even when paid early for Christmas, the home screen is no longer cut in half after a lock, and To review no longer keeps transactions already linked. The same day, 1.2.7, ceilings and recurring payments: each savings account is measured against its ceiling, Livret jeune 1,600 euros, Livret A 22,950 euros; a recurring payment stops from today and resumes if it comes back; Transactions shows the whole history. On 4 October, 1.2.8, the current release, stopping a recurring payment: a “No longer recurring” switch on a transaction’s page; the repetition keeps its frequency, “Every month”, even once stopped; the Repetition card now only lists frequencies. 97 tests, all green." width="100%">
+<img src="docs/en/schemas/versions.svg" alt="The releases, fourteen in thirteen days, from Thursday 24 September to Tuesday 6 October 2026, stacked one on top of the other: each one drops onto the previous one, just as it installs over it on the phone, without losing anything. At the bottom, the base never moves: your data, accounts, transactions, categories, learnt rules and links, and the same signing key, SHA-256 certificate 55572db2…fabcbef; a thread rises from the key and seals each release. On 24 September, 1.0.0, the first release: linked to Crédit Mutuel de Bretagne through Enable Banking, categorisation, internal transfers, refunds, recurring payments, an encrypted database and the unfolded screen in panes. 1.0.1, a small fix: the right version number in the settings, which still showed 0.1.0. 1.0.2: a Going out and leisure icon group, Ferris wheel, funfair, tickets, cinema, apart from Sport. 1.0.3: the overdrawn account alert, the balance read again every six hours, even with the app closed, one notification each time it drops below zero. 1.1.0: the demo, a second app installed alongside the real one, with four months of made-up transactions, no bank and no fingerprint. On 25 September, 1.2.0: every bank on Enable Banking, by name or by country, a guide page to get the key, pending transactions and a sync every time the app opens. On 26 September, 1.2.2, the full audit: linking a refund no longer freezes the app, it locks again after a trip to the background, the sync keeps the links of pending transactions, no more rule learnt from the “N” of a cheque, net amounts everywhere and correct recurring payments for past months, a transaction’s page fits whole on the unfolded screen. On 27 September, 1.2.3, the month follows the salary: the month starts by itself on the day the salary arrives, and cash withdrawn one month and spent the next no longer counts twice. On 29 September, 1.2.4, several refunds: one expense refunded by several transfers, six friends at 23 euros each, with checkboxes and what is left to cover right in view. The same day, 1.2.5: the Fold’s cover screen stays upright, like a phone, and the inner screen still rotates freely. On 30 September, 1.2.6, each salary, its month: each salary opens its month, even when paid early for Christmas, the home screen is no longer cut in half after a lock, and To review no longer keeps transactions already linked. The same day, 1.2.7, ceilings and recurring payments: each savings account is measured against its ceiling, Livret jeune 1,600 euros, Livret A 22,950 euros; a recurring payment stops from today and resumes if it comes back; Transactions shows the whole history. On 4 October, 1.2.8, stopping a recurring payment: a “No longer recurring” switch on a transaction’s page; the repetition keeps its frequency, “Every month”, even once stopped; the Repetition card now only lists frequencies. On 6 October, 1.2.9, the current release, the widgets: seven home screen widgets, drawn by the app with its own components; a tap opens the right page, behind the fingerprint; only the widgets you place keep an image. 97 tests, all green." width="100%">
 
 Every Release, with its notes and SHA-256 fingerprints: [github.com/Cybertrist/SmartBudget/releases](https://github.com/Cybertrist/SmartBudget/releases).
 
 <a id="licence"></a>
-<img src="docs/en/sections/s15.png" alt="15 Licence and author" width="100%">
 
 The code is released under the [MIT](LICENSE) licence: free to read, reuse and modify, as long as the copyright notice stays. The Figtree font is under the SIL Open Font licence, the Material Symbols icons under Apache 2.0.
 

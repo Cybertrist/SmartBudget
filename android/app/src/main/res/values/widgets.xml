@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_image">Widget SmartBudget</string>
+    <string name="widget_attente">Ouvre SmartBudget pour remplir ce widget.</string>
+    <string name="widget_budget">Budget</string>
+    <string name="widget_budget_desc">Ce qu\'il reste du budget du mois.</string>
+    <string name="widget_epargne">Épargne</string>
+    <string name="widget_epargne_desc">Le total de tes livrets, face à ton objectif.</string>
+    <string name="widget_comptes">Mes comptes</string>
+    <string name="widget_comptes_desc">Le total de tes comptes : courant, épargne, espèces.</string>
+    <string name="widget_analyse">Analyse</string>
+    <string name="widget_analyse_desc">L\'anneau des sorties du mois, catégorie par catégorie.</string>
+    <string name="widget_depenses">Dépenses du mois</string>
+    <string name="widget_depenses_desc">Le total du mois et ses trois plus grosses catégories.</string>
+    <string name="widget_avenir">À venir</string>
+    <string name="widget_avenir_desc">Les prochains prélèvements qui reviennent tout seuls.</string>
+    <string name="widget_especes">Dépense en espèces</string>
+    <string name="widget_especes_desc">Noter une dépense en espèces, d\'un appui.</string>
+</resources>

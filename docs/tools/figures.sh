@@ -69,7 +69,7 @@ rendre "s$1.html" "$DOCS/sections/s$1.png"
 n=1
 for titre in "Fonctionnalités" "Les écrans" "Installer" "Relier la banque" "Au quotidien" "Comment une opération est lue" \
              "Virements, remboursements, épargne" "L'alerte de compte en négatif" "L'écran déplié" \
-             "Chiffrement et sauvegarde" "Modèle de confidentialité" "Architecture" "Les tests" "Les versions" "Licence et auteur"; do
+             "Les widgets" "Chiffrement et sauvegarde" "Modèle de confidentialité" "Architecture" "Les tests" "Versions et licence"; do
   bandeau "$(printf '%02d' $n)" "$titre"; n=$((n+1))
 done
 bandeau "00" "Sommaire"
@@ -101,12 +101,12 @@ tuile 06 receipt_long 'Lecture d’une opération'
 tuile 07 sync_alt 'Virements et épargne'
 tuile 08 notifications_active 'L’alerte'
 tuile 09 devices_fold 'L’écran déplié'
-tuile 10 lock 'Chiffrement'
-tuile 11 shield 'Confidentialité'
-tuile 12 account_tree 'Architecture'
-tuile 13 task_alt 'Les tests'
-tuile 14 history 'Les versions'
-tuile 15 gavel 'Licence'
+tuile 10 widgets 'Les widgets'
+tuile 11 lock 'Chiffrement'
+tuile 12 shield 'Confidentialité'
+tuile 13 account_tree 'Architecture'
+tuile 14 task_alt 'Les tests'
+tuile 15 history 'Versions et licence'
 
 # ------------------------------------------------------------- les grilles
 # grille <nom> <colonnes> "icone|titre|texte" ...

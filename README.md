@@ -34,13 +34,13 @@ https://github.com/user-attachments/assets/a276cc4f-2d9d-4476-b3a3-6dcc519663b4
 <a href="#alerte"><img src="docs/sommaire/08.png" alt="08 L'alerte" width="31%"></a>
 <a href="#deplie"><img src="docs/sommaire/09.png" alt="09 L'écran déplié" width="31%"></a>
 <br>
-<a href="#chiffrement"><img src="docs/sommaire/10.png" alt="10 Chiffrement" width="31%"></a>
-<a href="#confidentialite"><img src="docs/sommaire/11.png" alt="11 Confidentialité" width="31%"></a>
-<a href="#architecture"><img src="docs/sommaire/12.png" alt="12 Architecture" width="31%"></a>
+<a href="#widgets"><img src="docs/sommaire/10.png" alt="10 Les widgets" width="31%"></a>
+<a href="#chiffrement"><img src="docs/sommaire/11.png" alt="11 Chiffrement" width="31%"></a>
+<a href="#confidentialite"><img src="docs/sommaire/12.png" alt="12 Confidentialité" width="31%"></a>
 <br>
-<a href="#tests"><img src="docs/sommaire/13.png" alt="13 Les tests" width="31%"></a>
-<a href="#versions"><img src="docs/sommaire/14.png" alt="14 Les versions" width="31%"></a>
-<a href="#licence"><img src="docs/sommaire/15.png" alt="15 Licence" width="31%"></a>
+<a href="#architecture"><img src="docs/sommaire/13.png" alt="13 Architecture" width="31%"></a>
+<a href="#tests"><img src="docs/sommaire/14.png" alt="14 Les tests" width="31%"></a>
+<a href="#versions"><img src="docs/sommaire/15.png" alt="15 Versions et licence" width="31%"></a>
 </p>
 
 <a id="fonctionnalites"></a>
@@ -80,11 +80,11 @@ Les APK ne sont pas sur le Play Store : Android demande, une fois, d'autoriser l
 <summary><b>Vérifier le fichier téléchargé, ou construire soi-même</b></summary>
 
 ```
-# SHA-256 de SmartBudget.apk, version 1.2.8
-ea23a7a17264bee017874dfc8acdc378d74a73d1524ef3fcbf0963a821cc4791
+# SHA-256 de SmartBudget.apk, version 1.2.9
+4e3c366fe81db617867cce34c05067fd1b442d505302e9bf57de08ebf54741f3
 
-# SHA-256 de SmartBudget-demo.apk, version 1.2.8
-a1ecc3e9bb0153513733247c6e263b1a4f7f4ea9d897069c4debf02ac77ab535
+# SHA-256 de SmartBudget-demo.apk, version 1.2.9
+9379e180bf719df05d0a1cd63b3c5ae480ff3c12124f18c42550c12a625aa8a8
 
 # SHA-256 du certificat de signature, CN=SmartBudget, O=Cybertrist
 55572db26550312a39ee80315ad81ce6c31e492f0e3aebfc8e5e0f2cffabcbef
@@ -252,8 +252,22 @@ SmartBudget n'envoie qu'une seule notification : **« Compte courant en négatif
 
 Un écran de téléphone étiré sur huit pouces ne ressemble plus à rien. Sur le Fold ouvert, les pages forment une seule grande page dont on voit les deux derniers volets : on descend de l'analyse à l'opération sans jamais perdre d'où l'on vient, et le geste retour de Samsung referme le dernier volet. Chaque page tient d'un coup, sans défiler ; la fiche d'une opération ouverte seule passe en deux colonnes. Les saisies s'ouvrent dans une carte au-dessus du clavier, jamais dans une feuille qui monte du bas.
 
+<a id="widgets"></a>
+<img src="docs/sections/s10.png" alt="10 Les widgets" width="100%">
+
+Sept widgets pour l'écran d'accueil : le mois se lit sans ouvrir l'application. Appui long sur l'écran d'accueil, **Widgets**, puis **Smart Budget**.
+
+<img src="docs/schemas/widgets.png" alt="Les sept widgets de l'écran d'accueil, remplis par le jeu d'essai. Analyse, 2 × 2 : l'anneau des sorties du mois, 708,62 € en octobre, une part et une icône par catégorie. Budget, 2 × 2 : 791,38 € restants sur 1 500 €, et sa jauge. Épargne, 2 × 2 : le cadran, 4 560,00 €, 76 % de l'objectif de 6 000 €. Mes comptes, 4 × 2 : 5 844,52 € au total, dont 1 284,52 € sur le compte courant et 4 560,00 € d'épargne, mis à jour le 6 octobre. Dépenses du mois, 4 × 2 : la barre des catégories, puis Logement 520,00 €, Shopping 83,30 € et À classer 34,99 €. À venir, 4 × 2 : -615,44 € attendus, dont EDF le 8 octobre, Basic Fit le 10 et Spotify le 14. Dépense en espèces, 4 × 1 : un appui ouvre la saisie. Chaque widget est une image que SmartBudget compose avec ses propres tuiles, ses couleurs et sa police, puis confie à Android." width="100%">
+
+- **Dessinés par l'application elle-même.** Un widget Android ne sait afficher que quelques vues simples. SmartBudget compose donc chaque widget hors de l'écran, avec ses propres tuiles, ses couleurs et sa police, le photographie, et confie la photo à Android : l'anneau du widget est celui de l'analyse, au pixel près.
+- **Un appui ouvre la bonne page**, derrière l'empreinte : l'analyse, l'épargne, l'accueil, ou directement la saisie d'une dépense en espèces.
+- **À jour à chaque ouverture.** Les photos sont refaites quand l'application s'ouvre, revient au premier plan, ou que ses données changent. Application fermée, un widget garde les chiffres de la dernière ouverture.
+- **Un widget tout juste posé** attend l'ouverture suivante : il affiche « Ouvre SmartBudget pour remplir ce widget ».
+
+**Le prix d'un widget.** Une photo est une image en clair, hors de la base chiffrée, que l'écran d'accueil montre sans empreinte : quiconque tient le téléphone déverrouillé lit les montants. Seuls les widgets réellement posés sont donc photographiés ; retirer un widget efface sa photo, et **Tout effacer** les efface toutes. Sans widget, rien ne sort de la base. Le widget **Dépense en espèces** ne porte aucun chiffre.
+
 <a id="chiffrement"></a>
-<img src="docs/sections/s10.png" alt="10 Chiffrement et sauvegarde" width="100%">
+<img src="docs/sections/s11.png" alt="11 Chiffrement et sauvegarde" width="100%">
 
 <img src="docs/schemas/chiffrement.svg" alt="Le chiffrement. L’empreinte charge la clé maîtresse de 32 octets depuis le Keystore Android. HKDF-SHA256 en dérive deux clés : l’une ouvre la base SQLCipher, l’autre chiffre en AES-GCM la clé privée d’Enable Banking. À part, la sauvegarde : une phrase choisie à l’export passe par PBKDF2 en 210 000 tours, et chiffre en AES-GCM un fichier .sbx relisible sur un autre téléphone. Hors de la veille du solde, qui la charge toutes les six heures le temps de lire le solde, la clé n’entre en mémoire qu’après l’empreinte." width="100%">
 
@@ -264,12 +278,12 @@ La clé maîtresse est tirée au hasard au premier lancement et ne quitte jamais
 Réglages, Sauvegarde, **Exporter, chiffré** : la phrase se tape deux fois, pour ne pas chiffrer avec une faute de frappe. Le fichier peut voyager n'importe où : sans la phrase, il est illisible. Sur un autre téléphone, **Restaurer une sauvegarde** remplace tout en une seule transaction ; une phrase fausse ne touche à rien. La clé bancaire, chiffrée par la clé maîtresse de l'ancien téléphone, ne s'y relit pas : elle est oubliée, et il suffit de la réimporter pour relier le compte.
 
 <a id="confidentialite"></a>
-<img src="docs/sections/s11.png" alt="11 Modèle de confidentialité" width="100%">
+<img src="docs/sections/s12.png" alt="12 Modèle de confidentialité" width="100%">
 
 <img src="docs/schemas/confidentialite.svg" alt="Le modèle de confidentialité. Au centre, le téléphone ; le seul fil qui en sort va vers Enable Banking, puis vers la banque, en lecture seule, pour un accès de 180 jours ; rien ne part vers un serveur, un compte, de l’analytique ou de la publicité. Un regard curieux essaie chaque porte, et elles tiennent. Aucun serveur à moi : l’application ne parle qu’à Enable Banking, pour lire le compte. La base est chiffrée par SQLCipher ; sa clé vit dans le Keystore et n’est chargée qu’après l’empreinte, hors la veille du solde. La clé bancaire est chiffrée deux fois, en AES-GCM par une clé dérivée, dans une base elle-même chiffrée. La DSP2 ne donne que la lecture : aucun virement ne peut partir de l’application, et l’accès expire au bout de 180 jours. L’écran est protégé : captures bloquées, aperçu du multitâche masqué, sauvegarde Android refusée. Puis, honnêtement, ce qui reste ouvert. Enable Banking voit passer les opérations le temps de les transmettre : c’est l’agrégateur agréé qui lit la banque. L’application ouverte montre tout : l’empreinte protège l’accès, pas ton épaule. Une sauvegarde voyage et vaut ce que vaut sa phrase ; sans la phrase, elle est perdue, pour tout le monde. Perdre le téléphone, c’est perdre les données qui n’ont pas été sauvegardées : la clé ne se recopie nulle part. La veille du solde se passe d’empreinte : toutes les six heures, la clé est chargée le temps de lire le solde, et l’alerte montre le montant sur l’écran verrouillé. L’empreinte se coupe dans les réglages ; les données restent chiffrées, mais s’ouvrent sans preuve." width="100%">
 
 <a id="architecture"></a>
-<img src="docs/sections/s12.png" alt="12 Architecture" width="100%">
+<img src="docs/sections/s13.png" alt="13 Architecture" width="100%">
 
 <img src="docs/schemas/stack.svg" alt="La pile de SmartBudget. En socle, Flutter 3 : l’application entière, en Dart, un seul code pour le téléphone et l’écran déplié. Dessus, cinq prises, ce que l’application sert, et chaque paquet s’empile sur la sienne. L’écran : flutter_riverpod pour l’état, une écriture fait relire tout ce qui en dépend, d’un seul appel ; go_router pour la navigation et la garde du verrou sur chaque page ; intl pour les dates et les montants à la française ; material_symbols_icons, cinq cents icônes arrondies comme l’interface. La base : sqflite_sqlcipher, SQLite chiffré par SQLCipher, schéma en version 6, migrations sans perte. La clé : flutter_secure_storage, la clé maîtresse dans le Keystore Android, jamais sur le disque en clair ; cryptography, HKDF pour dériver les clés, AES-GCM pour la clé bancaire et la sauvegarde, PBKDF2 pour la phrase ; local_auth, l’empreinte, qui charge la clé, sans elle la base reste illisible. La banque : pointycastle, la signature RS256 des requêtes, en Dart, octet pour octet celle d’OpenSSL. La veille : workmanager, la veille du solde toutes les six heures, même application fermée ; flutter_local_notifications, l’unique notification, le compte courant passé en négatif. Deux trajets les traversent. À l’ouverture, l’empreinte charge la clé, la clé ouvre la base, l’écran se remplit. Toutes les six heures, la veille charge la clé, signe sa requête, lit le solde à la banque, et prévient s’il passe en négatif." width="100%">
 
@@ -280,7 +294,7 @@ Réglages, Sauvegarde, **Exporter, chiffré** : la phrase se tape deux fois, pou
 Les montants sont des entiers, en centimes : jamais un flottant ne touche à l'argent. Le domaine ne connaît ni Flutter ni la base, ce qui le rend testable sans appareil.
 
 <a id="tests"></a>
-<img src="docs/sections/s13.png" alt="13 Les tests" width="100%">
+<img src="docs/sections/s14.png" alt="14 Les tests" width="100%">
 
 <img src="docs/schemas/tests.svg" alt="Les tests, lancés un à un. Un compteur monte de 0 à 97 et un ruban de 97 cases passe au vert : d’abord les 34 tests de logique pure, sans appareil, par flutter test, puis les 63 qui tournent sur un émulateur Android, où SQLCipher et le Keystore existent, par flutter test integration_test. Les 97 finissent au vert. Chaque famille s’allume quand passe un test qui la vérifie. Libellés : le marchand sort du bruit de la banque, et sa clé ne change pas d’un mois à l’autre. Virements internes : vers le livret, depuis le livret, un livret au nom inhabituel, et un virement à quelqu’un qui n’en est pas un. Récurrences : un abonnement mensuel reconnu avec sa prochaine date, des courses irrégulières qui n’en sont pas. Classement : le dictionnaire, les corrections apprises et suivies, et une synchronisation relancée qui ne double rien. Bilan : remboursements répartis, remboursement marchand, dépense en espèces retirée des retraits. Portefeuille : 50 euros comptés, un retrait de 20 euros, 12 euros au marché, il en reste 58. Mois budgétaire : chaque salaire ouvre son mois, même en avance pour Noël, une prime n’en ouvre aucun, et les espèces d’un retrait comptent une seule fois. Sauvegarde : tout revient avec la bonne phrase, une phrase fausse ne touche à rien. Signature : le JWT signé en Dart est, octet pour octet, celui d’OpenSSL. Remboursements : six virements pour une dépense, lier dans les deux sens, jamais au-delà, même avec deux écritures au même instant. Synchronisations : attentes qui passent, changent de montant ou sont levées, un an d’historique, rien ne double, rien ne se perd. Jamais figée : chaque test borne ses accès à la base dans le temps, un verrou mort ferait échouer la suite au lieu de la geler. Sur appareil : 97 tests, 34 sur la logique pure, 63 sur un émulateur Android." width="100%">
 
@@ -292,14 +306,13 @@ flutter test integration_test -d emulator-5554 # la base chiffrée, sur un émul
 ```
 
 <a id="versions"></a>
-<img src="docs/sections/s14.png" alt="14 Les versions" width="100%">
+<img src="docs/sections/s15.png" alt="15 Versions et licence" width="100%">
 
-<img src="docs/schemas/versions.svg" alt="Les versions, treize en onze jours, du jeudi 24 septembre au dimanche 4 octobre 2026, empilées l’une sur l’autre : chacune tombe sur la précédente, comme elle s’installe par-dessus sur le téléphone, sans rien perdre. En bas, le socle ne bouge pas : tes données, comptes, opérations, catégories, règles apprises et liens, et la même clé de signature, certificat SHA-256 55572db2…fabcbef ; un fil monte de la clé et scelle chaque version. Le 24 septembre, 1.0.0, la première version : reliée au Crédit Mutuel de Bretagne par Enable Banking, classement, virements internes, remboursements, récurrences, base chiffrée et écran déplié en volets. 1.0.1, un correctif : le bon numéro de version dans les réglages, qui affichaient encore 0.1.0. 1.0.2 : un groupe d’icônes Sorties et loisirs, grande roue, fête foraine, billets, cinéma, séparé du Sport. 1.0.3 : l’alerte de compte en négatif, le solde relu toutes les six heures, même application fermée, une notification par passage sous zéro. 1.1.0 : la démo, une seconde application installée à côté de la vraie, avec quatre mois d’opérations inventées, sans banque ni empreinte. Le 25 septembre, 1.2.0 : toutes les banques d’Enable Banking, par nom ou par pays, une page guide pour obtenir la clé, les opérations en attente et la synchronisation à chaque ouverture. Le 26 septembre, 1.2.2, l’audit complet : lier un remboursement ne gèle plus l’application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, plus de règle apprise sur le « N » d’un chèque, montants nets partout et récurrences justes sur les mois passés, la fiche d’une opération entière sur l’écran déplié. Le 27 septembre, 1.2.3, le mois suit le salaire : le mois commence tout seul le jour où le salaire arrive, et les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois. Le 29 septembre, 1.2.4, plusieurs remboursements : une dépense remboursée par plusieurs virements, six amis à 23 euros chacun, avec des cases à cocher et ce qui reste à couvrir sous les yeux. Le même jour, 1.2.5 : l’écran extérieur du Fold reste en portrait, comme un téléphone, et l’écran intérieur tourne toujours librement. Le 30 septembre, 1.2.6, chaque salaire, son mois : chaque salaire ouvre son mois, même versé en avance pour Noël, l’accueil n’est plus coupé en deux après un verrou, et À vérifier ne garde plus les opérations déjà liées. Le même jour, 1.2.7, plafonds et récurrences : chaque livret se mesure à son plafond, Livret jeune 1 600 euros, Livret A 22 950 euros ; une récurrence s’arrête à partir d’aujourd’hui et reprend si elle repasse ; Opérations montre tout l’historique. Le 4 octobre, 1.2.8, la version en cours, arrêter une récurrence : une bascule « Ne sera plus une récurrence » dans la fiche d’une opération ; la répétition garde sa fréquence, « Chaque mois », même arrêtée ; la carte Répétition ne propose plus que les fréquences. 97 tests, tous au vert." width="100%">
+<img src="docs/schemas/versions.svg" alt="Les versions, quatorze en treize jours, du jeudi 24 septembre au mardi 6 octobre 2026, empilées l’une sur l’autre : chacune tombe sur la précédente, comme elle s’installe par-dessus sur le téléphone, sans rien perdre. En bas, le socle ne bouge pas : tes données, comptes, opérations, catégories, règles apprises et liens, et la même clé de signature, certificat SHA-256 55572db2…fabcbef ; un fil monte de la clé et scelle chaque version. Le 24 septembre, 1.0.0, la première version : reliée au Crédit Mutuel de Bretagne par Enable Banking, classement, virements internes, remboursements, récurrences, base chiffrée et écran déplié en volets. 1.0.1, un correctif : le bon numéro de version dans les réglages, qui affichaient encore 0.1.0. 1.0.2 : un groupe d’icônes Sorties et loisirs, grande roue, fête foraine, billets, cinéma, séparé du Sport. 1.0.3 : l’alerte de compte en négatif, le solde relu toutes les six heures, même application fermée, une notification par passage sous zéro. 1.1.0 : la démo, une seconde application installée à côté de la vraie, avec quatre mois d’opérations inventées, sans banque ni empreinte. Le 25 septembre, 1.2.0 : toutes les banques d’Enable Banking, par nom ou par pays, une page guide pour obtenir la clé, les opérations en attente et la synchronisation à chaque ouverture. Le 26 septembre, 1.2.2, l’audit complet : lier un remboursement ne gèle plus l’application, elle se reverrouille après un passage en arrière-plan, la synchronisation garde les liens des opérations en attente, plus de règle apprise sur le « N » d’un chèque, montants nets partout et récurrences justes sur les mois passés, la fiche d’une opération entière sur l’écran déplié. Le 27 septembre, 1.2.3, le mois suit le salaire : le mois commence tout seul le jour où le salaire arrive, et les espèces retirées un mois et dépensées le suivant ne comptent plus deux fois. Le 29 septembre, 1.2.4, plusieurs remboursements : une dépense remboursée par plusieurs virements, six amis à 23 euros chacun, avec des cases à cocher et ce qui reste à couvrir sous les yeux. Le même jour, 1.2.5 : l’écran extérieur du Fold reste en portrait, comme un téléphone, et l’écran intérieur tourne toujours librement. Le 30 septembre, 1.2.6, chaque salaire, son mois : chaque salaire ouvre son mois, même versé en avance pour Noël, l’accueil n’est plus coupé en deux après un verrou, et À vérifier ne garde plus les opérations déjà liées. Le même jour, 1.2.7, plafonds et récurrences : chaque livret se mesure à son plafond, Livret jeune 1 600 euros, Livret A 22 950 euros ; une récurrence s’arrête à partir d’aujourd’hui et reprend si elle repasse ; Opérations montre tout l’historique. Le 4 octobre, 1.2.8, arrêter une récurrence : une bascule « Ne sera plus une récurrence » dans la fiche d’une opération ; la répétition garde sa fréquence, « Chaque mois », même arrêtée ; la carte Répétition ne propose plus que les fréquences. Le 6 octobre, 1.2.9, la version en cours, les widgets : sept widgets pour l’écran d’accueil du téléphone, dessinés par l’application avec ses propres composants ; un appui ouvre la bonne page, derrière l’empreinte ; seuls les widgets posés gardent une image. 97 tests, tous au vert." width="100%">
 
 Chaque Release, avec ses notes et ses empreintes SHA-256 : [github.com/Cybertrist/SmartBudget/releases](https://github.com/Cybertrist/SmartBudget/releases).
 
 <a id="licence"></a>
-<img src="docs/sections/s15.png" alt="15 Licence et auteur" width="100%">
 
 Le code est publié sous licence [MIT](LICENSE) : libre de le lire, de le reprendre et de le modifier, à condition de garder la mention de copyright. La police Figtree est sous licence SIL Open Font, les icônes Material Symbols sous licence Apache 2.0.
 

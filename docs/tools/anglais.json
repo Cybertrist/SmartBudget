@@ -547,5 +547,20 @@
   "Chiffrement": "Encryption",
   "Confidentialité": "Privacy",
   "Licence": "Licence",
-  "Les versions": "Versions"
+  "Les versions": "Versions",
+  "Les widgets": "The widgets",
+  "Versions et licence": "Releases and licence",
+  "Mes comptes": "My accounts",
+  "Dépenses du mois": "Spending this month",
+  "À venir": "Coming up",
+  "Dépense en espèces": "Cash expense",
+  "L’anneau des sorties du mois, une part et une icône par catégorie.": "The ring of the month’s spending, one slice and one icon per category.",
+  "Ce qu’il reste du budget du mois, et sa jauge.": "What is left of the month’s budget, and its gauge.",
+  "Le total des livrets, face à l’objectif.": "The savings total, against the goal.",
+  "Le total, puis le compte courant, l’épargne et les espèces.": "The total, then the current account, savings and cash.",
+  "Le total du mois et ses trois plus grosses catégories.": "The month’s total and its three biggest categories.",
+  "Les trois prochains prélèvements qui reviennent tout seuls.": "The next three payments that come back on their own.",
+  "Un appui ouvre la saisie d’une dépense en espèces.": "One tap opens the form to log a cash expense.",
+  "Dessinés par l’application elle-même": "Drawn by the app itself",
+  "Chaque widget est une image que SmartBudget compose avec ses propres tuiles, ses couleurs et sa police, puis confie à Android. Un appui ouvre la bonne page, derrière l’empreinte.": "Each widget is an image that SmartBudget composes with its own tiles, colours and typeface, then hands to Android. A tap opens the right page, behind the fingerprint."
 }

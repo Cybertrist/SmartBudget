@@ -43,6 +43,85 @@
                 <data android:scheme="${schemaBanque}" android:host="banque"/>
             </intent-filter>
         </activity>
+        <!-- Les widgets de l'écran d'accueil : une image dessinée par l'application
+             (lib/ecran_accueil). -->
+        <receiver
+            android:name=".WidgetBudget"
+            android:exported="true"
+            android:label="@string/widget_budget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_budget_info" />
+        </receiver>
+        <receiver
+            android:name=".WidgetEpargne"
+            android:exported="true"
+            android:label="@string/widget_epargne">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_epargne_info" />
+        </receiver>
+        <receiver
+            android:name=".WidgetComptes"
+            android:exported="true"
+            android:label="@string/widget_comptes">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_comptes_info" />
+        </receiver>
+        <receiver
+            android:name=".WidgetAnalyse"
+            android:exported="true"
+            android:label="@string/widget_analyse">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_analyse_info" />
+        </receiver>
+        <receiver
+            android:name=".WidgetDepenses"
+            android:exported="true"
+            android:label="@string/widget_depenses">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_depenses_info" />
+        </receiver>
+        <receiver
+            android:name=".WidgetAVenir"
+            android:exported="true"
+            android:label="@string/widget_avenir">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_avenir_info" />
+        </receiver>
+        <receiver
+            android:name=".WidgetEspeces"
+            android:exported="true"
+            android:label="@string/widget_especes">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_especes_info" />
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

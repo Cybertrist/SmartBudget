@@ -16,6 +16,7 @@ import '../donnees/sauvegarde.dart';
 import '../providers/auth_provider.dart';
 import '../providers/donnees.dart';
 import '../providers/securite.dart';
+import '../ecran_accueil/atelier.dart';
 import '../main.dart' show generation;
 import '../security/key_vault.dart';
 import '../utils/fichiers.dart';
@@ -198,7 +199,7 @@ class EcranReglages extends ConsumerWidget {
   }
 
   /// La version affichée, celle du pubspec.
-  static const _version = '1.2.8';
+  static const _version = '1.2.9';
 
   static String _duree(Duration d) => d.inSeconds < 60 ? '${d.inSeconds} secondes' : (d.inMinutes == 1 ? '1 minute' : '${d.inMinutes} minutes');
 
@@ -426,6 +427,8 @@ class EcranReglages extends ConsumerWidget {
     // l'erreur.
     final auth = ref.read(authServiceProvider);
     await Veille.arreter();
+    // Les photos des widgets de l'écran d'accueil portent des montants.
+    await AtelierWidgets.toutOublier();
     await KeyVault.instance.destroy();
     await Base.instance.toutDetruire();
     await auth.lock();

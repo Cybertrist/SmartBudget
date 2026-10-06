@@ -9,6 +9,7 @@ par un script. Changer un texte, c'est changer une ligne.
 
     bash docs/tools/figures.sh     # bannière, bandeaux, fonctionnalités, palette, boutons
     bash docs/tools/captures.sh    # les deux planches de captures
+    bash docs/tools/widgets.sh     # la planche des widgets de l'écran d'accueil
     node docs/tools/anime.js       # les vingt-trois schémas animés
     bash docs/tools/pastilles.sh   # les pastilles FRANÇAIS et ENGLISH, dans docs/langues
     bash docs/tools/social.sh      # l'aperçu social (JPEG), à déposer dans Settings > Social preview
@@ -25,6 +26,11 @@ Chaque commande fait la version française, puis l'anglaise dans `docs/en/`.
   ouvrir pour corriger une phrase.
 - `captures.sh` : les planches du téléphone et de l'écran déplié, à partir
   de `src-captures/`.
+- `widgets.sh` : la planche des widgets, à partir de `src-widgets/`, les
+  images que l'application dessine elle-même. Elles sortent de la démo en
+  débogage, seule version où tous les widgets sont photographiés, par
+  `adb exec-out run-as com.cybertrist.smartbudget.demo cat files/home_widget/<clé>.png`.
+  Les mêmes images servent d'aperçus dans le sélecteur de widgets.
 - `rogner.js` : prépare les captures brutes de l'émulateur. Il retire la
   barre d'état et la barre de navigation d'après un `barres.txt` posé à
   côté, réduit et écrit en JPEG, par un canvas de Chrome. Repris de
